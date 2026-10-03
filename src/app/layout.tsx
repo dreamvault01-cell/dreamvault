@@ -30,6 +30,10 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from '@/components/ThemeProvider';
+import ClerkThemeWrapper from '@/components/ClerkThemeProvider';
+import ErrorSuppressor from '@/components/ErrorSuppressor';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,6 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <ErrorSuppressor />
         <ThemeProvider>
           <ClerkThemeWrapper>
             <CartProvider>
