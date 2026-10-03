@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { getCategories, getProductsByCategory, getProducts } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const categories = await getCategories();
   const category = categories.find((c) => c.slug === slug);
   const categoryProducts = await getProductsByCategory(slug);

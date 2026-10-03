@@ -4,8 +4,8 @@ import ProductCard from '@/components/ProductCard';
 import AddToCartSection from '@/components/AddToCartSection';
 import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift } from 'lucide-react';
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const product = await getProductBySlug(slug);
 
   if (!product) {
