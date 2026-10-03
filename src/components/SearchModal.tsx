@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { searchProducts } from '@/data/products';
 
-import { Search } from 'lucide-react';
+import { Search, TrendingUp, ArrowRight, Image as ImageIcon } from 'lucide-react';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -63,8 +63,25 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
         <div className="search-results">
           {query.length < 2 && (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              Start typing to search...
+            <div className="search-empty-state">
+              <div className="search-empty-header">
+                <TrendingUp size={16} />
+                <span>Trending Searches</span>
+              </div>
+              <div className="search-quick-links">
+                <Link href="/collections/anime" onClick={onClose} className="search-quick-link">
+                  <ImageIcon size={14} /> Anime Posters
+                </Link>
+                <Link href="/collections/abstract" onClick={onClose} className="search-quick-link">
+                  <ImageIcon size={14} /> Abstract Art
+                </Link>
+                <Link href="/collections/wall-setup-packs" onClick={onClose} className="search-quick-link">
+                  <ImageIcon size={14} /> Gallery Wall Sets
+                </Link>
+                <Link href="/collections/minimal" onClick={onClose} className="search-quick-link">
+                  <ImageIcon size={14} /> Minimalist Prints
+                </Link>
+              </div>
             </div>
           )}
 
@@ -74,12 +91,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </div>
           )}
 
-          {results.map((product) => (
+          {results.map((product, i) => (
             <Link
               key={product.id}
               href={`/product/${product.slug}`}
               className="search-result-item"
               onClick={onClose}
+              style={{ animationDelay: `${i * 0.05}s` }}
             >
               <div className="search-result-image">
                 <img src={product.image} alt={product.name} />
@@ -88,7 +106,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <div className="search-result-name">{product.name}</div>
                 <div className="search-result-category">{product.category}</div>
               </div>
-              <div className="search-result-price">₹{product.price}</div>
+              <div className="search-result-action">
+                <div className="search-result-price">₹{product.price}</div>
+                <ArrowRight size={16} className="search-result-arrow" />
+              </div>
             </Link>
           ))}
         </div>
