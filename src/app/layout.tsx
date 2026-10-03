@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import ClerkThemeWrapper from '@/components/ClerkThemeProvider';
+import TrustBadges from '@/components/TrustBadges';
 
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
@@ -43,6 +44,7 @@ export default function RootLayout({
             <CartProvider>
               <Navbar />
               <main id="main-content">{children}</main>
+              <TrustBadges />
               <Footer />
             </CartProvider>
           </ClerkThemeWrapper>
