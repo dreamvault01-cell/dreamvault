@@ -30,8 +30,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { ThemeProvider } from '@/components/ThemeProvider';
-import ClerkThemeWrapper from '@/components/ClerkThemeProvider';
 import ErrorSuppressor from '@/components/ErrorSuppressor';
 
 export default function RootLayout({
