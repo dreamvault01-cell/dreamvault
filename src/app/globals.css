@@ -38,7 +38,7 @@
   --gradient-gold: linear-gradient(135deg, #d4af37 0%, #f0d060 50%, #d4af37 100%);
   --gradient-dark: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
   --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-  --gradient-hero: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.9) 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.4) 100%);
 
 
   /* Shadows (Light Mode) */
