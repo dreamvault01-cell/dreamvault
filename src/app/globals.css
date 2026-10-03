@@ -776,13 +776,14 @@ ul, ol {
 }
 
 #hero-custom-btn {
-  color: var(--text-primary);
-  border-color: var(--border-light);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 #hero-custom-btn:hover {
-  border-color: var(--accent-gold);
-  color: var(--accent-gold);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
 }
 
 .hero-stats {
