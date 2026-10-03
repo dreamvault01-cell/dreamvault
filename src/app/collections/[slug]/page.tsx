@@ -1,18 +1,16 @@
-'use client';
-
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { categories, getProductsByCategory, products } from '@/data/products';
+import { getCategories, getProductsByCategory, getProducts } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 
-export default function CategoryPage() {
-  const params = useParams();
-  const slug = params.slug as string;
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const categories = await getCategories();
   const category = categories.find((c) => c.slug === slug);
-  const categoryProducts = getProductsByCategory(slug);
+  const categoryProducts = await getProductsByCategory(slug);
+  const allProducts = await getProducts();
 
   // If category not found, show all products as fallback
-  const displayProducts = categoryProducts.length > 0 ? categoryProducts : products;
+  const displayProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
   const title = category?.name || 'All Posters';
   const description = category?.description || 'Browse our complete collection';
 

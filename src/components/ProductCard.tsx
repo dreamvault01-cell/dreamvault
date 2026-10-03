@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Product } from '@/data/products';
+import { Product } from '@/lib/data';
 import { useCart } from '@/context/CartContext';
 import { Heart, Eye, Star, StarHalf } from 'lucide-react';
 

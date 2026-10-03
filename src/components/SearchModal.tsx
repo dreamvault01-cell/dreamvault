@@ -2,9 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { searchProducts } from '@/data/products';
-
+import { searchProductsAction } from '@/app/actions/products';
 import { Search, TrendingUp, ArrowRight, Image as ImageIcon } from 'lucide-react';
+
+interface ProductResult {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  price: number;
+  image: string;
+}
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -13,8 +21,25 @@ interface SearchModalProps {
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
+  const [results, setResults] = useState<ProductResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const results = query.length >= 2 ? searchProducts(query) : [];
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      if (query.length >= 2) {
+        setIsSearching(true);
+        const data = await searchProductsAction(query);
+        setResults(data);
+        setIsSearching(false);
+      } else {
+        setResults([]);
+      }
+    };
+
+    const debounceTimer = setTimeout(fetchResults, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [query]);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,6 +48,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     } else {
       document.body.style.overflow = '';
       setQuery('');
+      setResults([]);
     }
   }, [isOpen]);
 
@@ -85,13 +111,19 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </div>
           )}
 
-          {query.length >= 2 && results.length === 0 && (
+          {query.length >= 2 && results.length === 0 && !isSearching && (
             <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
               No results for &ldquo;{query}&rdquo;
             </div>
           )}
+          
+          {isSearching && (
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              Searching...
+            </div>
+          )}
 
-          {results.map((product, i) => (
+          {!isSearching && results.map((product, i) => (
             <Link
               key={product.id}
               href={`/product/${product.slug}`}

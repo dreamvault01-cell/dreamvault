@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
-import { products, categories, getFeaturedProducts } from '@/data/products';
+import { getProducts, getCategories, getFeaturedProducts } from '@/lib/data';
 import { Rocket, Palette, Gem, ShieldCheck, Star } from 'lucide-react';
 
 const testimonials = [
@@ -29,9 +29,11 @@ const testimonials = [
   },
 ];
 
-export default function Home() {
-  const featured = getFeaturedProducts();
-  const bestsellers = products.slice(0, 8);
+export default async function Home() {
+  const featured = await getFeaturedProducts();
+  const allProducts = await getProducts();
+  const bestsellers = allProducts.slice(0, 8);
+  const categories = await getCategories();
 
   return (
     <>
@@ -229,7 +231,7 @@ export default function Home() {
           </div>
 
           <div className="product-grid">
-            {products
+            {allProducts
               .filter((p) => p.categorySlug === 'wall-setup-packs' || p.badge)
               .slice(0, 4)
               .map((product, i) => (

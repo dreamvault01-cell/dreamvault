@@ -1,10 +1,11 @@
-'use client';
-
 import Link from 'next/link';
-import { categories, products } from '@/data/products';
+import { getCategories, getProducts } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const categories = await getCategories();
+  const products = await getProducts();
+
   return (
     <div style={{ paddingTop: '10px' }}>
       {/* Header */}
@@ -73,4 +74,3 @@ export default function CollectionsPage() {
     </div>
   );
 }
-

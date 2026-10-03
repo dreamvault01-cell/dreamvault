@@ -1,20 +1,12 @@
-'use client';
-
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
-import { getProductBySlug, products } from '@/data/products';
-import { useCart } from '@/context/CartContext';
+import { getProductBySlug, getProductsByCategory } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
+import AddToCartSection from '@/components/AddToCartSection';
 import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift } from 'lucide-react';
 
-export default function ProductPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const product = getProductBySlug(slug);
-  const [selectedSize, setSelectedSize] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+export default async function ProductPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return (
@@ -30,6 +22,11 @@ export default function ProductPage() {
     );
   }
 
+  const categoryProducts = await getProductsByCategory(product.categorySlug);
+  const relatedProducts = categoryProducts
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4);
+
   const discount = Math.round(
     ((product.originalPrice - product.price) / product.originalPrice) * 100
   );
@@ -40,19 +37,6 @@ export default function ProductPage() {
     return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
   };
 
-  const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image,
-      size: product.sizes[selectedSize],
-      quantity,
-      slug: product.slug,
-    });
-  };
-
   // Delivery date calculation
   const now = new Date();
   const deliveryDate = new Date(now);
@@ -61,10 +45,6 @@ export default function ProductPage() {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const deliveryStr = `${days[deliveryDate.getDay()]}, ${deliveryDate.getDate()} ${months[deliveryDate.getMonth()]}`;
-
-  const relatedProducts = products
-    .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
-    .slice(0, 4);
 
   return (
     <>
@@ -105,46 +85,7 @@ export default function ProductPage() {
 
             <p className="pdp-description">{product.description}</p>
 
-            {/* Size Selection */}
-            <div className="pdp-option-group">
-              <div className="pdp-option-label">Select Size</div>
-              <div className="pdp-sizes">
-                {product.sizes.map((size, i) => (
-                  <button
-                    key={size}
-                    className={`pdp-size-btn ${i === selectedSize ? 'selected' : ''}`}
-                    onClick={() => setSelectedSize(i)}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Paper Type */}
-            <div className="pdp-option-group">
-              <div className="pdp-option-label">Paper Type</div>
-              <div className="pdp-sizes">
-                <button className="pdp-size-btn selected">{product.paperType}</button>
-              </div>
-            </div>
-
-            {/* Add to Cart */}
-            <div className="pdp-add-row">
-              <div className="pdp-qty">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>
-                <span>{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)}>+</button>
-              </div>
-              <button
-                className="btn btn-primary btn-lg"
-                style={{ flex: 1 }}
-                onClick={handleAddToCart}
-                id="pdp-add-to-cart"
-              >
-                Add to Cart — ₹{product.price * quantity}
-              </button>
-            </div>
+            <AddToCartSection product={product} />
 
             {/* Delivery Tracker */}
             <div className="delivery-tracker">
