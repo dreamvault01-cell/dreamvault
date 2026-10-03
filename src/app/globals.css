@@ -20,6 +20,7 @@
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
   --text-accent: #a67c00;
+  --btn-primary-text: #ffffff;
 
   /* Accent Colors (Light Mode) */
   --accent-gold: #b38600;
@@ -64,6 +65,7 @@
   --text-secondary: #a0a0a0;
   --text-muted: #666666;
   --text-accent: #d4af37;
+  --btn-primary-text: #0a0a0a;
 
   /* Accent Colors (Dark Mode) */
   --accent-gold: #d4af37;
@@ -254,7 +256,7 @@ ul, ol {
 
 .btn-primary {
   background: var(--gradient-gold);
-  color: #0a0a0a;
+  color: var(--btn-primary-text);
   font-weight: 700;
 }
 
@@ -662,7 +664,7 @@ ul, ol {
 
 .navbar-signup-btn {
   background: var(--accent-gold);
-  color: #0a0a0a;
+  color: var(--btn-primary-text);
   font-size: 0.8rem;
   font-weight: 700;
   padding: 0.4rem 1rem;
