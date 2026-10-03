@@ -1,10 +1,10 @@
-import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
 import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import ClerkThemeWrapper from '@/components/ClerkThemeProvider';
 
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
@@ -30,8 +30,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { ThemeProvider } from '@/components/ThemeProvider';
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,30 +38,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ClerkProvider
-          appearance={{
-            baseTheme: dark,
-            variables: {
-              colorPrimary: '#9333ea', // Premium neon purple
-              colorBackground: '#09090b', // Deep zinc black
-              colorInputBackground: '#18181b', // Dark zinc for inputs
-              colorInputText: '#fafafa',
-              borderRadius: '0.75rem',
-            },
-            elements: {
-              card: 'border border-zinc-800 shadow-2xl shadow-purple-900/20',
-              formButtonPrimary: 'hover:opacity-90 transition-opacity',
-            }
-          }}
-        >
-          <ThemeProvider>
-          <CartProvider>
-          <Navbar />
-          <main id="main-content">{children}</main>
-          <Footer />
-          </CartProvider>
-          </ThemeProvider>
-        </ClerkProvider>
+        <ThemeProvider>
+          <ClerkThemeWrapper>
+            <CartProvider>
+              <Navbar />
+              <main id="main-content">{children}</main>
+              <Footer />
+            </CartProvider>
+          </ClerkThemeWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
