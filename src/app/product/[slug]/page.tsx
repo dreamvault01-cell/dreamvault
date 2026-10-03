@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { getProductBySlug, products } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import ProductCard from '@/components/ProductCard';
+import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift } from 'lucide-react';
 
 export default function ProductPage() {
   const params = useParams();
@@ -149,7 +150,7 @@ export default function ProductPage() {
             <div className="delivery-tracker">
               <div className="delivery-route">
                 <div className="delivery-end">
-                  <span className="emoji">📦</span>
+                  <span className="emoji"><Package size={20} /></span>
                   <span className="label">Order today</span>
                 </div>
                 <div className="delivery-track">
@@ -167,39 +168,39 @@ export default function ProductPage() {
                   />
                 </div>
                 <div className="delivery-end">
-                  <span className="emoji">🏠</span>
+                  <span className="emoji"><Home size={20} /></span>
                   <span className="delivery-date">{deliveryStr}</span>
                 </div>
               </div>
               <div className="delivery-sub">
-                ⚡ <b>FREE Express + ₹50 OFF</b> — pay online (UPI / Card)
+                <Zap size={16} style={{ display: 'inline', verticalAlign: 'text-bottom' }} /> <b>FREE Express + ₹50 OFF</b> — pay online (UPI / Card)
               </div>
             </div>
 
             {/* Product Features */}
             <div className="pdp-features">
               <div className="pdp-feature">
-                <span className="icon">🎨</span>
+                <span className="icon"><Palette size={20} /></span>
                 <span>Premium 300 GSM Paper</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon">💎</span>
+                <span className="icon"><Gem size={20} /></span>
                 <span>Archival Quality Inks</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon">🚀</span>
+                <span className="icon"><Rocket size={20} /></span>
                 <span>Free Express Shipping</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon">🔄</span>
+                <span className="icon"><RefreshCw size={20} /></span>
                 <span>Easy Returns</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon">📐</span>
+                <span className="icon"><Ruler size={20} /></span>
                 <span>Hand-Inspected Quality</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon">🎁</span>
+                <span className="icon"><Gift size={20} /></span>
                 <span>Gift-Ready Packaging</span>
               </div>
             </div>

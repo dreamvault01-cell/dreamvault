@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
+import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -72,7 +73,7 @@ export default function Navbar() {
               aria-label="Search"
               id="search-btn"
             >
-              🔍
+              <Search size={20} />
             </button>
 
             <button
@@ -81,7 +82,7 @@ export default function Navbar() {
               aria-label="Cart"
               id="cart-btn"
             >
-              🛒
+              <ShoppingCart size={20} />
               {totalItems > 0 && (
                 <span className="navbar-cart-count">{totalItems}</span>
               )}
@@ -93,7 +94,7 @@ export default function Navbar() {
               aria-label="Toggle menu"
               id="menu-toggle"
             >
-              {mobileOpen ? '✕' : '☰'}
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>

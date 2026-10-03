@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { products, categories, getFeaturedProducts } from '@/data/products';
+import { Rocket, Palette, Gem, ShieldCheck, Star } from 'lucide-react';
 
 const testimonials = [
   {
@@ -78,7 +79,9 @@ export default function Home() {
               <div className="hero-stat-label">Unique Designs</div>
             </div>
             <div>
-              <div className="hero-stat-value">4.9★</div>
+              <div className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                4.9<Star size={24} fill="currentColor" />
+              </div>
               <div className="hero-stat-label">Avg. Rating</div>
             </div>
           </div>
@@ -90,28 +93,28 @@ export default function Home() {
         <div className="container">
           <div className="features-grid">
             <div className="feature-item">
-              <div className="feature-icon">🚀</div>
+              <div className="feature-icon"><Rocket size={32} /></div>
               <div className="feature-text">
                 <strong>Free Express Shipping</strong>
                 <span>Delivered in 3-5 days</span>
               </div>
             </div>
             <div className="feature-item">
-              <div className="feature-icon">🎨</div>
+              <div className="feature-icon"><Palette size={32} /></div>
               <div className="feature-text">
                 <strong>Premium 300 GSM</strong>
                 <span>Museum-quality art paper</span>
               </div>
             </div>
             <div className="feature-item">
-              <div className="feature-icon">💎</div>
+              <div className="feature-icon"><Gem size={32} /></div>
               <div className="feature-text">
                 <strong>Archival Inks</strong>
                 <span>Vibrant colors that last</span>
               </div>
             </div>
             <div className="feature-item">
-              <div className="feature-icon">🔒</div>
+              <div className="feature-icon"><ShieldCheck size={32} /></div>
               <div className="feature-text">
                 <strong>Secure Payments</strong>
                 <span>UPI, Cards & Net Banking</span>
@@ -253,8 +256,10 @@ export default function Home() {
           <div className="testimonial-grid">
             {testimonials.map((t, i) => (
               <div className="testimonial-card" key={i}>
-                <div className="testimonial-stars">
-                  {'★'.repeat(t.stars)}
+                <div className="testimonial-stars" style={{ display: 'flex', gap: '2px' }}>
+                  {[...Array(t.stars)].map((_, idx) => (
+                    <Star key={idx} size={16} fill="currentColor" stroke="currentColor" />
+                  ))}
                 </div>
                 <p className="testimonial-text">&ldquo;{t.text}&rdquo;</p>
                 <div className="testimonial-author">

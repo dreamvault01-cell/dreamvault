@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { searchProducts } from '@/data/products';
 
+import { Search } from 'lucide-react';
+
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -45,7 +47,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     >
       <div className="search-modal">
         <div className="search-input-wrap">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><Search size={20} /></span>
           <input
             ref={inputRef}
             type="text"

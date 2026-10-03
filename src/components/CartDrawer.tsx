@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { ShoppingCart, X } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
@@ -26,14 +27,16 @@ export default function CartDrawer() {
         <div className="cart-header">
           <h2>Your Cart ({totalItems})</h2>
           <button className="cart-close" onClick={() => setIsCartOpen(false)}>
-            ✕
+            <X size={20} />
           </button>
         </div>
 
         <div className="cart-items">
           {items.length === 0 && (
             <div className="cart-empty">
-              <div className="cart-empty-icon">🛒</div>
+              <div className="cart-empty-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+                <ShoppingCart size={48} opacity={0.5} />
+              </div>
               <p>Your cart is empty</p>
               <p style={{ fontSize: '0.8rem', marginTop: '8px' }}>
                 Start adding some stunning posters!

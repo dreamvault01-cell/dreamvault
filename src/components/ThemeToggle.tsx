@@ -2,6 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { Sun, Moon } from 'lucide-react';
 
 export default function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -15,7 +16,7 @@ export default function ThemeToggle() {
   if (!mounted) {
     return (
       <button className="navbar-action-btn" aria-label="Toggle Theme" style={{ width: 36, height: 36 }}>
-        <span style={{ opacity: 0 }}>☼</span>
+        <Sun size={20} style={{ opacity: 0 }} />
       </button>
     );
   }
@@ -29,7 +30,7 @@ export default function ThemeToggle() {
       aria-label="Toggle Theme"
       title={`Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} mode`}
     >
-      {currentTheme === 'dark' ? '☼' : '☾'}
+      {currentTheme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   );
 }

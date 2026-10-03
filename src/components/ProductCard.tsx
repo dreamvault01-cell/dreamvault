@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
+import { Heart, Eye, Star, StarHalf } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -18,7 +19,15 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const renderStars = (rating: number) => {
     const full = Math.floor(rating);
     const half = rating % 1 >= 0.5;
-    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
+    const empty = 5 - full - (half ? 1 : 0);
+    
+    return (
+      <>
+        {[...Array(full)].map((_, i) => <Star key={`full-${i}`} size={14} fill="currentColor" stroke="currentColor" />)}
+        {half && <StarHalf size={14} fill="currentColor" stroke="currentColor" />}
+        {[...Array(empty)].map((_, i) => <Star key={`empty-${i}`} size={14} stroke="currentColor" />)}
+      </>
+    );
   };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -56,14 +65,14 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             title="Add to wishlist"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           >
-            ♡
+            <Heart size={18} />
           </button>
           <button
             className="product-card-action-btn"
             title="Quick view"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           >
-            👁
+            <Eye size={18} />
           </button>
         </div>
 
