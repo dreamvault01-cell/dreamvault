@@ -47,7 +47,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     >
       <div className="search-modal">
         <div className="search-input-wrap">
-          <span className="search-icon"><Search size={20} /></span>
+          <span className="search-icon"><Search size={22} /></span>
           <input
             ref={inputRef}
             type="text"
@@ -56,8 +56,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             onChange={(e) => setQuery(e.target.value)}
             id="search-input"
           />
-          <button onClick={onClose} style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            ESC
+          <button onClick={onClose} aria-label="Close search">
+            <kbd className="search-esc-key">ESC</kbd>
           </button>
         </div>
 
