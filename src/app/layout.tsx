@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
@@ -38,15 +39,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ThemeProvider>
+        <ClerkProvider>
+          <ThemeProvider>
           <CartProvider>
-            <Navbar />
-            <main id="main-content">{children}</main>
-            <Footer />
+          <Navbar />
+          <main id="main-content">{children}</main>
+          <Footer />
           </CartProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
 }
-

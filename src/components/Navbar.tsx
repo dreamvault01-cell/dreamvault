@@ -6,7 +6,8 @@ import { useCart } from '@/context/CartContext';
 import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
+import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -75,6 +76,27 @@ export default function Navbar() {
             >
               <Search size={20} />
             </button>
+
+            <Show when="signed-out">
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: '0.5rem' }}>
+                <SignInButton mode="modal">
+                  <button className="navbar-action-btn" aria-label="Sign In" style={{ fontSize: '14px', fontWeight: '500' }}>
+                    Login
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="btn btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '14px' }}>
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </div>
+            </Show>
+
+            <Show when="signed-in">
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
+                <UserButton />
+              </div>
+            </Show>
 
             <button
               className="navbar-action-btn"
