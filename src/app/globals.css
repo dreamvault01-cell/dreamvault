@@ -686,8 +686,8 @@ ul, ol {
   display: flex;
   align-items: center;
   overflow: hidden;
-  margin-top: -106px;
-  padding-top: 106px;
+  margin-top: 106px;
+  padding-top: 0;
 }
 
 .hero-bg {
