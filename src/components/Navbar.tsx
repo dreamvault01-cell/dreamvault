@@ -63,6 +63,22 @@ export default function Navbar() {
             <Link href="/about" onClick={() => setMobileOpen(false)}>
               About
             </Link>
+
+            {/* Auth buttons inside mobile menu */}
+            <div className="mobile-auth-buttons">
+              <Show when="signed-out">
+                <SignInButton mode="modal">
+                  <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+                    Login
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </Show>
+            </div>
           </div>
 
           <div className="navbar-actions">
@@ -77,23 +93,23 @@ export default function Navbar() {
               <Search size={20} />
             </button>
 
-            <Show when="signed-out">
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: '0.5rem' }}>
+            <div className="desktop-auth">
+              <Show when="signed-out">
                 <SignInButton mode="modal">
-                  <button className="navbar-action-btn" aria-label="Sign In" style={{ fontSize: '14px', fontWeight: '500' }}>
+                  <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
                     Login
                   </button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <button className="btn btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '14px' }}>
+                  <button className="navbar-signup-btn">
                     Sign Up
                   </button>
                 </SignUpButton>
-              </div>
-            </Show>
+              </Show>
+            </div>
 
             <Show when="signed-in">
-              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.25rem' }}>
                 <UserButton />
               </div>
             </Show>

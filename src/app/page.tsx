@@ -38,52 +38,56 @@ export default async function Home() {
     <>
       {/* ==================== HERO SECTION ==================== */}
       <section className="hero" id="hero">
-        <div className="hero-bg">
-          <img
-            src="/images/banners/hero.jpg"
-            alt="DreamVault Premium Art Prints and Posters"
-          />
-        </div>
-        <div className="hero-overlay" />
+        <div className="container hero-container">
+          <div className="hero-content-wrapper">
+            <div className="hero-tag">✦ Premium Art Prints & Posters</div>
 
-        <div className="container hero-content">
-          <div className="hero-tag">✦ Premium Art Prints & Posters</div>
+            <h1 className="hero-title">
+              <span className="line">Curate Your</span>
+              <span className="line">
+                <span className="accent">Dream Space</span>
+              </span>
+            </h1>
 
-          <h1 className="hero-title">
-            <span className="line">Curate Your</span>
-            <span className="line">
-              <span className="accent">Dream Space</span>
-            </span>
-          </h1>
+            <p className="hero-desc">
+              Transform your walls into captivating canvases. Premium 300 GSM art prints
+              starting from just ₹149. Free express shipping on every order.
+            </p>
 
-          <p className="hero-desc">
-            Transform your walls into captivating canvases. Premium 300 GSM art prints
-            starting from just ₹149. Free express shipping on every order.
-          </p>
-
-          <div className="hero-buttons">
-            <Link href="/collections" className="btn btn-primary btn-lg" id="hero-shop-btn">
-              Shop Collection →
-            </Link>
-            <Link href="/custom" className="btn btn-secondary btn-lg" id="hero-custom-btn">
-              Create Custom Poster
-            </Link>
-          </div>
-
-          <div className="hero-stats">
-            <div>
-              <div className="hero-stat-value">50K+</div>
-              <div className="hero-stat-label">Happy Customers</div>
+            <div className="hero-buttons">
+              <Link href="/collections" className="btn btn-primary btn-lg" id="hero-shop-btn">
+                Shop Collection →
+              </Link>
+              <Link href="/custom" className="btn btn-secondary btn-lg" id="hero-custom-btn">
+                Create Custom Poster
+              </Link>
             </div>
-            <div>
-              <div className="hero-stat-value">500+</div>
-              <div className="hero-stat-label">Unique Designs</div>
-            </div>
-            <div>
-              <div className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                4.9<Star size={24} fill="currentColor" />
+
+            <div className="hero-stats">
+              <div>
+                <div className="hero-stat-value">50K+</div>
+                <div className="hero-stat-label">Happy Customers</div>
               </div>
-              <div className="hero-stat-label">Avg. Rating</div>
+              <div>
+                <div className="hero-stat-value">500+</div>
+                <div className="hero-stat-label">Unique Designs</div>
+              </div>
+              <div>
+                <div className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  4.9<Star size={24} fill="currentColor" />
+                </div>
+                <div className="hero-stat-label">Avg. Rating</div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="hero-image-wrapper">
+            <div className="hero-image-inner">
+              <img
+                src="/images/banners/hero.jpg"
+                alt="DreamVault Premium Art Prints and Posters"
+              />
+              <div className="hero-image-glow"></div>
             </div>
           </div>
         </div>
