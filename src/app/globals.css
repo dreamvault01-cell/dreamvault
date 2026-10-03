@@ -1043,31 +1043,39 @@ ul, ol {
   position: relative;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  padding: clamp(2rem, 5vw, 4rem);
+  padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem);
   background: var(--gradient-card);
   border: 1px solid var(--border-accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .cta-banner::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
   pointer-events: none;
 }
 
 .cta-content {
   position: relative;
   z-index: 1;
-  max-width: 500px;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .cta-banner h2 {
   font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
   font-weight: 700;
   margin-bottom: var(--gap-md);
 }
@@ -1076,6 +1084,7 @@ ul, ol {
   color: var(--text-secondary);
   margin-bottom: var(--gap-xl);
   line-height: 1.7;
+  font-size: 1.05rem;
 }
 
 /* ---------- Testimonials ---------- */
