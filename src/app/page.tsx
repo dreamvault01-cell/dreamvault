@@ -1,4 +1,3 @@
-'use client';
 
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
@@ -287,7 +286,7 @@ export default async function Home() {
             Get exclusive drops, early access, and special offers delivered to your inbox.
           </p>
           <form
-            onSubmit={(e) => e.preventDefault()}
+            action="#"
             style={{
               display: 'flex',
               gap: '0.75rem',

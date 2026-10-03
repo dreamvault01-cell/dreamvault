@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
-import { Product } from '@/lib/data';
+import type { Product } from '@/lib/data';
 
 interface AddToCartSectionProps {
   product: Product;

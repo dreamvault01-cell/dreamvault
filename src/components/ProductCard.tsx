@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Product } from '@/lib/data';
+import type { Product } from '@/lib/data';
 import { useCart } from '@/context/CartContext';
 import { Heart, Eye, Star, StarHalf } from 'lucide-react';
 
@@ -39,7 +39,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       price: product.price,
       originalPrice: product.originalPrice,
       image: product.image,
-      size: product.sizes[0],
+      size: "A4 (21x30 cm)",
       quantity: 1,
       slug: product.slug,
     });
