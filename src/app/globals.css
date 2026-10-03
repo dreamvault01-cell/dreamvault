@@ -521,8 +521,8 @@ ul, ol {
 }
 
 .navbar.scrolled {
-  background: rgba(10, 10, 10, 0.95);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .navbar-inner {
