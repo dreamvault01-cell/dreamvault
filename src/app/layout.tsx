@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
@@ -39,7 +40,22 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ClerkProvider>
+        <ClerkProvider
+          appearance={{
+            baseTheme: dark,
+            variables: {
+              colorPrimary: '#9333ea', // Premium neon purple
+              colorBackground: '#09090b', // Deep zinc black
+              colorInputBackground: '#18181b', // Dark zinc for inputs
+              colorInputText: '#fafafa',
+              borderRadius: '0.75rem',
+            },
+            elements: {
+              card: 'border border-zinc-800 shadow-2xl shadow-purple-900/20',
+              formButtonPrimary: 'hover:opacity-90 transition-opacity',
+            }
+          }}
+        >
           <ThemeProvider>
           <CartProvider>
           <Navbar />
