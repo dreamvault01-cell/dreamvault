@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -63,6 +64,8 @@ export default function Navbar() {
           </div>
 
           <div className="navbar-actions">
+            <ThemeToggle />
+            
             <button
               className="navbar-action-btn"
               onClick={() => setSearchOpen(true)}

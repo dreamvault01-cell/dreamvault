@@ -7,19 +7,19 @@
 
 /* ---------- CSS Custom Properties ---------- */
 :root {
-  /* Base Colors */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #111111;
-  --bg-tertiary: #1a1a1a;
-  --bg-card: #141414;
-  --bg-elevated: #1e1e1e;
-  --bg-glass: rgba(20, 20, 20, 0.85);
+  /* Base Colors (Light Mode) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f1f3f5;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
 
-  /* Text Colors */
-  --text-primary: #f5f5f5;
-  --text-secondary: #a0a0a0;
-  --text-muted: #666666;
-  --text-accent: #d4af37;
+  /* Text Colors (Light Mode) */
+  --text-primary: #111111;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-accent: #b8922e;
 
   /* Accent Colors */
   --accent-gold: #d4af37;
@@ -29,23 +29,59 @@
   --accent-rose: #e8455a;
   --accent-cyan: #00d4ff;
 
-  /* Borders */
+  /* Borders (Light Mode) */
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-light: rgba(0, 0, 0, 0.1);
+  --border-accent: rgba(212, 175, 55, 0.4);
+
+  /* Gradients (Light Mode) */
+  --gradient-gold: linear-gradient(135deg, #d4af37 0%, #f0d060 50%, #d4af37 100%);
+  --gradient-dark: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.8) 100%);
+
+  /* Shadows (Light Mode) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.2);
+  --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 20px rgba(212, 175, 55, 0.15);
+}
+
+[data-theme='dark'] {
+  /* Base Colors (Dark Mode) */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --bg-card: #141414;
+  --bg-elevated: #1e1e1e;
+  --bg-glass: rgba(20, 20, 20, 0.85);
+
+  /* Text Colors (Dark Mode) */
+  --text-primary: #f5f5f5;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  --text-accent: #d4af37;
+
+  /* Borders (Dark Mode) */
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-light: rgba(255, 255, 255, 0.1);
   --border-accent: rgba(212, 175, 55, 0.3);
 
-  /* Gradients */
-  --gradient-gold: linear-gradient(135deg, #d4af37 0%, #f0d060 50%, #d4af37 100%);
+  /* Gradients (Dark Mode) */
   --gradient-dark: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
   --gradient-card: linear-gradient(145deg, #1a1a1a 0%, #111111 100%);
   --gradient-hero: linear-gradient(135deg, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.4) 50%, rgba(10, 10, 10, 0.8) 100%);
 
-  /* Shadows */
+  /* Shadows (Dark Mode) */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.15);
   --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.08);
+}
+
+:root {
 
   /* Spacing */
   --section-padding: clamp(3rem, 6vw, 6rem);
@@ -476,7 +512,7 @@ ul, ol {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(10, 10, 10, 0.8);
+  background: var(--bg-glass);
   backdrop-filter: blur(20px) saturate(1.8);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   border-bottom: 1px solid var(--border-subtle);
