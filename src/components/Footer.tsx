@@ -119,11 +119,14 @@ export default function Footer() {
               <a href="#" aria-label="Facebook"><FacebookIcon /></a>
             </div>
             <p className="footer-copyright">© {new Date().getFullYear()} DreamVault. All rights reserved.</p>
-            <div className="footer-payments-minimal">
-              <span>VISA</span>
-              <span>MASTERCARD</span>
-              <span>AMEX</span>
-              <span>UPI</span>
+            <div className="footer-payments">
+              <span className="payment-badge payment-badge-text" style={{ color: '#142787' }}>VISA</span>
+              <span className="payment-badge">
+                <svg width="18" height="12" viewBox="0 0 18 12"><circle cx="6" cy="6" r="5.5" fill="#EB001B" opacity="0.9"/><circle cx="12" cy="6" r="5.5" fill="#F79E1B" opacity="0.9"/></svg>
+              </span>
+              <span className="payment-badge payment-badge-text">UPI</span>
+              <span className="payment-badge payment-badge-text">RuPay</span>
+              <span className="payment-badge payment-badge-text">Net Banking</span>
             </div>
           </div>
         </div>
