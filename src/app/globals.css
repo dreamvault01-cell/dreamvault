@@ -1508,7 +1508,7 @@ ul, ol {
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
   }
-  .footer-payments-minimal {
+  .footer-payments {
     justify-content: flex-end;
   }
 }
