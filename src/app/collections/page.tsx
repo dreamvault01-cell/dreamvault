@@ -8,18 +8,25 @@ export default async function CollectionsPage() {
 
   return (
     <div style={{ paddingTop: '10px' }}>
-      {/* Header */}
-      <section className="section" style={{ paddingBottom: '2rem' }}>
-        <div className="container">
-          <h1
-            className="section-title"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: '0.5rem' }}
-          >
-            All <span className="accent">Collections</span>
+      <section className="collection-hero" style={{ marginBottom: '3rem' }}>
+        <div
+          className="collection-hero-bg"
+          style={{ backgroundImage: `url(https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=2070&auto=format&fit=crop)` }}
+        />
+        <div className="collection-hero-overlay" />
+        
+        <div className="container collection-hero-content">
+          <div className="pdp-breadcrumb" style={{ justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <Link href="/">Home</Link>
+            <span>/</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Collections</span>
+          </div>
+
+          <h1 className="section-title" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', marginBottom: '0.5rem' }}>
+            All Collections
           </h1>
-          <p className="section-subtitle">
-            Explore {products.length}+ premium art prints across {categories.length}{' '}
-            curated categories
+          <p className="section-subtitle" style={{ margin: '0 auto', maxWidth: '600px' }}>
+            Explore {products.length}+ premium art prints across {categories.length} curated categories
           </p>
         </div>
       </section>
