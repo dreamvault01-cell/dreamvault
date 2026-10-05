@@ -2364,7 +2364,12 @@ ul, ol {
     font-size: 1.25rem;
   }
 
-  .navbar-actions .btn-icon {
+  .navbar-actions {
+    gap: 4px;
+  }
+
+  .navbar-action-btn,
+  .navbar-toggle {
     width: 36px;
     height: 36px;
   }
@@ -2654,6 +2659,16 @@ ul, ol {
 
   .navbar-logo {
     font-size: 1.1rem;
+  }
+
+  .navbar-actions {
+    gap: 2px;
+  }
+
+  .navbar-action-btn,
+  .navbar-toggle {
+    width: 32px;
+    height: 32px;
   }
 
   .navbar-nav.mobile-open {
