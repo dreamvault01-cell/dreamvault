@@ -2528,48 +2528,10 @@ ul, ol {
 
 .newsletter-banner {
   position: relative;
-  background: var(--gradient-card);
-  border: 1.5px solid var(--border-accent);
-  border-radius: var(--radius-xl);
+  background: var(--bg-card);
   padding: clamp(3.5rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
   text-align: center;
   overflow: hidden;
-}
-
-/* Decorative gold corner flourishes */
-.newsletter-corner {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  border-color: var(--accent-gold);
-  border-style: solid;
-  opacity: 0.3;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.newsletter-corner--tl {
-  top: 16px; left: 16px;
-  border-width: 2px 0 0 2px;
-  border-radius: 4px 0 0 0;
-}
-
-.newsletter-corner--tr {
-  top: 16px; right: 16px;
-  border-width: 2px 2px 0 0;
-  border-radius: 0 4px 0 0;
-}
-
-.newsletter-corner--bl {
-  bottom: 16px; left: 16px;
-  border-width: 0 0 2px 2px;
-  border-radius: 0 0 0 4px;
-}
-
-.newsletter-corner--br {
-  bottom: 16px; right: 16px;
-  border-width: 0 2px 2px 0;
-  border-radius: 0 0 4px 0;
 }
 
 /* Shimmer animation overlay */
@@ -2582,9 +2544,9 @@ ul, ol {
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(212, 175, 55, 0.04) 45%,
-    rgba(212, 175, 55, 0.08) 50%,
-    rgba(212, 175, 55, 0.04) 55%,
+    rgba(212, 175, 55, 0.03) 45%,
+    rgba(212, 175, 55, 0.05) 50%,
+    rgba(212, 175, 55, 0.03) 55%,
     transparent 60%
   );
   animation: shimmer 6s ease-in-out infinite;

@@ -246,42 +246,30 @@ export default async function Home() {
       </section>
 
       {/* ==================== NEWSLETTER CTA ==================== */}
-      <section className="section" id="newsletter">
+      <section className="section" id="newsletter" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="newsletter-banner">
-            {/* Decorative corners */}
-            <div className="newsletter-corner newsletter-corner--tl"></div>
-            <div className="newsletter-corner newsletter-corner--tr"></div>
-            <div className="newsletter-corner newsletter-corner--bl"></div>
-            <div className="newsletter-corner newsletter-corner--br"></div>
-
             {/* Shimmer overlay */}
             <div className="newsletter-shimmer"></div>
 
             <div className="newsletter-content">
-              <div className="hero-tag" style={{ marginBottom: '1rem' }}>
-                ✦ EXCLUSIVE ACCESS
-              </div>
               <h2 className="newsletter-title">
                 Stay in the <span className="accent">Loop</span>
               </h2>
               <p className="newsletter-desc">
-                Be the first to know about new drops, limited editions, and members-only offers. Join 50,000+ art lovers.
+                Get exclusive drops, early access, and special offers delivered to your inbox.
               </p>
               <form action="#" className="newsletter-form">
                 <input
                   type="email"
-                  placeholder="Enter your email address..."
+                  placeholder="Enter your email"
                   id="newsletter-email"
                   required
                 />
                 <button type="submit" className="btn btn-primary" id="newsletter-submit">
-                  Subscribe →
+                  Subscribe
                 </button>
               </form>
-              <p className="newsletter-privacy">
-                No spam, ever. Unsubscribe anytime.
-              </p>
             </div>
 
             {/* Background glow orbs */}
