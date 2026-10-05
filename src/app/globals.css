@@ -3490,9 +3490,15 @@ ul, ol {
   gap: var(--gap-md);
 }
 
+.checkout-field-full {
+  grid-column: span 2;
+}
+
 @media (max-width: 900px) {
   .checkout-layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column-reverse; /* Order Summary above Form on mobile */
+    gap: var(--gap-2xl);
   }
 
   .checkout-form-grid {
@@ -3500,6 +3506,6 @@ ul, ol {
   }
 
   .checkout-form-grid > div {
-    grid-column: span 1;
+    grid-column: span 1 !important;
   }
 }

@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                   ].map((field) => (
                     <div
                       key={field.id}
-                      style={{ gridColumn: field.full ? 'span 2' : undefined }}
+                      className={field.full ? 'checkout-field-full' : ''}
                     >
                       <label
                         htmlFor={field.id}
