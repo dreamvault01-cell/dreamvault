@@ -2880,19 +2880,6 @@ ul, ol {
     padding-bottom: 1.5rem;
   }
 
-  /* Checkout Responsive */
-  .checkout-layout {
-    grid-template-columns: 1fr !important;
-  }
-
-  .checkout-form-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .checkout-form-grid > div {
-    grid-column: span 1 !important;
-  }
-
   .hero-content-wrapper {
     padding-top: 10px;
   }
@@ -3501,4 +3488,18 @@ ul, ol {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap-md);
+}
+
+@media (max-width: 900px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-form-grid > div {
+    grid-column: span 1;
+  }
 }
