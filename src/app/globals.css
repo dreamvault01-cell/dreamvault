@@ -1357,20 +1357,20 @@ ul, ol {
 
 .footer-social {
   display: flex;
-  gap: var(--gap-sm);
+  gap: var(--gap-md); /* Increased gap */
 }
 
 .footer-social a {
-  width: 38px;
-  height: 38px;
+  width: 44px; /* Increased size */
+  height: 44px; /* Increased size */
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: 1.2rem; /* Increased font-size (though using SVG width/height) */
   transition: all var(--transition-fast);
 }
 
