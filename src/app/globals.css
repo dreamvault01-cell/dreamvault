@@ -2711,8 +2711,13 @@ ul, ol {
   .footer-brand {
     max-width: 100%;
     margin-bottom: var(--gap-md);
-    padding-bottom: var(--gap-lg);
+    padding-bottom: var(--gap-xl);
     border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .footer-brand p {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
   }
 
   .footer-column {
