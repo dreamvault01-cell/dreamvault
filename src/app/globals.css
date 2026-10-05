@@ -3046,11 +3046,17 @@ ul, ol {
 
   .newsletter-form {
     flex-direction: column;
+    align-items: stretch;
     border-radius: var(--radius-lg);
+  }
+
+  .newsletter-input-wrapper {
+    width: 100%;
   }
 
   .newsletter-form input {
     text-align: center;
+    width: 100%;
   }
 
   .newsletter-form button {
@@ -3117,6 +3123,10 @@ ul, ol {
   line-height: 1.1;
   margin-bottom: 1rem;
   color: var(--text-primary);
+}
+
+.newsletter-title .accent {
+  color: var(--accent-gold);
 }
 
 .newsletter-desc {
