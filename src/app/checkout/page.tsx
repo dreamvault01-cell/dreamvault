@@ -24,6 +24,10 @@ export default function CheckoutPage() {
     state: '',
   });
 
+  const [paymentMethod, setPaymentMethod] = useState('UPI (₹50 OFF)');
+  const upiDiscount = paymentMethod === 'UPI (₹50 OFF)' ? 50 : 0;
+  const finalTotal = Math.max(1, totalPrice - upiDiscount);
+
   // Redirect if not signed in
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -52,9 +56,6 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (isProcessing) return;
     setIsProcessing(true);
-
-    const formDataObj = new FormData(e.currentTarget);
-    const paymentMethod = formDataObj.get('payment') as string;
 
     try {
       // 1. Create Order on Backend
@@ -294,7 +295,8 @@ export default function CheckoutPage() {
                           type="radio"
                           name="payment"
                           value={method}
-                          defaultChecked={i === 0}
+                          checked={paymentMethod === method}
+                          onChange={() => setPaymentMethod(method)}
                           style={{ accentColor: 'var(--accent-gold)' }}
                         />
                         <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>{method}</span>
@@ -325,7 +327,7 @@ export default function CheckoutPage() {
                   id="place-order-btn"
                   disabled={isProcessing}
                 >
-                  {isProcessing ? 'Processing...' : `Place Order — ₹${totalPrice}`}
+                  {isProcessing ? 'Processing...' : `Place Order — ₹${finalTotal}`}
                 </button>
               </form>
             </div>
@@ -441,6 +443,21 @@ export default function CheckoutPage() {
                     <span>FREE</span>
                   </div>
 
+                  {upiDiscount > 0 && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                        fontSize: '0.9rem',
+                        color: '#22c55e',
+                      }}
+                    >
+                      <span>UPI Discount</span>
+                      <span>−₹{upiDiscount}</span>
+                    </div>
+                  )}
+
                   <div
                     style={{
                       display: 'flex',
@@ -452,7 +469,7 @@ export default function CheckoutPage() {
                     }}
                   >
                     <span>Total</span>
-                    <span>₹{totalPrice}</span>
+                    <span>₹{finalTotal}</span>
                   </div>
                 </div>
 
