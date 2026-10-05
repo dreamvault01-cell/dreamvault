@@ -210,33 +210,31 @@ export default async function Home() {
       </section>
 
       {/* ==================== TESTIMONIALS ==================== */}
-      <section className="section" id="testimonials">
+      <section className="section testimonials-section" id="testimonials">
         <div className="container">
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">
-                What Our <span className="accent">Customers</span> Say
-              </h2>
-              <p className="section-subtitle">
-                50,000+ happy customers and counting
-              </p>
-            </div>
+          <div className="testimonials-header">
+            <p className="testimonials-eyebrow">★ Trusted by 50,000+ Art Lovers</p>
+            <h2 className="section-title" style={{ textAlign: 'center' }}>
+              What Our <span className="accent">Customers</span> Say
+            </h2>
           </div>
 
           <div className="testimonial-grid">
             {testimonials.map((t, i) => (
               <div className="testimonial-card" key={i}>
+                <div className="testimonial-quote-icon">&ldquo;</div>
+                <p className="testimonial-text">{t.text}</p>
                 <div className="testimonial-stars" style={{ display: 'flex', gap: '2px' }}>
                   {[...Array(t.stars)].map((_, idx) => (
-                    <Star key={idx} size={16} fill="currentColor" stroke="currentColor" />
+                    <Star key={idx} size={14} fill="currentColor" stroke="currentColor" />
                   ))}
                 </div>
-                <p className="testimonial-text">&ldquo;{t.text}&rdquo;</p>
+                <div className="testimonial-divider"></div>
                 <div className="testimonial-author">
                   <div className="testimonial-avatar">{t.initials}</div>
                   <div>
                     <div className="testimonial-name">{t.name}</div>
-                    <div className="testimonial-role">{t.role}</div>
+                    <div className="testimonial-role">✓ {t.role}</div>
                   </div>
                 </div>
               </div>
