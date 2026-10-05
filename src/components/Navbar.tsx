@@ -7,7 +7,7 @@ import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
 import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
-import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -65,7 +65,7 @@ export default function Navbar() {
 
             {/* Auth buttons inside mobile menu */}
             <div className="mobile-auth-buttons">
-              <Show when="signed-out">
+              <SignedOut>
                 <SignInButton mode="modal">
                   <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
                     Login
@@ -76,7 +76,7 @@ export default function Navbar() {
                     Sign Up
                   </button>
                 </SignUpButton>
-              </Show>
+              </SignedOut>
             </div>
           </div>
 
@@ -93,7 +93,7 @@ export default function Navbar() {
             </button>
 
             <div className="desktop-auth">
-              <Show when="signed-out">
+              <SignedOut>
                 <SignInButton mode="modal">
                   <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
                     Login
@@ -104,14 +104,14 @@ export default function Navbar() {
                     Sign Up
                   </button>
                 </SignUpButton>
-              </Show>
+              </SignedOut>
             </div>
 
-            <Show when="signed-in">
+            <SignedIn>
               <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.25rem' }}>
                 <UserButton />
               </div>
-            </Show>
+            </SignedIn>
 
             <button
               className="navbar-action-btn"
