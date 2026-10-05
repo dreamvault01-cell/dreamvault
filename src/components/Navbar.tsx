@@ -7,13 +7,14 @@ import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
-import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
+import { useUser, UserButton } from '@clerk/nextjs';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -28,6 +29,10 @@ export default function Navbar() {
       document.body.style.overflow = '';
     }
   }, [mobileOpen]);
+
+  // Show auth buttons when: Clerk hasn't loaded yet OR user is signed out
+  // This ensures buttons are ALWAYS visible by default
+  const showAuthButtons = !isLoaded || !isSignedIn;
 
   return (
     <>
@@ -65,18 +70,26 @@ export default function Navbar() {
 
             {/* Auth buttons inside mobile menu */}
             <div className="mobile-auth-buttons">
-              <Show when="signed-out">
-                <SignInButton mode="modal">
-                  <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+              {showAuthButtons && (
+                <>
+                  <Link
+                    href="/sign-in"
+                    className="btn btn-secondary btn-lg"
+                    style={{ width: '100%', justifyContent: 'center', textDecoration: 'none' }}
+                    onClick={() => setMobileOpen(false)}
+                  >
                     Login
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="btn btn-primary btn-lg"
+                    style={{ width: '100%', justifyContent: 'center', textDecoration: 'none' }}
+                    onClick={() => setMobileOpen(false)}
+                  >
                     Sign Up
-                  </button>
-                </SignUpButton>
-              </Show>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -93,25 +106,23 @@ export default function Navbar() {
             </button>
 
             <div className="desktop-auth">
-              <Show when="signed-out">
-                <SignInButton mode="modal">
-                  <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
+              {showAuthButtons && (
+                <>
+                  <Link href="/sign-in" className="navbar-action-btn navbar-login-btn" style={{ textDecoration: 'none' }}>
                     Login
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="navbar-signup-btn">
+                  </Link>
+                  <Link href="/sign-up" className="navbar-signup-btn" style={{ textDecoration: 'none' }}>
                     Sign Up
-                  </button>
-                </SignUpButton>
-              </Show>
+                  </Link>
+                </>
+              )}
             </div>
 
-            <Show when="signed-in">
+            {isLoaded && isSignedIn && (
               <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.25rem' }}>
                 <UserButton />
               </div>
-            </Show>
+            )}
 
             <button
               className="navbar-action-btn"
