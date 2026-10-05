@@ -120,7 +120,7 @@ export async function POST(req: Request) {
         userId: internalUser.id,
         razorpayOrderId: razorpayOrder.id,
         status: 'PENDING',
-        paymentMethod: 'RAZORPAY',
+        paymentMethod: paymentMethod || 'RAZORPAY',
         totalAmount,
         shippingName: shippingDetails.name,
         shippingPhone: shippingDetails.phone,
