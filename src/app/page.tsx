@@ -249,9 +249,6 @@ export default async function Home() {
       <section className="section" id="newsletter" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="newsletter-banner">
-            {/* Shimmer overlay */}
-            <div className="newsletter-shimmer"></div>
-
             <div className="newsletter-content">
               <h2 className="newsletter-title">
                 Stay in the <span className="accent">Loop</span>
@@ -274,10 +271,6 @@ export default async function Home() {
                 </button>
               </form>
             </div>
-
-            {/* Background glow orbs */}
-            <div className="newsletter-glow"></div>
-            <div className="newsletter-glow newsletter-glow--2"></div>
           </div>
         </div>
       </section>
