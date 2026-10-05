@@ -1376,18 +1376,18 @@ ul, ol {
 }
 
 .footer-brand {
-  max-width: 320px;
+  max-width: 400px;
 }
 
 .footer-brand .navbar-logo {
-  margin-bottom: var(--gap-md);
+  margin-bottom: var(--gap-lg);
 }
 
 .footer-brand p {
   color: var(--text-muted);
-  font-size: 0.85rem;
-  line-height: 1.7;
-  margin-bottom: var(--gap-lg);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
 }
 
 .footer-social {
@@ -1421,16 +1421,16 @@ ul, ol {
 .footer-contact {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .footer-contact a,
 .footer-contact span {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-size: 0.8rem;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
   transition: color var(--transition-fast);
 }
 
@@ -1439,9 +1439,13 @@ ul, ol {
 }
 
 .footer-contact svg {
-  color: var(--accent-gold);
+  color: var(--text-muted);
   flex-shrink: 0;
-  opacity: 0.7;
+  transition: color var(--transition-fast);
+}
+
+.footer-contact a:hover svg {
+  color: var(--accent-gold);
 }
 
 /* Accordion */
