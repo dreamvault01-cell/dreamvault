@@ -1140,13 +1140,66 @@ ul, ol {
   margin-bottom: 0.75rem;
 }
 
-.testimonial-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.testimonial-marquee-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   gap: var(--gap-lg);
+  overflow: hidden;
+  padding: 1rem 0;
+  /* Premium fade on edges */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+.testimonial-track {
+  display: flex;
+  gap: var(--gap-lg);
+  width: max-content;
+  animation: scroll-left 40s linear infinite;
+}
+
+.testimonial-track.track-reverse {
+  animation: scroll-right 40s linear infinite;
+}
+
+.testimonial-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - (var(--gap-lg) / 2)));
+  }
+}
+
+@keyframes scroll-right {
+  0% {
+    transform: translateX(calc(-50% - (var(--gap-lg) / 2)));
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .testimonial-card {
+  width: 400px;
+  flex-shrink: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
