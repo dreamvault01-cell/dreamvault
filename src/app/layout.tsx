@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import ClerkThemeWrapper from '@/components/ClerkThemeProvider';
+import ScrollToTop from '@/components/ScrollToTop';
 
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
@@ -41,6 +42,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ClerkThemeWrapper>
             <CartProvider>
+              <ScrollToTop />
               <Navbar />
               <main id="main-content">{children}</main>
               <Footer />
