@@ -176,13 +176,7 @@ export default function CheckoutPage() {
             <span className="accent">Checkout</span>
           </h1>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1.2fr 0.8fr',
-              gap: 'var(--gap-2xl)',
-            }}
-          >
+          <div className="checkout-layout">
             {/* Form */}
             <div>
               <h2
@@ -198,7 +192,7 @@ export default function CheckoutPage() {
               </h2>
 
               <form onSubmit={handlePayment}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--gap-md)' }}>
+                <div className="checkout-form-grid">
                   {[
                     { label: 'First Name', id: 'first-name', type: 'text', full: false },
                     { label: 'Last Name', id: 'last-name', type: 'text', full: false },
