@@ -2280,7 +2280,7 @@ ul, ol {
    RESPONSIVE DESIGN — Tablet (max-width: 1024px)
    ================================================================= */
 @media (max-width: 1024px) {
-  .hero-content {
+  .hero-content-wrapper {
     max-width: 540px;
     padding-top: 50px;
   }
@@ -2300,6 +2300,32 @@ ul, ol {
 
   .testimonial-card {
     width: 320px;
+  }
+
+  /* Custom CTA — stack on tablet */
+  .custom-cta-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .custom-cta-text-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .custom-cta-text-side p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .custom-frame {
+    transform: none;
+    max-width: 280px;
+  }
+
+  .custom-frame:hover {
+    transform: translateY(-10px);
   }
 }
 
@@ -2330,6 +2356,7 @@ ul, ol {
   .hero {
     min-height: auto;
     padding-top: 2rem;
+    padding-bottom: 2rem;
   }
 
   .hero-container {
@@ -2338,13 +2365,14 @@ ul, ol {
   }
 
   .hero-image-wrapper {
-    min-height: 400px;
+    min-height: 350px;
     order: -1;
   }
 
   .hero-image-inner {
     height: 100%;
     transform: none !important;
+    border-radius: var(--radius-xl);
   }
 
   .hero-content-wrapper {
@@ -2373,22 +2401,34 @@ ul, ol {
   }
 
   .hero-stats {
-    gap: var(--gap-lg);
+    gap: 0;
+    width: 100%;
+  }
+
+  .hero-stats > div {
+    flex: 1;
+    padding: 0 1rem;
+    align-items: center;
+    text-align: center;
   }
 
   .hero-stat-value {
     font-size: 1.4rem;
+    justify-content: center;
   }
 
   .hero-stat-label {
     font-size: 0.7rem;
   }
 
-  /* Sections */
+  /* Section Headers — keep centered on mobile */
   .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--gap-sm);
+    text-align: center;
+    align-items: center;
+  }
+
+  .section-eyebrow {
+    font-size: 0.75rem;
   }
 
   /* Category Grid */
@@ -2422,13 +2462,48 @@ ul, ol {
     font-size: 3rem;
   }
 
-  /* CTA Banner */
+  /* Custom CTA */
+  .custom-cta-wrapper {
+    padding: clamp(2rem, 5vw, 3rem);
+  }
+
+  .custom-cta-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--gap-xl);
+  }
+
+  .custom-cta-text-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .custom-cta-text-side p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .custom-cta-image-side {
+    display: none;
+  }
+
+  /* CTA Banner (old - kept for fallback) */
   .cta-banner {
     padding: clamp(1.5rem, 4vw, 2.5rem);
   }
 
   .cta-banner h2 {
     font-size: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
+  /* Collection Hero */
+  .collection-hero {
+    padding: clamp(3rem, 6vw, 4rem) 0;
+  }
+
+  .collection-hero .section-title {
+    font-size: clamp(1.75rem, 6vw, 2.5rem) !important;
   }
 
   /* Product Detail */
@@ -2452,7 +2527,7 @@ ul, ol {
   }
 
   .pdp-features {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   /* Delivery Tracker */
@@ -2466,6 +2541,21 @@ ul, ol {
 
   .delivery-end .label {
     font-size: 0.6rem;
+  }
+
+  /* Newsletter */
+  .newsletter-wrapper {
+    padding: 5rem 0;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .newsletter-form button {
+    width: 100%;
+    text-align: center;
   }
 
   /* Footer */
@@ -2482,6 +2572,11 @@ ul, ol {
   .footer-bottom {
     flex-direction: column;
     text-align: center;
+  }
+
+  .footer-payments {
+    justify-content: center;
+    flex-wrap: wrap;
   }
 }
 
@@ -2523,10 +2618,15 @@ ul, ol {
   .hero {
     min-height: auto;
     padding-top: 0;
+    padding-bottom: 1.5rem;
   }
 
   .hero-content-wrapper {
     padding-top: 10px;
+  }
+
+  .hero-image-wrapper {
+    min-height: 300px;
   }
 
   .hero-tag {
@@ -2546,16 +2646,34 @@ ul, ol {
 
   .hero-stats {
     flex-wrap: wrap;
-    gap: var(--gap-md);
+    gap: 0;
+    border-radius: var(--radius-md);
+  }
+
+  .hero-stats > div {
+    padding: 0 0.75rem;
   }
 
   .hero-stat-value {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+  }
+
+  .hero-stat-label {
+    font-size: 0.65rem;
   }
 
   /* Sections */
   .section-title {
     font-size: clamp(1.4rem, 6vw, 2rem);
+  }
+
+  .section-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .section-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
   }
 
   /* Category Grid */
@@ -2566,6 +2684,10 @@ ul, ol {
 
   .category-card-name {
     font-size: 0.8rem;
+  }
+
+  .category-card-count {
+    font-size: 0.65rem;
   }
 
   /* Product Grid */
@@ -2598,19 +2720,56 @@ ul, ol {
     font-size: 0.7rem;
   }
 
+  .product-card-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+  }
+
+  .product-card-quick-add {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .product-card-actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .product-card-action-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* "View All" buttons under sections */
+  .btn-lg {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+
   /* Features Bar */
   .features-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: var(--gap-sm);
   }
 
   .feature-item {
     padding: var(--gap-xs);
+    flex-direction: column;
+    text-align: center;
+    gap: var(--gap-xs);
   }
 
   .feature-icon {
     width: 40px;
     height: 40px;
+  }
+
+  .feature-text strong {
+    font-size: 0.75rem;
+  }
+
+  .feature-text span {
+    font-size: 0.65rem;
   }
 
   /* Testimonials */
@@ -2632,6 +2791,42 @@ ul, ol {
     font-size: 2.5rem;
   }
 
+  .testimonial-name {
+    font-size: 0.8rem;
+  }
+
+  .testimonial-role {
+    font-size: 0.65rem;
+  }
+
+  /* Custom CTA */
+  .custom-cta-wrapper {
+    padding: 2rem 1.5rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .custom-cta-content h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .custom-cta-image-side {
+    display: none;
+  }
+
+  /* Collection Hero */
+  .collection-hero {
+    padding: clamp(2.5rem, 5vw, 3.5rem) 0;
+  }
+
+  .collection-hero .section-title {
+    font-size: clamp(1.5rem, 7vw, 2rem) !important;
+  }
+
+  .pdp-breadcrumb {
+    font-size: 0.7rem;
+    flex-wrap: wrap;
+  }
+
   /* Product Detail */
   .pdp-title {
     font-size: clamp(1.4rem, 6vw, 2rem);
@@ -2643,6 +2838,11 @@ ul, ol {
 
   .pdp-price .original {
     font-size: 1rem;
+  }
+
+  .pdp-price .discount-tag {
+    font-size: 0.75rem;
+    padding: 4px 10px;
   }
 
   .pdp-sizes {
@@ -2664,6 +2864,34 @@ ul, ol {
     font-size: 0.9rem;
   }
 
+  .pdp-features {
+    grid-template-columns: 1fr;
+  }
+
+  .pdp-feature {
+    font-size: 0.8rem;
+  }
+
+  /* Delivery Tracker */
+  .delivery-tracker {
+    padding: var(--gap-md);
+  }
+
+  .delivery-end {
+    min-width: 50px;
+  }
+
+  .delivery-end .emoji {
+    font-size: 1rem;
+  }
+
+  .delivery-sub {
+    font-size: 0.7rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
   /* Footer */
   .footer-grid {
     grid-template-columns: 1fr;
@@ -2672,10 +2900,15 @@ ul, ol {
 
   .footer-brand {
     grid-column: auto;
+    max-width: 100%;
   }
 
   .footer-social {
     justify-content: flex-start;
+  }
+
+  .footer-column h4 {
+    margin-bottom: var(--gap-sm);
   }
 
   .footer-bottom {
@@ -2684,14 +2917,37 @@ ul, ol {
     text-align: center;
   }
 
+  .footer-bottom p {
+    font-size: 0.7rem;
+  }
+
   .footer-payments {
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .payment-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
   }
 
   /* Search Modal */
-  .search-modal-content {
-    width: 95%;
-    max-height: 80vh;
+  .search-overlay {
+    padding-top: 8vh;
+  }
+
+  .search-modal {
+    width: 96vw;
+    max-height: 85vh;
+  }
+
+  .search-input-wrap {
+    padding: 14px 16px;
+  }
+
+  .search-input-wrap input {
+    font-size: 1rem;
   }
 
   /* Cart Drawer */
@@ -2699,7 +2955,36 @@ ul, ol {
     width: 100vw;
   }
 
+  .cart-header {
+    padding: var(--gap-md) var(--gap-lg);
+  }
+
+  .cart-items {
+    padding: var(--gap-md) var(--gap-lg);
+  }
+
+  .cart-footer {
+    padding: var(--gap-md) var(--gap-lg);
+  }
+
   /* Newsletter */
+  .newsletter-wrapper {
+    padding: 4rem 0;
+  }
+
+  .newsletter-banner {
+    padding: clamp(2rem, 5vw, 3rem) clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .newsletter-title {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .newsletter-desc {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
   .newsletter-form {
     flex-direction: column;
     border-radius: var(--radius-lg);
@@ -2711,6 +2996,10 @@ ul, ol {
 
   .newsletter-form button {
     width: 100%;
+  }
+
+  .newsletter-privacy {
+    font-size: 0.75rem;
   }
 }
 

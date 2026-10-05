@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getProductBySlug, getProductsByCategory } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 import AddToCartSection from '@/components/AddToCartSection';
-import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift } from 'lucide-react';
+import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift, Star } from 'lucide-react';
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
