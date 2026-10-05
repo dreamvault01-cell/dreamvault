@@ -2693,7 +2693,7 @@ ul, ol {
   }
 
   .footer-main {
-    padding: 1.75rem 0;
+    padding: 2.5rem 0;
   }
 
   .footer-grid {
@@ -2704,37 +2704,37 @@ ul, ol {
   .footer-brand {
     max-width: 100%;
     margin-bottom: 0;
-    padding-bottom: 1.25rem;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-subtle);
-    text-align: center;
+    text-align: left;
   }
 
   .footer-brand .navbar-logo {
-    justify-content: center;
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
+    justify-content: flex-start;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
   }
 
   .footer-brand p {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     line-height: 1.6;
-    margin-bottom: 1rem;
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 1.25rem;
+    max-width: 90%;
+    margin-left: 0;
+    margin-right: 0;
     color: var(--text-muted);
   }
 
   .footer-contact {
-    align-items: center;
-    gap: 4px;
+    align-items: flex-start;
+    gap: 6px;
   }
 
   .footer-contact a,
   .footer-contact span {
-    font-size: 0.76rem;
-    justify-content: center;
-    gap: 6px;
+    font-size: 0.78rem;
+    justify-content: flex-start;
+    gap: 8px;
   }
 
   .footer-column {
@@ -2744,10 +2744,10 @@ ul, ol {
   .footer-column-title {
     pointer-events: auto;
     cursor: pointer;
-    padding: 12px 0;
+    padding: 16px 0;
     margin-bottom: 0;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
   }
 
   .footer-accordion-icon {
@@ -2756,12 +2756,12 @@ ul, ol {
 
   .footer-column-content {
     display: none;
-    padding-bottom: 10px;
+    padding-bottom: 16px;
   }
 
   .footer-column-content a {
     font-size: 0.8rem;
-    padding: 3px 0;
+    padding: 6px 0;
   }
 
   .footer-accordion-toggle:checked ~ .footer-column-content {
@@ -2774,30 +2774,30 @@ ul, ol {
   }
 
   .footer-bottom-bar {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
   }
 
   .footer-bottom {
     flex-direction: column;
-    text-align: center;
-    align-items: center;
-    gap: 0.75rem;
+    text-align: left;
+    align-items: flex-start;
+    gap: 1.5rem;
   }
 
   .footer-social-minimal {
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 
   .footer-copyright {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     opacity: 0.8;
   }
 
   .footer-payments {
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 8px;
   }
 }
 
@@ -3137,75 +3137,79 @@ ul, ol {
   }
 
   .footer-main {
-    padding: 1.5rem 0;
+    padding: 2rem 0;
   }
 
   .footer-brand {
     grid-column: auto;
     max-width: 100%;
-    padding-bottom: 1rem;
+    padding-bottom: 1.5rem;
+    text-align: left;
   }
 
   .footer-brand .navbar-logo {
-    margin-bottom: 0.4rem;
-    font-size: 1.1rem;
+    justify-content: flex-start;
+    margin-bottom: 0.75rem;
   }
 
   .footer-brand p {
-    font-size: 0.75rem;
-    max-width: 280px;
-    margin-bottom: 0.75rem;
-    line-height: 1.55;
+    font-size: 0.78rem;
+    max-width: 95%;
+    margin-bottom: 1rem;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .footer-contact {
-    gap: 3px;
+    align-items: flex-start;
+    gap: 8px;
   }
 
   .footer-contact a,
   .footer-contact span {
-    font-size: 0.73rem;
-    gap: 6px;
+    font-size: 0.75rem;
+    justify-content: flex-start;
+    gap: 8px;
   }
 
   .footer-social a {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
 
   .footer-column-title {
-    padding: 11px 0;
-    font-size: 0.7rem;
+    padding: 14px 0;
+    font-size: 0.72rem;
   }
 
   .footer-bottom-bar {
-    padding: 0.75rem 0;
+    padding: 1.25rem 0;
   }
 
   .footer-bottom {
     flex-direction: column;
-    gap: 0.6rem;
-    text-align: center;
-    align-items: center;
+    gap: 1.25rem;
+    text-align: left;
+    align-items: flex-start;
   }
 
   .footer-social-minimal {
-    gap: 1rem;
+    gap: 1.25rem;
   }
 
   .footer-social-minimal a svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   .footer-copyright {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 
   .footer-payments {
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 6px;
   }
 
   .payment-badge {
