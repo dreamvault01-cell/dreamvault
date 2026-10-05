@@ -4,8 +4,8 @@ import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import ClerkThemeWrapper from '@/components/ClerkThemeProvider';
 import ScrollToTop from '@/components/ScrollToTop';
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
@@ -39,16 +39,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ThemeProvider>
-          <ClerkThemeWrapper>
+        <ClerkProvider>
+          <ThemeProvider>
             <CartProvider>
               <ScrollToTop />
               <Navbar />
               <main id="main-content">{children}</main>
               <Footer />
             </CartProvider>
-          </ClerkThemeWrapper>
-        </ThemeProvider>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
