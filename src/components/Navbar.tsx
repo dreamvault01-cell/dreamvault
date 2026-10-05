@@ -7,13 +7,14 @@ import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
 import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { isLoaded, userId } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -65,18 +66,20 @@ export default function Navbar() {
 
             {/* Auth buttons inside mobile menu */}
             <div className="mobile-auth-buttons">
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
-                    Login
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </SignedOut>
+              {isLoaded && !userId && (
+                <>
+                  <SignInButton mode="modal">
+                    <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+                      Login
+                    </button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+                      Sign Up
+                    </button>
+                  </SignUpButton>
+                </>
+              )}
             </div>
           </div>
 
@@ -93,25 +96,27 @@ export default function Navbar() {
             </button>
 
             <div className="desktop-auth">
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
-                    Login
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="navbar-signup-btn">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </SignedOut>
+              {isLoaded && !userId && (
+                <>
+                  <SignInButton mode="modal">
+                    <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
+                      Login
+                    </button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <button className="navbar-signup-btn">
+                      Sign Up
+                    </button>
+                  </SignUpButton>
+                </>
+              )}
             </div>
 
-            <SignedIn>
+            {isLoaded && userId && (
               <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.25rem' }}>
                 <UserButton />
               </div>
-            </SignedIn>
+            )}
 
             <button
               className="navbar-action-btn"
