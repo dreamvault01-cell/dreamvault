@@ -40,35 +40,6 @@ const ChevronDown = () => (
 export default function Footer() {
   return (
     <footer className="footer" id="footer">
-      {/* ── Trust Bar ── */}
-      <div className="footer-trust-bar">
-        <div className="container">
-          <div className="footer-trust-grid">
-            <div className="footer-trust-item">
-              <Truck size={20} strokeWidth={1.5} />
-              <div>
-                <span className="footer-trust-title">Free Shipping</span>
-                <span className="footer-trust-sub">On orders above ₹499</span>
-              </div>
-            </div>
-            <div className="footer-trust-item">
-              <RotateCcw size={20} strokeWidth={1.5} />
-              <div>
-                <span className="footer-trust-title">Easy Returns</span>
-                <span className="footer-trust-sub">7-day hassle-free returns</span>
-              </div>
-            </div>
-            <div className="footer-trust-item">
-              <Shield size={20} strokeWidth={1.5} />
-              <div>
-                <span className="footer-trust-title">Secure Checkout</span>
-                <span className="footer-trust-sub">256-bit SSL encryption</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* ── Main Footer ── */}
       <div className="footer-main">
         <div className="container">
