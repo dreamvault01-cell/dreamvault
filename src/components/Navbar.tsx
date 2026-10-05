@@ -64,8 +64,8 @@ export default function Navbar() {
             </Link>
 
             {/* Auth buttons inside mobile menu */}
-            <div className="mobile-auth-buttons">
-              <Show when="signed-out">
+            <Show when="signed-out">
+              <div className="mobile-auth-buttons">
                 <SignInButton mode="modal">
                   <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
                     Login
@@ -76,8 +76,8 @@ export default function Navbar() {
                     Sign Up
                   </button>
                 </SignUpButton>
-              </Show>
-            </div>
+              </div>
+            </Show>
           </div>
 
           <div className="navbar-actions">
@@ -92,8 +92,8 @@ export default function Navbar() {
               <Search size={20} />
             </button>
 
-            <div className="desktop-auth">
-              <Show when="signed-out">
+            <Show when="signed-out">
+              <div className="desktop-auth">
                 <SignInButton mode="modal">
                   <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
                     Login
@@ -104,12 +104,21 @@ export default function Navbar() {
                     Sign Up
                   </button>
                 </SignUpButton>
-              </Show>
-            </div>
+              </div>
+            </Show>
 
             <Show when="signed-in">
-              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.25rem' }}>
-                <UserButton />
+              <div className="user-button-wrapper" style={{ margin: '0 0.25rem', display: 'flex', alignItems: 'center' }}>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: { width: '36px', height: '36px', border: '1.5px solid #d4af37' }
+                    },
+                    variables: {
+                      colorPrimary: '#d4af37'
+                    }
+                  }}
+                />
               </div>
             </Show>
 
