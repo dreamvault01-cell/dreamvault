@@ -2520,13 +2520,45 @@ ul, ol {
   }
 }
 
-/* ---------- Newsletter Banner ---------- */
+/* ---------- Newsletter Section - Ultra Premium ---------- */
+.newsletter-section {
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.newsletter-wrapper {
+  position: relative;
+  padding: 8rem 0;
+  background-color: var(--bg-secondary);
+  background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border-top: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.newsletter-ambient-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, transparent 60%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .newsletter-banner {
   position: relative;
   background: var(--bg-card);
-  padding: clamp(3.5rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
+  padding: clamp(4rem, 8vw, 6rem) clamp(2rem, 5vw, 4rem);
   text-align: center;
-  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.05), 0 24px 48px -12px rgba(0, 0, 0, 0.08);
+  z-index: 2;
 }
 
 .newsletter-content {

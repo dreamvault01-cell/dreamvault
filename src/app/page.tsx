@@ -246,30 +246,33 @@ export default async function Home() {
       </section>
 
       {/* ==================== NEWSLETTER CTA ==================== */}
-      <section className="section" id="newsletter" style={{ background: 'var(--bg-secondary)' }}>
-        <div className="container">
-          <div className="newsletter-banner">
-            <div className="newsletter-content">
-              <h2 className="newsletter-title">
-                Stay in the <span className="accent">Loop</span>
-              </h2>
-              <p className="newsletter-desc">
-                Get exclusive drops, early access, and special offers delivered to your inbox.
-              </p>
-              <form action="#" className="newsletter-form">
-                <div className="newsletter-input-wrapper">
-                  <Mail className="newsletter-icon" size={20} />
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    id="newsletter-email"
-                    required
-                  />
-                </div>
-                <button type="submit" className="btn btn-primary" id="newsletter-submit">
-                  Subscribe
-                </button>
-              </form>
+      <section className="section newsletter-section" id="newsletter">
+        <div className="newsletter-wrapper">
+          <div className="newsletter-ambient-glow"></div>
+          <div className="container">
+            <div className="newsletter-banner">
+              <div className="newsletter-content">
+                <h2 className="newsletter-title">
+                  Stay in the <span className="accent">Loop</span>
+                </h2>
+                <p className="newsletter-desc">
+                  Get exclusive drops, early access, and special offers delivered to your inbox.
+                </p>
+                <form action="#" className="newsletter-form">
+                  <div className="newsletter-input-wrapper">
+                    <Mail className="newsletter-icon" size={20} />
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      id="newsletter-email"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary" id="newsletter-submit">
+                    Subscribe
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
