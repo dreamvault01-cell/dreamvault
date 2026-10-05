@@ -2692,15 +2692,8 @@ ul, ol {
     text-align: center;
   }
 
-  /* Footer */
-  .footer-trust-grid {
-    grid-template-columns: 1fr;
-    gap: var(--gap-md);
-  }
-
-  .footer-trust-item {
-    justify-content: flex-start;
-    padding: 0 var(--gap-sm);
+  .footer-main {
+    padding: 2.5rem 0;
   }
 
   .footer-grid {
@@ -2711,35 +2704,38 @@ ul, ol {
   .footer-brand {
     max-width: 100%;
     margin-bottom: 0;
-    padding-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-subtle);
     text-align: center;
   }
 
   .footer-brand .navbar-logo {
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.3rem;
   }
 
   .footer-brand p {
-    font-size: 0.82rem;
-    line-height: 1.7;
+    font-size: 0.8rem;
+    line-height: 1.65;
     margin-bottom: 1.25rem;
-    max-width: 340px;
+    max-width: 320px;
     margin-left: auto;
     margin-right: auto;
     color: var(--text-muted);
+    letter-spacing: 0.01em;
   }
 
   .footer-contact {
     align-items: center;
-    gap: 10px;
+    gap: 6px;
   }
 
   .footer-contact a,
   .footer-contact span {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     justify-content: center;
+    gap: 8px;
   }
 
   .footer-column {
@@ -2749,9 +2745,10 @@ ul, ol {
   .footer-column-title {
     pointer-events: auto;
     cursor: pointer;
-    padding: 18px 0;
+    padding: 15px 0;
     margin-bottom: 0;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
   }
 
   .footer-accordion-icon {
@@ -2760,7 +2757,12 @@ ul, ol {
 
   .footer-column-content {
     display: none;
-    padding-bottom: 16px;
+    padding-bottom: 14px;
+  }
+
+  .footer-column-content a {
+    font-size: 0.8rem;
+    padding: 4px 0;
   }
 
   .footer-accordion-toggle:checked ~ .footer-column-content {
@@ -2772,24 +2774,31 @@ ul, ol {
     transform: rotate(180deg);
   }
 
+  .footer-bottom-bar {
+    padding: 1.25rem 0;
+  }
+
   .footer-bottom {
     flex-direction: column;
     text-align: center;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   .footer-social-minimal {
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
   .footer-copyright {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.8;
   }
 
   .footer-payments {
     justify-content: center;
     flex-wrap: wrap;
+    gap: 5px;
   }
 }
 
