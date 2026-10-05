@@ -26,6 +26,27 @@ const testimonials = [
     stars: 5,
     text: 'The custom poster feature is amazing. I uploaded a photo from my trip and it came out looking like a professional art print. Best gift I ever gave myself.',
   },
+  {
+    name: 'Sneha Patel',
+    initials: 'SP',
+    role: 'Verified Buyer',
+    stars: 5,
+    text: 'I was hesitant about ordering art online, but the packaging was incredibly secure. The prints arrived in pristine condition. The matte finish is gorgeous without any glare.',
+  },
+  {
+    name: 'Vikram Singh',
+    initials: 'VS',
+    role: 'Verified Buyer',
+    stars: 5,
+    text: 'Excellent customer service. I made a mistake with my shipping address and they fixed it immediately. The anime prints I got are top tier — highly recommend!',
+  },
+  {
+    name: 'Neha Gupta',
+    initials: 'NG',
+    role: 'Verified Buyer',
+    stars: 5,
+    text: 'The minimalist collection completely transformed my home office. Everyone on my Zoom calls keeps asking where I got them. Definitely buying more soon.',
+  },
 ];
 
 export default async function Home() {
