@@ -59,6 +59,7 @@ model Order {
   shippingCity    String
   shippingState   String
   shippingPin     String
+  paymentMethod   String      @default("RAZORPAY") // RAZORPAY or COD
   items           OrderItem[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt

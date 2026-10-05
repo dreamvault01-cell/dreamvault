@@ -48,10 +48,13 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handlePayment = async (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isProcessing) return;
     setIsProcessing(true);
+
+    const formDataObj = new FormData(e.currentTarget);
+    const paymentMethod = formDataObj.get('payment') as string;
 
     try {
       // 1. Create Order on Backend
@@ -60,6 +63,7 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           items, 
+          paymentMethod,
           shippingDetails: {
             name: `${formData['first-name']} ${formData['last-name']}`,
             phone: formData.phone,
@@ -74,7 +78,14 @@ export default function CheckoutPage() {
       const orderData = await res.json();
       if (!res.ok) throw new Error(orderData.error);
 
-      // 2. Initialize Razorpay
+      // If COD, skip Razorpay completely
+      if (paymentMethod === 'Cash on Delivery') {
+        clearCart();
+        router.push('/checkout/success');
+        return;
+      }
+
+      // 2. Initialize Razorpay for online payments
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'dummy_key',
         amount: orderData.amount,
