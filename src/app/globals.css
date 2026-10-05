@@ -870,12 +870,44 @@ ul, ol {
 }
 
 .hero-stats {
-  display: flex;
-  gap: var(--gap-2xl);
+  display: inline-flex;
+  gap: 0;
   margin-top: var(--gap-2xl);
-  padding-top: var(--gap-xl);
-  border-top: 1px solid var(--border-subtle);
+  padding: 1.25rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   animation: fadeInUp 0.6s var(--ease-out) 1s both;
+  backdrop-filter: blur(12px);
+  width: max-content;
+  max-width: 100%;
+}
+
+.hero-stats > div {
+  padding: 0 1.5rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-stats > div:first-child {
+  padding-left: 0.5rem;
+}
+
+.hero-stats > div:last-child {
+  padding-right: 0.5rem;
+}
+
+.hero-stats > div:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: var(--border-light);
 }
 
 .hero-stat-value {
@@ -883,12 +915,14 @@ ul, ol {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--accent-gold);
+  line-height: 1.1;
 }
 
 .hero-stat-label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text-secondary);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* ---------- Announcement Bar ---------- */

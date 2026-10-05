@@ -33,11 +33,10 @@ export default function Navbar() {
     <>
       <div className="announcement-bar">
         <span className="marquee">
-          ✨ FREE Express Shipping on all orders &nbsp;•&nbsp; Premium 300 GSM Art Paper
-          &nbsp;•&nbsp; ₹50 OFF on prepaid orders &nbsp;•&nbsp; 100% Satisfaction
-          Guaranteed &nbsp;•&nbsp; ✨ FREE Express Shipping on all orders &nbsp;•&nbsp;
-          Premium 300 GSM Art Paper &nbsp;•&nbsp; ₹50 OFF on prepaid orders &nbsp;•&nbsp;
-          100% Satisfaction Guaranteed
+          ✨ FREE Express Shipping &nbsp;•&nbsp; 🎨 Premium 300 GSM Art Paper &nbsp;•&nbsp; 
+          💎 Archival Inks &nbsp;•&nbsp; 🔒 Secure Payments &nbsp;•&nbsp; ⭐ 100% Satisfaction Guaranteed 
+          &nbsp;•&nbsp; ✨ FREE Express Shipping &nbsp;•&nbsp; 🎨 Premium 300 GSM Art Paper 
+          &nbsp;•&nbsp; 💎 Archival Inks &nbsp;•&nbsp; 🔒 Secure Payments &nbsp;•&nbsp; ⭐ 100% Satisfaction Guaranteed
         </span>
       </div>
 

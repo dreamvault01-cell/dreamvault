@@ -246,43 +246,30 @@ export default async function Home() {
       </section>
 
       {/* ==================== NEWSLETTER CTA ==================== */}
-      <section className="section" id="newsletter" style={{ background: 'var(--bg-secondary)' }}>
-        <div className="container" style={{ textAlign: 'center', maxWidth: '600px' }}>
-          <h2 className="section-title" style={{ marginBottom: '0.5rem' }}>
-            Stay in the <span className="accent">Loop</span>
-          </h2>
-          <p className="section-subtitle" style={{ marginBottom: '2rem' }}>
-            Get exclusive drops, early access, and special offers delivered to your inbox.
-          </p>
-          <form
-            action="#"
-            style={{
-              display: 'flex',
-              gap: '0.75rem',
-              maxWidth: '480px',
-              margin: '0 auto',
-            }}
-          >
-            <input
-              type="email"
-              placeholder="Enter your email"
-              id="newsletter-email"
-              style={{
-                flex: 1,
-                padding: '14px 20px',
-                borderRadius: 'var(--radius-md)',
-                border: '1.5px solid var(--border-light)',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.95rem',
-                outline: 'none',
-              }}
-            />
-            <button type="submit" className="btn btn-primary" id="newsletter-submit">
-              Subscribe
-            </button>
-          </form>
+      <section className="section" id="newsletter">
+        <div className="container">
+          <div className="newsletter-banner">
+            <div className="newsletter-content">
+              <h2 className="section-title" style={{ marginBottom: '0.5rem' }}>
+                Stay in the <span className="accent">Loop</span>
+              </h2>
+              <p className="section-subtitle" style={{ marginBottom: '2rem' }}>
+                Get exclusive drops, early access, and special offers delivered to your inbox.
+              </p>
+              <form action="#" className="newsletter-form">
+                <input
+                  type="email"
+                  placeholder="Enter your email address..."
+                  id="newsletter-email"
+                  required
+                />
+                <button type="submit" className="btn btn-primary" id="newsletter-submit">
+                  Subscribe
+                </button>
+              </form>
+            </div>
+            <div className="newsletter-glow"></div>
+          </div>
         </div>
       </section>
     </>
