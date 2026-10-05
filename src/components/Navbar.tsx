@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext';
 import SearchModal from './SearchModal';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
-import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 
 export default function Navbar() {
@@ -14,7 +14,19 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
-  const { isLoaded, userId } = useAuth();
+
+  // useAuth for checking sign-in state, but we show buttons by default
+  let isLoaded = false;
+  let userId: string | null | undefined = null;
+  try {
+    const auth = useAuth();
+    isLoaded = auth.isLoaded;
+    userId = auth.userId;
+  } catch {
+    // Clerk not available — show sign-in/sign-up buttons as fallback
+  }
+
+  const isSignedIn = isLoaded && !!userId;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -29,6 +41,43 @@ export default function Navbar() {
       document.body.style.overflow = '';
     }
   }, [mobileOpen]);
+
+  // Render auth buttons — uses Clerk components when available, plain links as fallback
+  const renderSignedOutButtons = (variant: 'mobile' | 'desktop') => {
+    if (isSignedIn) return null;
+
+    if (variant === 'mobile') {
+      return (
+        <>
+          <SignInButton mode="modal">
+            <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+              Login
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+              Sign Up
+            </button>
+          </SignUpButton>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <SignInButton mode="modal">
+          <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
+            Login
+          </button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <button className="navbar-signup-btn">
+            Sign Up
+          </button>
+        </SignUpButton>
+      </>
+    );
+  };
 
   return (
     <>
@@ -66,20 +115,7 @@ export default function Navbar() {
 
             {/* Auth buttons inside mobile menu */}
             <div className="mobile-auth-buttons">
-              {isLoaded && !userId && (
-                <>
-                  <SignInButton mode="modal">
-                    <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
-                      Login
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </>
-              )}
+              {renderSignedOutButtons('mobile')}
             </div>
           </div>
 
@@ -96,23 +132,10 @@ export default function Navbar() {
             </button>
 
             <div className="desktop-auth">
-              {isLoaded && !userId && (
-                <>
-                  <SignInButton mode="modal">
-                    <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
-                      Login
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="navbar-signup-btn">
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </>
-              )}
+              {renderSignedOutButtons('desktop')}
             </div>
 
-            {isLoaded && userId && (
+            {isSignedIn && (
               <div style={{ display: 'flex', alignItems: 'center', marginLeft: '0.25rem' }}>
                 <UserButton />
               </div>
@@ -147,4 +170,3 @@ export default function Navbar() {
     </>
   );
 }
-
