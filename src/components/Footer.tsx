@@ -53,12 +53,6 @@ export default function Footer() {
                 Elevate your space with personalized artistry. Premium posters and art prints,
                 meticulously crafted to reflect your unique style.
               </p>
-              <div className="footer-social">
-                <a href="#" aria-label="Instagram"><InstagramIcon /></a>
-                <a href="#" aria-label="Twitter"><TwitterIcon /></a>
-                <a href="#" aria-label="Facebook"><FacebookIcon /></a>
-                <a href="#" aria-label="YouTube"><YoutubeIcon /></a>
-              </div>
               <div className="footer-contact">
                 <a href="mailto:hello@dreamvault.in"><Mail size={14} /> hello@dreamvault.in</a>
                 <a href="tel:+919876543210"><Phone size={14} /> +91 98765 43210</a>
@@ -119,15 +113,17 @@ export default function Footer() {
       <div className="footer-bottom-bar">
         <div className="container">
           <div className="footer-bottom">
-            <p>© {new Date().getFullYear()} DreamVault. All rights reserved. Made with ♥ in India.</p>
-            <div className="footer-payments">
-              <span className="payment-badge payment-badge-text">VISA</span>
-              <span className="payment-badge">
-                <svg width="18" height="12" viewBox="0 0 18 12"><circle cx="6" cy="6" r="5.5" fill="#EB001B" opacity="0.8"/><circle cx="12" cy="6" r="5.5" fill="#F79E1B" opacity="0.8"/></svg>
-              </span>
-              <span className="payment-badge payment-badge-text">UPI</span>
-              <span className="payment-badge payment-badge-text">RuPay</span>
-              <span className="payment-badge payment-badge-text">Net Banking</span>
+            <div className="footer-social-minimal">
+              <a href="#" aria-label="Instagram"><InstagramIcon /></a>
+              <a href="#" aria-label="Twitter"><TwitterIcon /></a>
+              <a href="#" aria-label="Facebook"><FacebookIcon /></a>
+            </div>
+            <p className="footer-copyright">© {new Date().getFullYear()} DreamVault. All rights reserved.</p>
+            <div className="footer-payments-minimal">
+              <span>VISA</span>
+              <span>MASTERCARD</span>
+              <span>AMEX</span>
+              <span>UPI</span>
             </div>
           </div>
         </div>
