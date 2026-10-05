@@ -249,12 +249,24 @@ export default async function Home() {
       <section className="section" id="newsletter">
         <div className="container">
           <div className="newsletter-banner">
+            {/* Decorative corners */}
+            <div className="newsletter-corner newsletter-corner--tl"></div>
+            <div className="newsletter-corner newsletter-corner--tr"></div>
+            <div className="newsletter-corner newsletter-corner--bl"></div>
+            <div className="newsletter-corner newsletter-corner--br"></div>
+
+            {/* Shimmer overlay */}
+            <div className="newsletter-shimmer"></div>
+
             <div className="newsletter-content">
-              <h2 className="section-title" style={{ marginBottom: '0.5rem' }}>
+              <div className="hero-tag" style={{ marginBottom: '1rem' }}>
+                ✦ EXCLUSIVE ACCESS
+              </div>
+              <h2 className="newsletter-title">
                 Stay in the <span className="accent">Loop</span>
               </h2>
-              <p className="section-subtitle" style={{ marginBottom: '2rem' }}>
-                Get exclusive drops, early access, and special offers delivered to your inbox.
+              <p className="newsletter-desc">
+                Be the first to know about new drops, limited editions, and members-only offers. Join 50,000+ art lovers.
               </p>
               <form action="#" className="newsletter-form">
                 <input
@@ -264,11 +276,17 @@ export default async function Home() {
                   required
                 />
                 <button type="submit" className="btn btn-primary" id="newsletter-submit">
-                  Subscribe
+                  Subscribe →
                 </button>
               </form>
+              <p className="newsletter-privacy">
+                No spam, ever. Unsubscribe anytime.
+              </p>
             </div>
+
+            {/* Background glow orbs */}
             <div className="newsletter-glow"></div>
+            <div className="newsletter-glow newsletter-glow--2"></div>
           </div>
         </div>
       </section>
