@@ -2,9 +2,141 @@
 
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import Script from 'next/script';
 
 export default function CheckoutPage() {
-  const { items, totalPrice, totalSavings } = useCart();
+  const { items, totalPrice, totalSavings, clearCart } = useCart();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const router = useRouter();
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [formData, setFormData] = useState({
+    'first-name': '',
+    'last-name': '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    pincode: '',
+    state: '',
+  });
+
+  // Redirect if not signed in
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in?redirect_url=/checkout');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  // Pre-fill email and name
+  useEffect(() => {
+    if (user && !formData.email) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.primaryEmailAddress?.emailAddress || '',
+        'first-name': user.firstName || '',
+        'last-name': user.lastName || '',
+      }));
+    }
+  }, [user]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      // 1. Create Order on Backend
+      const res = await fetch('/api/checkout/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          items, 
+          shippingDetails: {
+            name: `${formData['first-name']} ${formData['last-name']}`,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            pin: formData.pincode,
+          } 
+        }),
+      });
+
+      const orderData = await res.json();
+      if (!res.ok) throw new Error(orderData.error);
+
+      // 2. Initialize Razorpay
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'dummy_key',
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'DreamVault',
+        description: 'Premium Poster Purchase',
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          // 3. Verify Payment
+          const verifyRes = await fetch('/api/checkout/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          });
+          
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            clearCart();
+            router.push('/checkout/success');
+          } else {
+            alert('Payment verification failed. Please contact support.');
+            setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: `${formData['first-name']} ${formData['last-name']}`,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: '#d4af37',
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      if (!(window as any).Razorpay) {
+        alert('Payment gateway failed to load. Please disable adblockers and refresh.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.on('payment.failed', function (response: any) {
+        alert(response.error.description);
+        setIsProcessing(false);
+      });
+      
+      rzp1.open();
+    } catch (error: any) {
+      console.error('Payment Error:', error);
+      alert(error.message || 'Something went wrong initializing payment.');
+      setIsProcessing(false);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -24,8 +156,17 @@ export default function CheckoutPage() {
     );
   }
 
+  if (!isLoaded || !isSignedIn) {
+    return (
+      <div className="container" style={{ paddingTop: '100px', textAlign: 'center', minHeight: '60vh' }}>
+        <h2>Loading...</h2>
+      </div>
+    );
+  }
+
   return (
     <div style={{ paddingTop: '10px', minHeight: '100vh' }}>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <section className="section">
         <div className="container" style={{ maxWidth: '900px' }}>
           <h1
@@ -56,7 +197,7 @@ export default function CheckoutPage() {
                 Shipping Details
               </h2>
 
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form onSubmit={handlePayment}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--gap-md)' }}>
                   {[
                     { label: 'First Name', id: 'first-name', type: 'text', full: false },
@@ -107,6 +248,9 @@ export default function CheckoutPage() {
                         onBlur={(e) =>
                           (e.target.style.borderColor = 'var(--border-light)')
                         }
+                        value={formData[field.id as keyof typeof formData]}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
                   ))}
@@ -144,6 +288,7 @@ export default function CheckoutPage() {
                         <input
                           type="radio"
                           name="payment"
+                          value={method}
                           defaultChecked={i === 0}
                           style={{ accentColor: 'var(--accent-gold)' }}
                         />
@@ -171,10 +316,11 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   className="btn btn-primary btn-lg"
-                  style={{ width: '100%', marginTop: 'var(--gap-xl)' }}
+                  style={{ width: '100%', marginTop: 'var(--gap-xl)', display: 'flex', justifyContent: 'center' }}
                   id="place-order-btn"
+                  disabled={isProcessing}
                 >
-                  Place Order — ₹{totalPrice}
+                  {isProcessing ? 'Processing...' : `Place Order — ₹${totalPrice}`}
                 </button>
               </form>
             </div>
