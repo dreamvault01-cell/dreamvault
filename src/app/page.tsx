@@ -119,17 +119,13 @@ export default async function Home() {
       <section className="section" id="categories">
         <div className="container">
           <div className="section-header">
-            <div>
-              <h2 className="section-title">
-                Shop by <span className="accent">Category</span>
-              </h2>
-              <p className="section-subtitle">
-                Explore our curated collections for every style and space
-              </p>
-            </div>
-            <Link href="/collections" className="section-link">
-              View All →
-            </Link>
+            <p className="section-eyebrow">✦ Browse Collections</p>
+            <h2 className="section-title">
+              Shop by <span className="accent">Category</span>
+            </h2>
+            <p className="section-subtitle">
+              Explore our curated collections for every style and space
+            </p>
           </div>
 
           <div className="category-grid">
@@ -156,17 +152,13 @@ export default async function Home() {
       <section className="section" id="bestsellers" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="section-header">
-            <div>
-              <h2 className="section-title">
-                <span className="accent">Bestsellers</span> & Trending
-              </h2>
-              <p className="section-subtitle">
-                The most loved posters by our community
-              </p>
-            </div>
-            <Link href="/collections" className="section-link">
-              Shop All →
-            </Link>
+            <p className="section-eyebrow">★ Customer Favorites</p>
+            <h2 className="section-title">
+              <span className="accent">Bestsellers</span> & Trending
+            </h2>
+            <p className="section-subtitle">
+              The most loved posters by our community
+            </p>
           </div>
 
           <div className="product-grid">
@@ -174,29 +166,44 @@ export default async function Home() {
               <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
+          
+          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+            <Link href="/collections" className="btn btn-secondary btn-lg">
+              View All Bestsellers
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ==================== CUSTOM POSTER CTA ==================== */}
       <section className="section" id="custom-cta">
         <div className="container">
-          <div className="cta-banner">
-            <div className="cta-content">
-              <div
-                className="hero-tag"
-                style={{ marginBottom: '1rem' }}
-              >
-                YOUR PHOTO, PRINTED
+          <div className="custom-cta-wrapper">
+            <div className="custom-cta-glow"></div>
+            <div className="custom-cta-content">
+              <div className="custom-cta-text-side">
+                <div className="section-eyebrow" style={{ color: 'var(--bg-primary)' }}>✦ Your Photo, Printed</div>
+                <h2 style={{ fontSize: 'clamp(2rem, 4vw, 2.5rem)', fontWeight: 800, marginBottom: '1rem', color: 'var(--bg-primary)' }}>
+                  Create Your <br />
+                  <span style={{ color: 'var(--accent-gold-light)' }}>Custom Poster</span>
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '400px' }}>
+                  Upload any photo and we&apos;ll print it on premium 300 GSM art paper. 
+                  Perfect for personal memories, pet portraits, or unique gifts. 
+                  Starting from just ₹149.
+                </p>
+                <Link href="/custom" className="btn btn-primary btn-lg" id="cta-custom-btn">
+                  Start Creating →
+                </Link>
               </div>
-              <h2>Create Your Custom Poster</h2>
-              <p>
-                Upload any photo and we&apos;ll print it on premium 300 GSM art paper.
-                Perfect for personal memories, pet portraits, or unique gifts. Starting
-                from just ₹99.
-              </p>
-              <Link href="/custom" className="btn btn-primary" id="cta-custom-btn">
-                Start Creating →
-              </Link>
+              <div className="custom-cta-image-side">
+                {/* Visual representation of custom upload */}
+                <div className="custom-frame">
+                  <div className="custom-frame-inner">
+                    <img src="/images/banners/hero.jpg" alt="Custom Poster Example" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -206,17 +213,13 @@ export default async function Home() {
       <section className="section" id="wall-packs" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="section-header">
-            <div>
-              <h2 className="section-title">
-                Wall Setup <span className="accent">Packs</span>
-              </h2>
-              <p className="section-subtitle">
-                Curated poster sets — everything you need for the perfect gallery wall
-              </p>
-            </div>
-            <Link href="/collections/wall-setup-packs" className="section-link">
-              View All →
-            </Link>
+            <p className="section-eyebrow">✦ Curated For You</p>
+            <h2 className="section-title">
+              Wall Setup <span className="accent">Packs</span>
+            </h2>
+            <p className="section-subtitle">
+              Curated poster sets — everything you need for the perfect gallery wall
+            </p>
           </div>
 
           <div className="product-grid">
@@ -233,9 +236,9 @@ export default async function Home() {
       {/* ==================== TESTIMONIALS ==================== */}
       <section className="section testimonials-section" id="testimonials">
         <div className="container">
-          <div className="testimonials-header">
-            <p className="testimonials-eyebrow">★ Trusted by 50,000+ Art Lovers</p>
-            <h2 className="section-title" style={{ textAlign: 'center' }}>
+          <div className="section-header">
+            <p className="section-eyebrow">★ Trusted by 50,000+ Art Lovers</p>
+            <h2 className="section-title">
               What Our <span className="accent">Customers</span> Say
             </h2>
           </div>

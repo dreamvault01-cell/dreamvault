@@ -16,42 +16,19 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   return (
     <div style={{ paddingTop: '10px' }}>
-      {/* Hero Banner */}
-      <section
-        style={{
-          position: 'relative',
-          padding: 'clamp(3rem, 6vw, 5rem) 0',
-          background: 'var(--bg-secondary)',
-          borderBottom: '1px solid var(--border-subtle)',
-          overflow: 'hidden',
-        }}
-      >
+      <section className="collection-hero">
         {category && (
           <>
             <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0.15,
-                backgroundImage: `url(${category.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                filter: 'blur(40px)',
-              }}
+              className="collection-hero-bg"
+              style={{ backgroundImage: `url(${category.image})` }}
             />
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'linear-gradient(180deg, var(--bg-secondary) 0%, transparent 40%, var(--bg-secondary) 100%)',
-              }}
-            />
+            <div className="collection-hero-overlay" />
           </>
         )}
 
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="pdp-breadcrumb" style={{ marginBottom: '1.5rem' }}>
+        <div className="container collection-hero-content">
+          <div className="pdp-breadcrumb" style={{ justifyContent: 'center', marginBottom: '1.5rem' }}>
             <Link href="/">Home</Link>
             <span>/</span>
             <Link href="/collections">Collections</Link>
@@ -59,22 +36,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             <span style={{ color: 'var(--text-secondary)' }}>{title}</span>
           </div>
 
-          <h1
-            className="section-title"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: '0.5rem' }}
-          >
+          <h1 className="section-title" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', marginBottom: '0.5rem' }}>
             {title}
           </h1>
-          <p className="section-subtitle">{description}</p>
-          <p
-            style={{
-              color: 'var(--text-muted)',
-              fontSize: '0.85rem',
-              marginTop: '0.5rem',
-            }}
-          >
-            {displayProducts.length} product{displayProducts.length !== 1 ? 's' : ''}
-          </p>
+          <p className="section-subtitle" style={{ margin: '0 auto', maxWidth: '600px' }}>{description}</p>
+          <div className="section-eyebrow" style={{ marginTop: '1.5rem', opacity: 0.8 }}>
+            {displayProducts.length} Product{displayProducts.length !== 1 ? 's' : ''}
+          </div>
         </div>
       </section>
 

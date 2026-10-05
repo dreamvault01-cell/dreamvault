@@ -183,11 +183,20 @@ ul, ol {
 }
 
 .section-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  text-align: center;
   margin-bottom: var(--gap-2xl);
-  gap: var(--gap-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
 }
 
 .section-title {
@@ -206,7 +215,8 @@ ul, ol {
   color: var(--text-secondary);
   font-size: clamp(0.9rem, 1.5vw, 1.05rem);
   font-weight: 400;
-  margin-top: var(--gap-xs);
+  margin-top: var(--gap-sm);
+  max-width: 600px;
 }
 
 .section-link {
@@ -219,6 +229,41 @@ ul, ol {
   align-items: center;
   gap: 6px;
   transition: gap var(--transition-base);
+}
+
+/* ---------- Collection Hero ---------- */
+.collection-hero {
+  position: relative;
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+  text-align: center;
+}
+
+.collection-hero-bg {
+  position: absolute;
+  inset: -20%;
+  opacity: 0.2;
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.collection-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, transparent 40%, var(--bg-secondary) 100%);
+  z-index: 1;
+}
+
+.collection-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .section-link:hover {
@@ -1126,20 +1171,6 @@ ul, ol {
   background: var(--bg-primary);
 }
 
-.testimonials-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.testimonials-eyebrow {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--accent-gold);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 0.75rem;
-}
-
 .testimonial-marquee-wrapper {
   position: relative;
   display: flex;
@@ -1388,9 +1419,76 @@ ul, ol {
 
 .footer-payments {
   display: flex;
-  gap: var(--gap-sm);
+  gap: var(--gap-xs);
+  align-items: center;
+}
+
+.payment-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- Custom Poster CTA ---------- */
+.custom-cta-wrapper {
+  position: relative;
+  background: #0a0a0a;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  padding: clamp(3rem, 6vw, 5rem);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(179, 134, 0, 0.15) 0%, transparent 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.custom-cta-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-2xl);
+  align-items: center;
+}
+
+.custom-frame {
+  background: #111;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+  transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+  transition: transform 0.6s var(--ease-out);
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.custom-frame:hover {
+  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(-10px);
+}
+
+.custom-frame-inner {
+  aspect-ratio: 3/4;
+  background: #000;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
 }
 
 /* ---------- Cart Drawer ---------- */
@@ -2532,21 +2630,6 @@ ul, ol {
 
   .testimonial-quote-icon {
     font-size: 2.5rem;
-  }
-
-  /* CTA Banner */
-  .cta-banner {
-    padding: 1.5rem;
-    text-align: center;
-  }
-
-  .cta-content {
-    max-width: 100%;
-  }
-
-  .cta-banner .btn {
-    width: 100%;
-    justify-content: center;
   }
 
   /* Product Detail */

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -14,10 +15,10 @@ export default function Footer() {
               meticulously crafted to reflect your unique style.
             </p>
             <div className="footer-social">
-              <a href="#" aria-label="Instagram">📷</a>
-              <a href="#" aria-label="Twitter">🐦</a>
-              <a href="#" aria-label="Facebook">📘</a>
-              <a href="#" aria-label="Pinterest">📌</a>
+              <a href="#" aria-label="Instagram"><Instagram size={18} /></a>
+              <a href="#" aria-label="Twitter"><Twitter size={18} /></a>
+              <a href="#" aria-label="Facebook"><Facebook size={18} /></a>
+              <a href="#" aria-label="YouTube"><Youtube size={18} /></a>
             </div>
           </div>
 
@@ -25,9 +26,9 @@ export default function Footer() {
             <h4>Shop</h4>
             <Link href="/collections">All Collections</Link>
             <Link href="/collections/abstract-art">Abstract Art</Link>
-            <Link href="/collections/nature-landscapes">Nature & Landscapes</Link>
-            <Link href="/collections/movies-cinema">Movies & Cinema</Link>
-            <Link href="/collections/anime-manga">Anime & Manga</Link>
+            <Link href="/collections/nature-landscapes">Nature &amp; Landscapes</Link>
+            <Link href="/collections/movies-cinema">Movies &amp; Cinema</Link>
+            <Link href="/collections/anime-manga">Anime &amp; Manga</Link>
             <Link href="/collections/wall-setup-packs">Wall Setup Packs</Link>
           </div>
 
@@ -35,8 +36,8 @@ export default function Footer() {
             <h4>Help</h4>
             <Link href="/about">About Us</Link>
             <a href="#">FAQ</a>
-            <a href="#">Shipping & Delivery</a>
-            <a href="#">Returns & Refunds</a>
+            <a href="#">Shipping &amp; Delivery</a>
+            <a href="#">Returns &amp; Refunds</a>
             <a href="#">Track Your Order</a>
             <a href="#">Contact Us</a>
           </div>
@@ -51,16 +52,15 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2024 DreamVault. All rights reserved. Made with ♥ in India.</p>
+          <p>© {new Date().getFullYear()} DreamVault. All rights reserved. Made with ♥ in India.</p>
           <div className="footer-payments">
-            <span>💳 Visa</span>
-            <span>💳 Mastercard</span>
-            <span>📱 UPI</span>
-            <span>🏦 Net Banking</span>
+            <span className="payment-badge">Visa</span>
+            <span className="payment-badge">Mastercard</span>
+            <span className="payment-badge">UPI</span>
+            <span className="payment-badge">Net Banking</span>
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

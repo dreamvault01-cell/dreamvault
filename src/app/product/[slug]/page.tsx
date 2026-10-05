@@ -34,7 +34,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const renderStars = (rating: number) => {
     const full = Math.floor(rating);
     const half = rating % 1 >= 0.5;
-    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
+    const empty = 5 - full - (half ? 1 : 0);
+    
+    return (
+      <div style={{ display: 'flex', gap: '2px', color: 'var(--accent-gold)' }}>
+        {[...Array(full)].map((_, i) => <Star key={`full-${i}`} size={16} fill="currentColor" stroke="currentColor" />)}
+        {half && <Star key="half" size={16} fill="currentColor" stroke="currentColor" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />}
+        {[...Array(empty)].map((_, i) => <Star key={`empty-${i}`} size={16} stroke="currentColor" />)}
+      </div>
+    );
   };
 
   // Delivery date calculation
@@ -48,7 +56,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <div className="container">
+      <div className="container" style={{ paddingBottom: 'var(--section-padding)' }}>
         <div className="pdp-container">
           {/* Gallery */}
           <div className="pdp-gallery">
@@ -72,8 +80,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h1 className="pdp-title">{product.name}</h1>
 
             <div className="pdp-rating">
-              <span className="stars">{renderStars(product.rating)}</span>
-              <span>{product.rating}</span>
+              {renderStars(product.rating)}
+              <span style={{ fontWeight: 600, marginLeft: '4px' }}>{product.rating}</span>
               <span className="count">({product.reviews} reviews)</span>
             </div>
 
@@ -102,7 +110,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                       top: '50%',
                       height: 3,
                       marginTop: -1.5,
-                      background: 'var(--accent-gold)',
+                      background: 'var(--gradient-gold)',
                       borderRadius: 2,
                       width: '100%',
                     }}
@@ -110,38 +118,38 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </div>
                 <div className="delivery-end">
                   <span className="emoji"><Home size={20} /></span>
-                  <span className="delivery-date">{deliveryStr}</span>
+                  <span className="delivery-date" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{deliveryStr}</span>
                 </div>
               </div>
-              <div className="delivery-sub">
-                <Zap size={16} style={{ display: 'inline', verticalAlign: 'text-bottom' }} /> <b>FREE Express + ₹50 OFF</b> — pay online (UPI / Card)
+              <div className="delivery-sub" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}>
+                <Zap size={16} color="var(--accent-gold)" /> <span><b>FREE Express + ₹50 OFF</b> — pay online (UPI / Card)</span>
               </div>
             </div>
 
             {/* Product Features */}
             <div className="pdp-features">
               <div className="pdp-feature">
-                <span className="icon"><Palette size={20} /></span>
+                <span className="icon" style={{ color: 'var(--accent-gold)' }}><Palette size={22} strokeWidth={1.5} /></span>
                 <span>Premium 300 GSM Paper</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon"><Gem size={20} /></span>
+                <span className="icon" style={{ color: 'var(--accent-gold)' }}><Gem size={22} strokeWidth={1.5} /></span>
                 <span>Archival Quality Inks</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon"><Rocket size={20} /></span>
+                <span className="icon" style={{ color: 'var(--accent-gold)' }}><Rocket size={22} strokeWidth={1.5} /></span>
                 <span>Free Express Shipping</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon"><RefreshCw size={20} /></span>
+                <span className="icon" style={{ color: 'var(--accent-gold)' }}><RefreshCw size={22} strokeWidth={1.5} /></span>
                 <span>Easy Returns</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon"><Ruler size={20} /></span>
+                <span className="icon" style={{ color: 'var(--accent-gold)' }}><Ruler size={22} strokeWidth={1.5} /></span>
                 <span>Hand-Inspected Quality</span>
               </div>
               <div className="pdp-feature">
-                <span className="icon"><Gift size={20} /></span>
+                <span className="icon" style={{ color: 'var(--accent-gold)' }}><Gift size={22} strokeWidth={1.5} /></span>
                 <span>Gift-Ready Packaging</span>
               </div>
             </div>
