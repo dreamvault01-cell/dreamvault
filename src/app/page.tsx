@@ -241,33 +241,9 @@ export default async function Home() {
           </div>
 
           <div className="testimonial-marquee-wrapper">
-            {/* Top Track - Scrolls Left */}
             <div className="testimonial-track">
               {[...testimonials, ...testimonials].map((t, i) => (
-                <div className="testimonial-card" key={`top-${i}`}>
-                  <div className="testimonial-quote-icon">&ldquo;</div>
-                  <p className="testimonial-text">{t.text}</p>
-                  <div className="testimonial-stars" style={{ display: 'flex', gap: '2px' }}>
-                    {[...Array(t.stars)].map((_, idx) => (
-                      <Star key={idx} size={14} fill="currentColor" stroke="currentColor" />
-                    ))}
-                  </div>
-                  <div className="testimonial-divider"></div>
-                  <div className="testimonial-author">
-                    <div className="testimonial-avatar">{t.initials}</div>
-                    <div>
-                      <div className="testimonial-name">{t.name}</div>
-                      <div className="testimonial-role">✓ {t.role}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Track - Scrolls Right */}
-            <div className="testimonial-track track-reverse">
-              {[...testimonials.slice(3).concat(testimonials.slice(0, 3)), ...testimonials.slice(3).concat(testimonials.slice(0, 3))].map((t, i) => (
-                <div className="testimonial-card" key={`bottom-${i}`}>
+                <div className="testimonial-card" key={`track-${i}`}>
                   <div className="testimonial-quote-icon">&ldquo;</div>
                   <p className="testimonial-text">{t.text}</p>
                   <div className="testimonial-stars" style={{ display: 'flex', gap: '2px' }}>
