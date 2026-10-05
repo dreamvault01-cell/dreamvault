@@ -2602,34 +2602,37 @@ ul, ol {
   background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 65%);
 }
 
-/* Pill-shaped form */
+/* Form layout matching the screenshot but more premium */
 .newsletter-form {
   display: flex;
   align-items: center;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  padding: 5px;
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.3s, box-shadow 0.3s;
-  max-width: 480px;
+  gap: 12px;
+  justify-content: center;
+  max-width: 500px;
   margin: 0 auto;
 }
 
 .newsletter-form:focus-within {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+  /* removed since focus is now on the input directly */
 }
 
 .newsletter-form input {
   flex: 1;
-  background: transparent;
-  border: none;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
   padding: 14px 20px;
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 0.95rem;
   outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.3s;
+}
+
+.newsletter-form input:focus {
+  border-color: var(--accent-gold);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
 .newsletter-form input::placeholder {
@@ -2637,13 +2640,24 @@ ul, ol {
 }
 
 .newsletter-form button {
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   padding: 14px 32px;
   margin: 0;
   white-space: nowrap;
   flex-shrink: 0;
   font-weight: 700;
   letter-spacing: 0.02em;
+  background: linear-gradient(135deg, var(--accent-gold), #c9a02a);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+  transition: all 0.3s;
+}
+
+.newsletter-form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.35);
+  background: linear-gradient(135deg, #e3c048, #c9a02a);
 }
 
 .newsletter-privacy {

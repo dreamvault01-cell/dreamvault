@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { getProducts, getCategories, getFeaturedProducts } from '@/lib/data';
-import { Rocket, Palette, Gem, ShieldCheck, Star } from 'lucide-react';
+import { Rocket, Palette, Gem, ShieldCheck, Star, Mail } from 'lucide-react';
 
 const testimonials = [
   {
@@ -260,12 +260,15 @@ export default async function Home() {
                 Get exclusive drops, early access, and special offers delivered to your inbox.
               </p>
               <form action="#" className="newsletter-form">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  id="newsletter-email"
-                  required
-                />
+                <div className="newsletter-input-wrapper">
+                  <Mail className="newsletter-icon" size={20} />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    id="newsletter-email"
+                    required
+                  />
+                </div>
                 <button type="submit" className="btn btn-primary" id="newsletter-submit">
                   Subscribe
                 </button>
