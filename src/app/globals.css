@@ -2678,8 +2678,8 @@ ul, ol {
 
   .footer-brand {
     max-width: 100%;
-    margin-bottom: var(--gap-xl);
-    padding-bottom: var(--gap-xl);
+    margin-bottom: var(--gap-md);
+    padding-bottom: var(--gap-lg);
     border-bottom: 1px solid var(--border-subtle);
   }
 

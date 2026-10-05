@@ -121,9 +121,7 @@ export default function Footer() {
           <div className="footer-bottom">
             <p>© {new Date().getFullYear()} DreamVault. All rights reserved. Made with ♥ in India.</p>
             <div className="footer-payments">
-              <span className="payment-badge">
-                <svg width="32" height="10" viewBox="0 0 32 10" fill="currentColor"><text x="0" y="9" fontSize="9" fontWeight="700" fontFamily="sans-serif">VISA</text></svg>
-              </span>
+              <span className="payment-badge payment-badge-text">VISA</span>
               <span className="payment-badge">
                 <svg width="18" height="12" viewBox="0 0 18 12"><circle cx="6" cy="6" r="5.5" fill="#EB001B" opacity="0.8"/><circle cx="12" cy="6" r="5.5" fill="#F79E1B" opacity="0.8"/></svg>
               </span>
