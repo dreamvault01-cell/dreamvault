@@ -93,11 +93,11 @@ export default function Footer() {
               </label>
               <div className="footer-column-content">
                 <Link href="/about">About Us</Link>
-                <a href="#">FAQ</a>
-                <a href="#">Shipping &amp; Delivery</a>
-                <a href="#">Returns &amp; Refunds</a>
-                <a href="#">Track Your Order</a>
-                <a href="#">Contact Us</a>
+                <Link href="/faq">FAQ</Link>
+                <Link href="/shipping-delivery">Shipping &amp; Delivery</Link>
+                <Link href="/returns-refunds">Returns &amp; Refunds</Link>
+                <Link href="/track-order">Track Your Order</Link>
+                <Link href="/contact">Contact Us</Link>
               </div>
             </div>
 
@@ -108,10 +108,10 @@ export default function Footer() {
                 Policies <ChevronDown />
               </label>
               <div className="footer-column-content">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Refund Policy</a>
-                <a href="#">Shipping Policy</a>
+                <Link href="/privacy-policy">Privacy Policy</Link>
+                <Link href="/terms-of-service">Terms of Service</Link>
+                <Link href="/refund-policy">Refund Policy</Link>
+                <Link href="/shipping-policy">Shipping Policy</Link>
               </div>
             </div>
           </div>
