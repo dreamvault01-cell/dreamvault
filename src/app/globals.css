@@ -2565,21 +2565,44 @@ ul, ol {
   margin: 0 auto;
 }
 
-.newsletter-form input {
+.newsletter-input-wrapper {
   flex: 1;
+  display: flex;
+  align-items: center;
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 14px 20px;
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  outline: none;
-  transition: all 0.3s;
+  padding: 0 20px;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
-.newsletter-form input:focus {
+.newsletter-input-wrapper:focus-within {
   border-color: var(--accent-gold);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1), 0 0 0 3px rgba(212, 175, 55, 0.1);
+  background: var(--bg-card);
+}
+
+.newsletter-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.newsletter-input-wrapper:focus-within .newsletter-icon {
+  color: var(--accent-gold);
+}
+
+.newsletter-form input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 16px 0;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  outline: none;
 }
 
 .newsletter-form input::placeholder {
@@ -2588,26 +2611,29 @@ ul, ol {
 
 .newsletter-form button {
   border-radius: var(--radius-md);
-  padding: 14px 32px;
+  padding: 16px 36px;
   margin: 0;
   white-space: nowrap;
   flex-shrink: 0;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
   background: var(--accent-gold);
   border: none;
   color: var(--bg-primary);
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
 }
 
 .newsletter-form button:hover {
   background: var(--accent-gold-hover, #c9a02a);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
 }
 
 .newsletter-privacy {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   letter-spacing: 0.02em;
 }
