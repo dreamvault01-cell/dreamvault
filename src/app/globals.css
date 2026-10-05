@@ -1381,13 +1381,30 @@ ul, ol {
   transform: translateY(-2px);
 }
 
-.footer-column h4 {
+.footer-accordion-toggle {
+  display: none;
+}
+
+.footer-column-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-primary);
   margin-bottom: var(--gap-lg);
+  pointer-events: none; /* Not clickable on desktop */
+}
+
+.footer-accordion-icon {
+  display: none; /* Hidden on desktop */
+  transition: transform var(--transition-fast);
+}
+
+.footer-column-content {
+  display: block; /* Always visible on desktop */
 }
 
 .footer-column a {
@@ -2560,22 +2577,51 @@ ul, ol {
 
   /* Footer */
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--gap-xl);
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .footer-brand {
     max-width: 100%;
-    grid-column: 1 / -1;
+    margin-bottom: var(--gap-xl);
+  }
+
+  .footer-column {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .footer-column-title {
+    pointer-events: auto; /* Clickable on mobile */
+    padding: 16px 0;
+    margin-bottom: 0;
+  }
+
+  .footer-accordion-icon {
+    display: block; /* Visible on mobile */
+  }
+
+  .footer-column-content {
+    display: none; /* Hidden by default on mobile */
+    padding-bottom: 16px;
+  }
+
+  .footer-accordion-toggle:checked ~ .footer-column-content {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .footer-accordion-toggle:checked ~ .footer-column-title .footer-accordion-icon {
+    transform: rotate(180deg);
   }
 
   .footer-bottom {
     flex-direction: column;
-    text-align: center;
+    text-align: left;
+    align-items: flex-start;
   }
 
   .footer-payments {
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
   }
 }
@@ -2895,26 +2941,24 @@ ul, ol {
   /* Footer */
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: var(--gap-lg);
+    gap: 0;
   }
 
   .footer-brand {
     grid-column: auto;
     max-width: 100%;
+    margin-bottom: var(--gap-lg);
   }
 
   .footer-social {
     justify-content: flex-start;
   }
 
-  .footer-column h4 {
-    margin-bottom: var(--gap-sm);
-  }
-
   .footer-bottom {
     flex-direction: column;
     gap: var(--gap-sm);
-    text-align: center;
+    text-align: left;
+    align-items: flex-start;
   }
 
   .footer-bottom p {
@@ -2922,7 +2966,7 @@ ul, ol {
   }
 
   .footer-payments {
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
     gap: 4px;
   }

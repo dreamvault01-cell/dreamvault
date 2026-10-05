@@ -28,6 +28,12 @@ const YoutubeIcon = () => (
   </svg>
 );
 
+const ChevronDown = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="footer-accordion-icon">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
+
 export default function Footer() {
   return (
     <footer className="footer" id="footer">
@@ -50,31 +56,46 @@ export default function Footer() {
           </div>
 
           <div className="footer-column">
-            <h4>Shop</h4>
-            <Link href="/collections">All Collections</Link>
-            <Link href="/collections/abstract-art">Abstract Art</Link>
-            <Link href="/collections/nature-landscapes">Nature &amp; Landscapes</Link>
-            <Link href="/collections/movies-cinema">Movies &amp; Cinema</Link>
-            <Link href="/collections/anime-manga">Anime &amp; Manga</Link>
-            <Link href="/collections/wall-setup-packs">Wall Setup Packs</Link>
+            <input type="checkbox" id="footer-shop" className="footer-accordion-toggle" />
+            <label htmlFor="footer-shop" className="footer-column-title">
+              Shop <ChevronDown />
+            </label>
+            <div className="footer-column-content">
+              <Link href="/collections">All Collections</Link>
+              <Link href="/collections/abstract-art">Abstract Art</Link>
+              <Link href="/collections/nature-landscapes">Nature &amp; Landscapes</Link>
+              <Link href="/collections/movies-cinema">Movies &amp; Cinema</Link>
+              <Link href="/collections/anime-manga">Anime &amp; Manga</Link>
+              <Link href="/collections/wall-setup-packs">Wall Setup Packs</Link>
+            </div>
           </div>
 
           <div className="footer-column">
-            <h4>Help</h4>
-            <Link href="/about">About Us</Link>
-            <a href="#">FAQ</a>
-            <a href="#">Shipping &amp; Delivery</a>
-            <a href="#">Returns &amp; Refunds</a>
-            <a href="#">Track Your Order</a>
-            <a href="#">Contact Us</a>
+            <input type="checkbox" id="footer-help" className="footer-accordion-toggle" />
+            <label htmlFor="footer-help" className="footer-column-title">
+              Help <ChevronDown />
+            </label>
+            <div className="footer-column-content">
+              <Link href="/about">About Us</Link>
+              <a href="#">FAQ</a>
+              <a href="#">Shipping &amp; Delivery</a>
+              <a href="#">Returns &amp; Refunds</a>
+              <a href="#">Track Your Order</a>
+              <a href="#">Contact Us</a>
+            </div>
           </div>
 
           <div className="footer-column">
-            <h4>Policies</h4>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Refund Policy</a>
-            <a href="#">Shipping Policy</a>
+            <input type="checkbox" id="footer-policies" className="footer-accordion-toggle" />
+            <label htmlFor="footer-policies" className="footer-column-title">
+              Policies <ChevronDown />
+            </label>
+            <div className="footer-column-content">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Service</a>
+              <a href="#">Refund Policy</a>
+              <a href="#">Shipping Policy</a>
+            </div>
           </div>
         </div>
 
