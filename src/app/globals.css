@@ -2504,4 +2504,89 @@ ul, ol {
   .cart-drawer {
     width: 100vw;
   }
+
+  /* Newsletter */
+  .newsletter-form {
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+  }
+
+  .newsletter-form input {
+    text-align: center;
+  }
+
+  .newsletter-form button {
+    width: 100%;
+  }
+}
+
+/* ---------- Newsletter Banner ---------- */
+.newsletter-banner {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem);
+  text-align: center;
+  overflow: hidden;
+}
+
+.newsletter-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.newsletter-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.newsletter-form {
+  display: flex;
+  align-items: center;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 5px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.newsletter-form:focus-within {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+.newsletter-form input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.newsletter-form input::placeholder {
+  color: var(--text-muted);
+}
+
+.newsletter-form button {
+  border-radius: var(--radius-full);
+  padding: 12px 28px;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
