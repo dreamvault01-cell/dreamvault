@@ -1,7 +1,6 @@
-'use client';
-
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { getSupportConfig } from '@/lib/support-config';
 
 // Inline SVGs for social brands
 const InstagramIcon = () => (
@@ -42,6 +41,7 @@ const ChevronDown = () => (
 );
 
 export default function Footer() {
+  const supportEmail = getSupportConfig().supportEmail || 'support@soliheleug.resend.app';
   return (
     <footer className="footer" id="footer">
       {/* ── Main Footer ── */}
@@ -58,7 +58,7 @@ export default function Footer() {
                 meticulously crafted to reflect your unique style.
               </p>
               <div className="footer-contact">
-                <a href="mailto:hello@dreamvault.in"><Mail size={14} /> hello@dreamvault.in</a>
+                <a href={`mailto:${supportEmail}`}><Mail size={14} /> {supportEmail}</a>
                 <a href="tel:+919876543210"><Phone size={14} /> +91 98765 43210</a>
                 <span><MapPin size={14} /> Mumbai, India</span>
               </div>

@@ -1,6 +1,8 @@
 import PolicyLayout, { PolicySection } from '@/components/PolicyLayout';
+import { getSupportConfig } from '@/lib/support-config';
 
 export default function PrivacyPolicyPage() {
+  const supportEmail = getSupportConfig().supportEmail || 'support@soliheleug.resend.app';
   return (
     <PolicyLayout
       tag="LEGAL"
@@ -25,10 +27,10 @@ export default function PrivacyPolicyPage() {
         <p>Our website uses cookies to enhance your browsing experience, remember your preferences, and analyze site traffic. You can control cookie settings through your browser preferences at any time.</p>
       </PolicySection>
       <PolicySection id="your-rights" title="Your Rights">
-        <p>You have the right to access, correct, or delete your personal data. You may also unsubscribe from our marketing emails at any time using the link in the footer of each email. To exercise these rights, contact us at hello@dreamvault.in.</p>
+        <p>You have the right to access, correct, or delete your personal data. You may also unsubscribe from our marketing emails at any time using the link in the footer of each email. To exercise these rights, contact us at {supportEmail}.</p>
       </PolicySection>
       <PolicySection id="contact-us" title="Contact Us">
-        <p>If you have questions about this privacy policy, please contact us at <a href="mailto:hello@dreamvault.in">hello@dreamvault.in</a> or call us at +91 98765 43210.</p>
+        <p>If you have questions about this privacy policy, please contact us at <a href={`mailto:${supportEmail}`}>{supportEmail}</a> or call us at +91 98765 43210.</p>
       </PolicySection>
     </PolicyLayout>
   );

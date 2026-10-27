@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:support": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/support-inbox.sql",
+    "test:support": "node --conditions=react-server --import tsx --test src/lib/contact.test.ts src/app/api/contact/route.test.ts src/lib/support-config.test.ts src/lib/support-mail.test.ts src/lib/support-http.test.ts src/lib/support-validation.test.ts src/lib/support-outbox.test.ts src/lib/support-inbound.test.ts src/lib/support-store.integration.test.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.10",
@@ -19,7 +21,8 @@
     "next-themes": "^0.4.6",
     "razorpay": "^2.9.8",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "resend": "^6.34.1"
   },
   "devDependencies": {
     "@types/node": "^20",

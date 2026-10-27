@@ -92,27 +92,34 @@ in `ContactMessage`, with a reference ID shown only after a successful save.
 It supports guest submissions, field validation, a honeypot, request-size limits,
 three submissions per email per ten minutes, and duplicate-safe retries.
 
-With `DATABASE_URL` configured, initialize only the contact table and its indexes:
+The protected `/admin/messages` support inbox lets administrators read
+conversations, write email replies and private notes, manage statuses, and review
+delivery problems. When Resend is connected, customer email replies return to
+the same conversation through a verified webhook. Outgoing messages use a
+durable queue with bounded retries; a saved request does not guarantee delivery.
+
+With `DATABASE_URL` configured for the intended database, apply the additive
+support schema and preserve existing contact requests:
 
 ```bash
-npx prisma db execute --schema prisma/schema.prisma --file prisma/sql/contact-messages.sql
+npm run db:support
 ```
 
-This setup is additive and does not require resetting or synchronizing the other
-store tables. The model is also defined in `prisma/schema.prisma`; regenerate the
-Prisma client when the development server is stopped if you want to browse the
-messages using `npx prisma studio`. New messages have status `NEW`; support can
-change this to `READ` or `RESOLVED` in the database.
+Email is not activated by installing the code. Add the private Resend API key,
+webhook signing secret, and support settings locally and in Vercel when ready.
+Development mode allows outgoing email only to the configured test inbox; other
+customers' requests still save without redirecting their emails. No domain is
+needed for development. Do not commit or share real credentials.
 
-Email notifications are not configured. Saving a message does not send an email.
-Support should review the `ContactMessage` table. No public endpoint exposes
-submitted messages or customer email addresses.
-
-Run the contact validation and API rejection checks with:
+Run the support validation, HTTP, email, webhook, and queue checks with:
 
 ```bash
-node --import tsx --test src/lib/contact.test.ts src/app/api/contact/route.test.ts
+npm run test:support
 ```
+
+See [the support setup guide](docs/SUPPORT_SETUP.md) for the required settings,
+step-by-step configuration, full email testing, optional rollback-only database
+tests, background retries, and moving to a branded domain later.
 
 ## 🎨 Design Inspiration
 

@@ -1,6 +1,8 @@
 import PolicyLayout, { PolicySection } from '@/components/PolicyLayout';
+import { getSupportConfig } from '@/lib/support-config';
 
 export default function ShippingPolicyPage() {
+  const supportEmail = getSupportConfig().supportEmail || 'support@soliheleug.resend.app';
   return (
     <PolicyLayout
       tag="POLICIES"
@@ -30,7 +32,7 @@ export default function ShippingPolicyPage() {
         <p>Currently, we only ship within India. International shipping is coming soon — sign up for our newsletter to be notified when we expand globally.</p>
       </PolicySection>
       <PolicySection id="damaged-or-lost-shipments" title="Damaged or Lost Shipments">
-        <p>If your order arrives damaged or is lost in transit, please contact us within 48 hours at <a href="mailto:hello@dreamvault.in">hello@dreamvault.in</a> with your order ID and photos. We&apos;ll arrange a free replacement or full refund.</p>
+        <p>If your order arrives damaged or is lost in transit, please contact us within 48 hours at <a href={`mailto:${supportEmail}`}>{supportEmail}</a> with your order ID and photos. We&apos;ll arrange a free replacement or full refund.</p>
       </PolicySection>
     </PolicyLayout>
   );

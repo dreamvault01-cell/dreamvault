@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { validateContactSubmission } from '@/lib/contact';
 import { ContactConflictError, ContactRateLimitError, saveContactMessage } from '@/lib/contact-store';
+import { processSupportOutbox } from '@/lib/support-outbox';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60;
 const MAX_BODY_BYTES = 32 * 1024;
 
 export async function POST(request: Request) {
@@ -51,6 +53,9 @@ export async function POST(request: Request) {
 
   try {
     const reference = await saveContactMessage(result.data);
+    // Await bounded immediate delivery; the outbox remains durable if the provider
+    // is down. A saved contact request must not become a false form failure.
+    try { await processSupportOutbox({ ticketId: reference, limit: 2, budgetMs: 10_000 }); } catch { /* retry from the dashboard or scheduler */ }
     return NextResponse.json({ success: true, reference }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     if (error instanceof ContactRateLimitError) {

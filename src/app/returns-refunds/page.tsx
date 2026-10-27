@@ -1,7 +1,9 @@
 import PolicyLayout, { PolicySection } from '@/components/PolicyLayout';
 import styles from '@/components/PolicyLayout.module.css';
+import { getSupportConfig } from '@/lib/support-config';
 
 export default function ReturnsRefundsPage() {
+  const supportEmail = getSupportConfig().supportEmail || 'support@soliheleug.resend.app';
   return (
     <PolicyLayout
       tag="INFORMATION"
@@ -19,7 +21,7 @@ export default function ReturnsRefundsPage() {
       <PolicySection id="how-to-return" title="How to Return">
         <ol className={styles.steps}>
           {[
-            { step: '1', title: 'Contact Us', desc: 'Email hello@dreamvault.in with your order ID, photos of the issue, and your preferred resolution (refund or exchange).' },
+            { step: '1', title: 'Contact Us', desc: `Email ${supportEmail} with your order ID, photos of the issue, and your preferred resolution (refund or exchange).` },
             { step: '2', title: 'Approval', desc: 'Our team reviews your request within 24 hours and sends you return instructions if approved.' },
             { step: '3', title: 'Ship It Back', desc: 'Pack the item securely and ship it using the prepaid label we provide. Return shipping is free for approved claims.' },
             { step: '4', title: 'Refund / Exchange', desc: 'Once we receive the item, your refund is processed in 5–7 business days, or a replacement is shipped immediately.' },

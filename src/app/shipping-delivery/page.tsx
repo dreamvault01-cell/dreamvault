@@ -1,7 +1,9 @@
 import PolicyLayout, { PolicySection } from '@/components/PolicyLayout';
 import styles from '@/components/PolicyLayout.module.css';
+import { getSupportConfig } from '@/lib/support-config';
 
 export default function ShippingDeliveryPage() {
+  const supportEmail = getSupportConfig().supportEmail || 'support@soliheleug.resend.app';
   return (
     <PolicyLayout
       tag="INFORMATION"
@@ -45,7 +47,7 @@ export default function ShippingDeliveryPage() {
         <p>Once your order ships, you&apos;ll receive an email and SMS with a live tracking link. You can also visit our <a href="/track-order">Track Your Order</a> page and enter your Order ID to check real-time status.</p>
       </PolicySection>
       <PolicySection id="need-help" title="Need Help?">
-        <p>If you have any questions about shipping or delivery, contact us at <a href="mailto:hello@dreamvault.in">hello@dreamvault.in</a> or call +91 98765 43210.</p>
+        <p>If you have any questions about shipping or delivery, contact us at <a href={`mailto:${supportEmail}`}>{supportEmail}</a> or call +91 98765 43210.</p>
       </PolicySection>
     </PolicyLayout>
   );

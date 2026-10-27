@@ -124,7 +124,56 @@ model ContactMessage {
   message   String   @db.Text
   status    String   @default("NEW") @db.VarChar(20)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+  lastMessageAt DateTime @default(now()) @db.Timestamptz(3)
+  lastInboundAt DateTime @default(now()) @db.Timestamptz(3)
+  lastReadAt DateTime? @db.Timestamptz(3)
+  replyToken String? @unique @db.VarChar(48)
+  source String @default("FORM") @db.VarChar(10)
+  messages SupportMessage[]
 
   @@index([email, createdAt])
   @@index([status, createdAt])
+  @@index([lastMessageAt])
+}
+
+model SupportMessage {
+  id String @id @default(uuid())
+  ticketId String
+  ticket ContactMessage @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  direction String @db.VarChar(10)
+  kind String @db.VarChar(20)
+  body String @db.Text
+  fromEmail String? @db.VarChar(254)
+  fromName String? @db.VarChar(100)
+  toEmail String? @db.VarChar(254)
+  replyToEmail String? @db.VarChar(254)
+  subject String @db.VarChar(200)
+  authorId String?
+  attachments Json @default("[]")
+  deliveryStatus String @default("RECEIVED") @db.VarChar(16)
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now()) @db.Timestamptz(3)
+  firstAttemptAt DateTime? @db.Timestamptz(3)
+  lockedUntil DateTime? @db.Timestamptz(3)
+  lockToken String? @db.VarChar(36)
+  providerEmailId String? @unique
+  internetMessageId String? @db.VarChar(998)
+  inReplyTo String? @db.VarChar(998)
+  sentAt DateTime? @db.Timestamptz(3)
+  providerEventAt DateTime? @db.Timestamptz(3)
+  lastError String? @db.VarChar(300)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([ticketId, createdAt])
+  @@index([deliveryStatus, nextAttemptAt])
+}
+
+model SupportWebhookEvent {
+  id String @id
+  eventType String @db.VarChar(80)
+  providerEmailId String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
 }
