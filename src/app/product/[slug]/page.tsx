@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getProductBySlug, getProductsByCategory } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
+import ProductGallery from '@/components/ProductGallery';
 import AddToCartSection from '@/components/AddToCartSection';
-import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift, Star } from 'lucide-react';
+import { Package, Home, Zap, Palette, Gem, Rocket, RefreshCw, Ruler, Gift } from 'lucide-react';
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -27,23 +29,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
-  const discount = Math.round(
-    ((product.originalPrice - product.price) / product.originalPrice) * 100
-  );
-
-  const renderStars = (rating: number) => {
-    const full = Math.floor(rating);
-    const half = rating % 1 >= 0.5;
-    const empty = 5 - full - (half ? 1 : 0);
-    
-    return (
-      <div style={{ display: 'flex', gap: '2px', color: 'var(--accent-gold)' }}>
-        {[...Array(full)].map((_, i) => <Star key={`full-${i}`} size={16} fill="currentColor" stroke="currentColor" />)}
-        {half && <Star key="half" size={16} fill="currentColor" stroke="currentColor" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />}
-        {[...Array(empty)].map((_, i) => <Star key={`empty-${i}`} size={16} stroke="currentColor" />)}
-      </div>
-    );
-  };
+  const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
+  const discount = hasDiscount
+    ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
+    : 0;
 
   // Delivery date calculation
   const now = new Date();
@@ -59,11 +48,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <div className="container" style={{ paddingBottom: 'var(--section-padding)' }}>
         <div className="pdp-container">
           {/* Gallery */}
-          <div className="pdp-gallery">
-            <div className="pdp-main-image">
-              <img src={product.image} alt={product.name} />
-            </div>
-          </div>
+          <ProductGallery
+            mainImage={product.image}
+            images={product.images || []}
+            productName={product.name}
+          />
 
           {/* Product Info */}
           <div className="pdp-info">
@@ -79,19 +68,40 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
             <h1 className="pdp-title">{product.name}</h1>
 
-            <div className="pdp-rating">
-              {renderStars(product.rating)}
-              <span style={{ fontWeight: 600, marginLeft: '4px' }}>{product.rating}</span>
-              <span className="count">({product.reviews} reviews)</span>
-            </div>
-
             <div className="pdp-price">
               <span className="current">₹{product.price}</span>
-              <span className="original">₹{product.originalPrice}</span>
-              <span className="discount-tag">{discount}% OFF</span>
+              {hasDiscount && (
+                <>
+                  <span className="original">₹{product.compareAtPrice}</span>
+                  <span className="discount-tag">{discount}% OFF</span>
+                </>
+              )}
             </div>
 
             <p className="pdp-description">{product.description}</p>
+
+            {product.tags && product.tags.length > 0 && (
+              <div className="pdp-tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', margin: '0.75rem 0 1.25rem' }}>
+                {product.tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '0.2rem 0.65rem',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
+                      color: 'var(--text-secondary, #94a3b8)',
+                    }}
+                  >
+                    #{tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <AddToCartSection product={product} />
 

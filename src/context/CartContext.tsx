@@ -6,7 +6,7 @@ export interface CartItem {
   id: string;
   name: string;
   price: number;
-  originalPrice: number;
+  compareAtPrice: number | null;
   image: string;
   size: string;
   quantity: number;
@@ -29,20 +29,16 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('dreamvault-cart');
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch {
-        // ignore parse errors
-      }
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem('dreamvault-cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
     }
-  }, []);
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Save cart to localStorage on change
   useEffect(() => {
@@ -83,7 +79,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const totalSavings = items.reduce(
-    (sum, i) => sum + (i.originalPrice - i.price) * i.quantity,
+    (sum, i) => sum + ((i.compareAtPrice || i.price) - i.price) * i.quantity,
     0
   );
 

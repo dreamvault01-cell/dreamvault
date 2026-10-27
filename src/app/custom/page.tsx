@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 
 export default function CustomPosterPage() {
   const [uploaded, setUploaded] = useState(false);
@@ -81,15 +81,12 @@ export default function CustomPosterPage() {
               >
                 {uploaded ? (
                   <>
-                    <img
+                    <Image
                       src="/images/products/nature.jpg"
                       alt="Preview"
+                      fill
                       style={{
-                        width: '100%',
-                        height: '100%',
                         objectFit: 'cover',
-                        position: 'absolute',
-                        inset: 0,
                       }}
                     />
                     <div

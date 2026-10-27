@@ -29,7 +29,8 @@ export async function POST(req: Request) {
 
     for (const item of items) {
       const dbProduct = await prisma.product.findUnique({
-        where: { id: item.id }
+        where: { id: item.id },
+        include: { variants: true },
       });
 
       if (!dbProduct) {
@@ -41,11 +42,23 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: `Invalid quantity for product: ${dbProduct.name}` }, { status: 400 });
       }
 
-      totalAmount += dbProduct.price * item.quantity;
+      // Look up the correct variant price based on the selected size
+      let unitPrice = dbProduct.price;
+      if (item.size && dbProduct.variants.length > 0) {
+        // Normalize: strip dimension labels like "A4 (21×30 cm)" → "A4"
+        const sizeKey = item.size.split(' ')[0].toUpperCase();
+        const variant = dbProduct.variants.find((v) => v.size.toUpperCase() === sizeKey);
+        if (variant) {
+          unitPrice = variant.price;
+        }
+      }
+
+      totalAmount += unitPrice * item.quantity;
       validatedItems.push({
         productId: dbProduct.id,
         quantity: item.quantity,
-        price: dbProduct.price,
+        price: unitPrice,
+        size: item.size || null,
       });
     }
 

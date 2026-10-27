@@ -1,8 +1,9 @@
 
 import Link from 'next/link';
+import Image from 'next/image';
 import ProductCard from '@/components/ProductCard';
-import { getProducts, getCategories, getFeaturedProducts } from '@/lib/data';
-import { Rocket, Palette, Gem, ShieldCheck, Star, Mail } from 'lucide-react';
+import { getProducts, getCategories } from '@/lib/data';
+import { Star, Mail } from 'lucide-react';
 
 const testimonials = [
   {
@@ -50,7 +51,6 @@ const testimonials = [
 ];
 
 export default async function Home() {
-  const featured = await getFeaturedProducts();
   const allProducts = await getProducts();
   const bestsellers = allProducts.slice(0, 8);
   const categories = await getCategories();
@@ -86,27 +86,28 @@ export default async function Home() {
 
             <div className="hero-stats">
               <div>
-                <div className="hero-stat-value">50K+</div>
-                <div className="hero-stat-label">Happy Customers</div>
+                <div className="hero-stat-value">{allProducts.length}+</div>
+                <div className="hero-stat-label">Art Prints</div>
               </div>
               <div>
-                <div className="hero-stat-value">500+</div>
-                <div className="hero-stat-label">Unique Designs</div>
+                <div className="hero-stat-value">300 GSM</div>
+                <div className="hero-stat-label">Museum Matte</div>
               </div>
               <div>
-                <div className="hero-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  4.9<Star size={24} fill="currentColor" />
-                </div>
-                <div className="hero-stat-label">Avg. Rating</div>
+                <div className="hero-stat-value">100%</div>
+                <div className="hero-stat-label">Quality Guaranteed</div>
               </div>
             </div>
           </div>
           
           <div className="hero-image-wrapper">
             <div className="hero-image-inner">
-              <img
+              <Image
                 src="/images/banners/hero.jpg"
                 alt="DreamVault Premium Art Prints and Posters"
+                width={600}
+                height={600}
+                priority
               />
               <div className="hero-image-glow"></div>
             </div>
@@ -135,7 +136,7 @@ export default async function Home() {
                 key={cat.slug}
                 className="category-card"
               >
-                <img src={cat.image} alt={cat.name} loading="lazy" />
+                <Image src={cat.image} alt={cat.name} width={400} height={400} loading="lazy" />
                 <div className="category-card-overlay">
                   <div className="category-card-name">{cat.name}</div>
                   <div className="category-card-count">
@@ -200,7 +201,7 @@ export default async function Home() {
                 {/* Visual representation of custom upload */}
                 <div className="custom-frame">
                   <div className="custom-frame-inner">
-                    <img src="/images/banners/hero.jpg" alt="Custom Poster Example" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <Image src="/images/banners/hero.jpg" alt="Custom Poster Example" width={400} height={400} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { ShoppingCart, X } from 'lucide-react';
 
@@ -47,7 +48,7 @@ export default function CartDrawer() {
           {items.map((item) => (
             <div className="cart-item" key={`${item.id}-${item.size}`}>
               <div className="cart-item-image">
-                <img src={item.image} alt={item.name} />
+                <Image src={item.image} alt={item.name} width={80} height={80} />
               </div>
 
               <div className="cart-item-info">

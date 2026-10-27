@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Product } from '@/lib/data';
 import { useCart } from '@/context/CartContext';
-import { Heart, Eye, Star, StarHalf } from 'lucide-react';
+import { Heart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -12,23 +13,11 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { addToCart } = useCart();
-  const discount = Math.round(
-    ((product.originalPrice - product.price) / product.originalPrice) * 100
-  );
 
-  const renderStars = (rating: number) => {
-    const full = Math.floor(rating);
-    const half = rating % 1 >= 0.5;
-    const empty = 5 - full - (half ? 1 : 0);
-    
-    return (
-      <>
-        {[...Array(full)].map((_, i) => <Star key={`full-${i}`} size={14} fill="currentColor" stroke="currentColor" />)}
-        {half && <StarHalf size={14} fill="currentColor" stroke="currentColor" />}
-        {[...Array(empty)].map((_, i) => <Star key={`empty-${i}`} size={14} stroke="currentColor" />)}
-      </>
-    );
-  };
+  const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
+  const discount = hasDiscount
+    ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
+    : 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,7 +26,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       id: product.id,
       name: product.name,
       price: product.price,
-      originalPrice: product.originalPrice,
+      compareAtPrice: product.compareAtPrice,
       image: product.image,
       size: "A4 (21x30 cm)",
       quantity: 1,
@@ -53,7 +42,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       id={`product-card-${product.id}`}
     >
       <div className="product-card-image">
-        <img src={product.image} alt={product.name} loading="lazy" />
+        <Image src={product.image} alt={product.name} width={400} height={400} loading="lazy" />
 
         {product.badge && (
           <span className="product-card-badge">{product.badge}</span>
@@ -84,19 +73,20 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       <div className="product-card-info">
         <span className="product-card-category">{product.category}</span>
         <h3 className="product-card-name">{product.name}</h3>
-
-        <div className="product-card-rating">
-          <span className="stars">{renderStars(product.rating)}</span>
-          <span>({product.reviews})</span>
-        </div>
+        {product.shortDescription && (
+          <p className="product-card-desc">{product.shortDescription}</p>
+        )}
 
         <div className="product-card-price">
           <span className="current">₹{product.price}</span>
-          <span className="original">₹{product.originalPrice}</span>
-          <span className="discount">{discount}% OFF</span>
+          {hasDiscount && (
+            <>
+              <span className="original">₹{product.compareAtPrice}</span>
+              <span className="discount">{discount}% OFF</span>
+            </>
+          )}
         </div>
       </div>
     </Link>
   );
 }
-

@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import ScrollToTop from '@/components/ScrollToTop';
 import { ClerkProvider } from '@clerk/nextjs';
+import { ToastProvider } from '@/components/Toast';
 
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
@@ -42,10 +43,12 @@ export default function RootLayout({
         <ClerkProvider>
           <ThemeProvider>
             <CartProvider>
-              <ScrollToTop />
-              <Navbar />
-              <main id="main-content">{children}</main>
-              <Footer />
+              <ToastProvider>
+                <ScrollToTop />
+                <Navbar />
+                <main id="main-content">{children}</main>
+                <Footer />
+              </ToastProvider>
             </CartProvider>
           </ThemeProvider>
         </ClerkProvider>

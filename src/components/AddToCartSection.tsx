@@ -9,21 +9,39 @@ interface AddToCartSectionProps {
 }
 
 export default function AddToCartSection({ product }: AddToCartSectionProps) {
-  const [selectedSize, setSelectedSize] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
-  
-  // Hardcoded sizes for now since we didn't add them to the Prisma schema
-  const sizes = ["A4 (21x30 cm)", "A3 (30x42 cm)", "A2 (42x60 cm)"];
+
+  // Use real variants if available, fallback to base product
+  const hasVariants = product.variants && product.variants.length > 0;
+  const variants = hasVariants
+    ? product.variants
+    : [
+        { id: 'default-a4', size: 'A4', price: product.price, compareAtPrice: product.compareAtPrice, sku: null, stock: 99 },
+        { id: 'default-a3', size: 'A3', price: product.price + 50, compareAtPrice: null, sku: null, stock: 99 },
+        { id: 'default-a2', size: 'A2', price: product.price + 150, compareAtPrice: null, sku: null, stock: 99 },
+      ];
+
+  const current = variants[selectedVariant];
+  const isOutOfStock = current.stock === 0;
+
+  const sizeLabels: Record<string, string> = {
+    A4: 'A4 (21×30 cm)',
+    A3: 'A3 (30×42 cm)',
+    A2: 'A2 (42×60 cm)',
+    A1: 'A1 (60×84 cm)',
+  };
 
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
+      price: current.price,
+      compareAtPrice: current.compareAtPrice || product.compareAtPrice,
       image: product.image,
-      size: sizes[selectedSize],
+      size: sizeLabels[current.size] || current.size,
       quantity,
       slug: product.slug,
     });
@@ -34,13 +52,22 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
       <div className="pdp-option-group">
         <div className="pdp-option-label">Select Size</div>
         <div className="pdp-sizes">
-          {sizes.map((size, i) => (
+          {variants.map((variant, i) => (
             <button
-              key={size}
-              className={`pdp-size-btn ${i === selectedSize ? 'selected' : ''}`}
-              onClick={() => setSelectedSize(i)}
+              key={variant.size}
+              className={`pdp-size-btn ${i === selectedVariant ? 'selected' : ''} ${variant.stock === 0 ? 'out-of-stock' : ''}`}
+              onClick={() => {
+                setSelectedVariant(i);
+                setQuantity(1);
+              }}
+              style={variant.stock === 0 ? { opacity: 0.5, textDecoration: 'line-through' } : {}}
             >
-              {size}
+              {sizeLabels[variant.size] || variant.size}
+              {variant.stock > 0 && variant.stock <= 5 && (
+                <span style={{ fontSize: '0.65rem', color: 'var(--accent-gold)', display: 'block' }}>
+                  Only {variant.stock} left
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -57,15 +84,16 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
         <div className="pdp-qty">
           <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</button>
           <span>{quantity}</span>
-          <button onClick={() => setQuantity(quantity + 1)}>+</button>
+          <button onClick={() => setQuantity(Math.min(current.stock, quantity + 1))}>+</button>
         </div>
         <button
           className="btn btn-primary btn-lg"
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: isOutOfStock ? 0.5 : 1 }}
           onClick={handleAddToCart}
+          disabled={isOutOfStock}
           id="pdp-add-to-cart"
         >
-          Add to Cart — ₹{product.price * quantity}
+          {isOutOfStock ? 'Out of Stock' : `Add to Cart — ₹${current.price * quantity}`}
         </button>
       </div>
     </>

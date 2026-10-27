@@ -85,6 +85,35 @@ dreamvault/
 | `npm start` | Run production build |
 | `npm run lint` | Run ESLint |
 
+## Contact form
+
+The contact page posts to `POST /api/contact`. Messages are stored in PostgreSQL
+in `ContactMessage`, with a reference ID shown only after a successful save.
+It supports guest submissions, field validation, a honeypot, request-size limits,
+three submissions per email per ten minutes, and duplicate-safe retries.
+
+With `DATABASE_URL` configured, initialize only the contact table and its indexes:
+
+```bash
+npx prisma db execute --schema prisma/schema.prisma --file prisma/sql/contact-messages.sql
+```
+
+This setup is additive and does not require resetting or synchronizing the other
+store tables. The model is also defined in `prisma/schema.prisma`; regenerate the
+Prisma client when the development server is stopped if you want to browse the
+messages using `npx prisma studio`. New messages have status `NEW`; support can
+change this to `READ` or `RESOLVED` in the database.
+
+Email notifications are not configured. Saving a message does not send an email.
+Support should review the `ContactMessage` table. No public endpoint exposes
+submitted messages or customer email addresses.
+
+Run the contact validation and API rejection checks with:
+
+```bash
+node --import tsx --test src/lib/contact.test.ts src/app/api/contact/route.test.ts
+```
+
 ## 🎨 Design Inspiration
 
 Inspired by [Posterized.in](https://www.posterized.in/) and other premium poster e-commerce stores like Displate, Society6, and Redbubble.

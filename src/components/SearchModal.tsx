@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { searchProductsAction } from '@/app/actions/products';
 import { Search, TrendingUp, ArrowRight, Image as ImageIcon } from 'lucide-react';
 
@@ -41,20 +42,25 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return () => clearTimeout(debounceTimer);
   }, [query]);
 
+  // Reset state when closing — wrap the parent's onClose
+  const handleClose = useCallback(() => {
+    setQuery('');
+    setResults([]);
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
-      setQuery('');
-      setResults([]);
     }
   }, [isOpen]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         // toggle handled externally
@@ -62,13 +68,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [onClose]);
+  }, [handleClose]);
 
   return (
     <div
       className={`search-overlay ${isOpen ? 'open' : ''}`}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) handleClose();
       }}
     >
       <div className="search-modal">
@@ -82,7 +88,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             onChange={(e) => setQuery(e.target.value)}
             id="search-input"
           />
-          <button onClick={onClose} aria-label="Close search">
+          <button onClick={handleClose} aria-label="Close search">
             <kbd className="search-esc-key">ESC</kbd>
           </button>
         </div>
@@ -95,16 +101,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <span>Trending Searches</span>
               </div>
               <div className="search-quick-links">
-                <Link href="/collections/anime" onClick={onClose} className="search-quick-link">
+                <Link href="/collections/anime" onClick={handleClose} className="search-quick-link">
                   <ImageIcon size={14} /> Anime Posters
                 </Link>
-                <Link href="/collections/abstract" onClick={onClose} className="search-quick-link">
+                <Link href="/collections/abstract" onClick={handleClose} className="search-quick-link">
                   <ImageIcon size={14} /> Abstract Art
                 </Link>
-                <Link href="/collections/wall-setup-packs" onClick={onClose} className="search-quick-link">
+                <Link href="/collections/wall-setup-packs" onClick={handleClose} className="search-quick-link">
                   <ImageIcon size={14} /> Gallery Wall Sets
                 </Link>
-                <Link href="/collections/minimal" onClick={onClose} className="search-quick-link">
+                <Link href="/collections/minimal" onClick={handleClose} className="search-quick-link">
                   <ImageIcon size={14} /> Minimalist Prints
                 </Link>
               </div>
@@ -128,11 +134,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               key={product.id}
               href={`/product/${product.slug}`}
               className="search-result-item"
-              onClick={onClose}
+              onClick={handleClose}
               style={{ animationDelay: `${i * 0.05}s` }}
             >
               <div className="search-result-image">
-                <img src={product.image} alt={product.name} />
+                <Image src={product.image} alt={product.name} width={60} height={60} />
               </div>
               <div className="search-result-info">
                 <div className="search-result-name">{product.name}</div>

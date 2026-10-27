@@ -7,6 +7,7 @@ export async function searchProductsAction(query: string) {
   
   const products = await prisma.product.findMany({
     where: {
+      status: 'ACTIVE',
       OR: [
         { name: { contains: query, mode: 'insensitive' } },
         { description: { contains: query, mode: 'insensitive' } },

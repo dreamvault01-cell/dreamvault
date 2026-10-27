@@ -31,18 +31,58 @@ model Category {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String
-  price       Float
-  image       String
-  badge       String?
-  categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id               String           @id @default(cuid())
+  name             String
+  slug             String           @unique
+  description      String
+  shortDescription String?          // Shown on product cards
+  price            Float            // Selling price (lowest variant price)
+  compareAtPrice   Float?           // MRP / original price (for showing discount)
+  image            String           // Primary image (hero)
+  badge            String?
+  status           String           @default("ACTIVE") // ACTIVE or DRAFT
+  categoryId       String
+  category         Category         @relation(fields: [categoryId], references: [id])
+  variants         ProductVariant[]
+  images           ProductImage[]
+  tags             Tag[]            @relation("ProductTags")
+  orderItems       OrderItem[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  position  Int      @default(0) // For ordering images in gallery
+  createdAt DateTime @default(now())
+
+  @@index([productId, position])
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  products Product[] @relation("ProductTags")
+}
+
+model ProductVariant {
+  id             String   @id @default(cuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size           String   // "A4", "A3", "A2", "A1"
+  price          Float    // Selling price for this size
+  compareAtPrice Float?   // MRP for this size
+  sku            String?  // Stock Keeping Unit
+  stock          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([productId, size])
 }
 
 model Order {
@@ -73,4 +113,18 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float   // Store price at the time of purchase
+  size      String? // Track which size was ordered
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  email     String   @db.VarChar(254)
+  subject   String   @db.VarChar(150)
+  message   String   @db.Text
+  status    String   @default("NEW") @db.VarChar(20)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([email, createdAt])
+  @@index([status, createdAt])
 }

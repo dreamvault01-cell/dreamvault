@@ -1,0 +1,212 @@
+.page {
+  --about-gold: var(--accent-gold);
+  --about-line: var(--border-light);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: clip;
+}
+
+.container { width: min(1280px, 92%); margin-inline: auto; }
+.intro { padding-top: 42px; }
+.topline, .sectionLabel { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.eyebrow, .edition, .sectionLabel, .heroImageTop, .imageIndex span, .craftImage figcaption, .materialLabel, .roomNote {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--about-gold); }
+.dot { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: currentColor; }
+.edition { color: var(--text-muted); }
+.introGrid { display: grid; grid-template-columns: 1.65fr 1fr; align-items: end; gap: 60px; padding-block: 48px 58px; }
+.title, .story h2, .craftContent h2, .philosophy h2, .closing h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 1.07;
+  text-wrap: balance;
+}
+.title { font-size: clamp(3.6rem, 7.9vw, 6.7rem); }
+.page em { font-weight: 400; color: var(--about-gold); }
+.introAside { max-width: 330px; padding-bottom: 6px; }
+.introAside > p:first-child { font-size: 17px; line-height: 1.65; }
+.introDescription { margin-top: 15px; font-size: 13px; line-height: 1.9; color: var(--text-secondary); }
+.storyLink { display: inline-flex; align-items: center; gap: 13px; margin-top: 25px; font-size: 11px; letter-spacing: 0.03em; }
+.circleArrow { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--about-line); border-radius: 50%; transition: background 200ms, color 200ms, transform 200ms; }
+.storyLink:hover .circleArrow { background: var(--about-gold); color: var(--bg-primary); transform: translateY(3px); }
+
+.heroImage { position: relative; height: clamp(350px, 42vw, 550px); overflow: hidden; border-radius: 5px; background: #22221d; color: #fff; isolation: isolate; }
+.heroImage > img, .craftImage > img, .sanctuaryImage > img { object-fit: cover; transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.heroImage > img { object-position: center 45%; animation: imageEntry 1200ms ease-out both; }
+.heroImage:hover > img, .craftImage:hover > img, .sanctuaryImage:hover > img { transform: scale(1.025); }
+.imageShade { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(0 0 0 / 24%), transparent 36%, rgb(0 0 0 / 72%)); pointer-events: none; }
+.heroImageTop { position: absolute; top: 25px; inset-inline: 30px; display: flex; justify-content: space-between; color: #e6e2d8; font-size: 9px; }
+.heroCaption { position: absolute; inset-inline: 36px; bottom: 32px; display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+.heroCaption p { font-family: var(--font-serif); font-size: clamp(1.7rem, 3.3vw, 2.65rem); font-weight: 400; line-height: 1.3; letter-spacing: -0.025em; }
+.heroCaption em { color: #dbca9e; }
+.imageIndex { font-family: var(--font-serif); font-size: 44px; line-height: 1; display: grid; gap: 15px; text-align: right; }
+.imageIndex span { font-family: var(--font-sans); font-size: 8px; color: #d1cbc0; }
+.signatureStrip { display: flex; justify-content: center; align-items: center; gap: clamp(15px, 4vw, 58px); padding-block: 28px; border-bottom: 1px solid var(--about-line); color: var(--text-secondary); font-size: 11px; letter-spacing: 0.08em; }
+.signatureStrip > span:nth-child(even) { color: var(--about-gold); font-size: 13px; }
+
+.story { padding-block: 95px 105px; scroll-margin-top: 130px; }
+.sectionLabel { color: var(--text-muted); font-size: 9px; }
+.labelLine { height: 1px; background: var(--about-line); flex: 1; }
+.storyGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; margin-top: 57px; }
+.storyHeading > .eyebrow { margin-bottom: 23px; }
+.story h2, .philosophy h2 { font-size: clamp(2.8rem, 4.6vw, 4.2rem); }
+.brandSignature { display: flex; flex-wrap: wrap; align-items: baseline; margin-top: 40px; font-size: 18px; font-weight: 700; letter-spacing: -0.05em; }
+.brandSignature > span:first-child { color: var(--about-gold); }
+.brandSignature .signatureNote { width: 100%; margin-top: 5px; color: var(--text-muted); font-size: 10px; font-weight: 400; letter-spacing: 0.06em; }
+.storyCopy { padding-top: 6px; }
+.storyCopy p { font-size: 14px; line-height: 1.95; color: var(--text-secondary); }
+.storyCopy p + p { margin-top: 20px; }
+.storyCopy .lead { color: var(--text-primary); font-size: 20px; line-height: 1.6; font-weight: 400; margin-bottom: 26px; }
+.textLink { display: inline-flex; align-items: center; justify-content: space-between; gap: 25px; padding-bottom: 9px; margin-top: 28px; border-bottom: 1px solid var(--about-gold); font-size: 12px; color: var(--text-primary); transition: color 200ms; }
+.textLink svg { color: var(--about-gold); transition: transform 200ms; }
+.textLink:hover { color: var(--about-gold); }
+.textLink:hover svg { transform: translate(2px, -2px); }
+
+.craftSection { padding-block: 75px; background: var(--bg-secondary); border-block: 1px solid var(--border-subtle); }
+.craftGrid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(35px, 6vw, 90px); align-items: center; }
+.craftImage { position: relative; min-height: 600px; align-self: stretch; overflow: hidden; border-radius: 4px; background: #27251e; }
+.craftImage::after { content: ''; position: absolute; inset: 65% 0 0; background: linear-gradient(transparent, rgb(0 0 0 / 65%)); pointer-events: none; }
+.craftImage figcaption { position: absolute; inset-inline: 24px; bottom: 25px; z-index: 1; display: flex; flex-direction: column; gap: 7px; color: #f3eede; font-size: 8px; }
+.craftImage figcaption > span:last-child { color: #d2bc87; }
+.craftContent { padding-block: 20px; }
+.craftContent h2 { margin-top: 24px; font-size: clamp(2.4rem, 3.8vw, 3.4rem); line-height: 1.16; }
+.craftContent > p { margin-top: 20px; max-width: 400px; color: var(--text-secondary); font-size: 13px; line-height: 1.9; }
+.materials { margin-top: 30px; border-top: 1px solid var(--about-line); }
+.material { border-bottom: 1px solid var(--about-line); }
+.material summary { display: flex; align-items: center; gap: 18px; padding-block: 20px; cursor: pointer; list-style: none; }
+.material summary::-webkit-details-marker { display: none; }
+.material summary > svg:first-child { color: var(--about-gold); flex-shrink: 0; }
+.materialSummary { display: flex; flex-direction: column; gap: 4px; }
+.materialLabel { color: var(--text-muted); font-size: 8px; }
+.materialTitle { font-size: 17px; letter-spacing: -0.02em; }
+.materialPlus { margin-left: auto; flex-shrink: 0; color: var(--text-muted); transition: transform 200ms; }
+.material[open] .materialPlus { transform: rotate(45deg); color: var(--about-gold); }
+.materialDetail { padding: 0 25px 22px 39px; color: var(--text-secondary); font-size: 12px; line-height: 1.9; }
+.materialDetail p:first-child { color: var(--text-primary); margin-bottom: 8px; }
+.craftContent > .textLink { margin-top: 25px; font-size: 11px; }
+
+.philosophy { padding-block: 100px 85px; }
+.philosophyHeader { display: grid; grid-template-columns: 1.4fr 1fr; gap: 70px; align-items: end; margin-block: 45px 42px; }
+.philosophyHeader > p { max-width: 320px; justify-self: end; color: var(--text-secondary); font-size: 14px; line-height: 1.9; padding-bottom: 5px; }
+.sanctuaryImage { position: relative; height: clamp(340px, 47vw, 590px); border-radius: 5px; overflow: hidden; background: #383329; }
+.roomNote { position: absolute; left: 25px; top: 24px; display: inline-flex; align-items: center; gap: 8px; background: rgb(20 20 18 / 75%); backdrop-filter: blur(12px); border: 1px solid rgb(255 255 255 / 15%); color: #fff3dc; padding: 11px 15px; font-size: 8px; border-radius: 3px; }
+.roomNote .dot { color: #d5bc84; }
+.galleryLink { position: absolute; right: 25px; bottom: 25px; min-width: 270px; padding: 21px 23px; background: #f5f0e6; color: #24231f; display: flex; align-items: center; gap: 30px; justify-content: space-between; border-radius: 3px; transition: background 200ms; }
+.galleryLink > span { font-family: var(--font-serif); font-size: 20px; }
+.galleryLink > span > span { display: block; font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.09em; margin-top: 5px; text-transform: uppercase; color: #73644b; }
+.galleryLink:hover { background: #e6d6b4; }
+.values { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 35px; }
+.value { padding: 0 35px; border-left: 1px solid var(--about-line); }
+.value:first-child { padding-left: 0; border-left: 0; }
+.value:last-child { padding-right: 0; }
+.value > span { color: var(--about-gold); font-size: 10px; letter-spacing: 0.1em; }
+.value h3 { font-family: var(--font-serif); font-weight: 400; font-size: 23px; margin-block: 10px; letter-spacing: -0.035em; }
+.value p { max-width: 280px; font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
+
+.closing { padding-bottom: 65px; }
+.closingInner { position: relative; isolation: isolate; overflow: hidden; padding: 70px 25px 100px; text-align: center; border: 1px solid var(--about-line); border-radius: 5px; background: radial-gradient(ellipse at 50% 100%, rgb(174 137 63 / 10%), transparent 70%), var(--bg-secondary); }
+.closingInner > .eyebrow { font-size: 9px; }
+.closing h2 { margin-top: 23px; font-size: clamp(3.2rem, 6.3vw, 5.2rem); }
+.closingInner > p { color: var(--text-secondary); font-size: 13px; line-height: 1.8; margin: 22px auto 28px; }
+.primaryLink { display: inline-flex; align-items: center; justify-content: center; gap: 30px; padding: 16px 24px; background: var(--about-gold); color: var(--btn-primary-text); border: 1px solid var(--about-gold); border-radius: 3px; font-size: 12px; font-weight: 600; transition: transform 200ms, box-shadow 200ms; }
+.primaryLink:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgb(174 137 63 / 15%); }
+.contactLink { display: flex; justify-content: center; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 24px; color: var(--text-muted); font-size: 10px; }
+.contactLink > span { display: inline-flex; gap: 5px; align-items: center; color: var(--text-secondary); }
+.contactLink:hover > span { color: var(--about-gold); }
+.closingWordmark { position: absolute; z-index: -1; bottom: -0.29em; left: 50%; transform: translateX(-50%); font-family: var(--font-serif); font-size: clamp(95px, 17.5vw, 235px); font-weight: 400; letter-spacing: -0.065em; white-space: nowrap; color: var(--text-primary); opacity: 0.035; user-select: none; pointer-events: none; }
+.page a:focus-visible, .material summary:focus-visible { outline: 2px solid var(--about-gold); outline-offset: 6px; border-radius: 2px; }
+
+@keyframes imageEntry {
+  from { transform: scale(1.045); opacity: 0.5; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (min-width: 1600px) { .title { font-size: 108px; } }
+
+@media (max-width: 1050px) {
+  .introGrid { grid-template-columns: 1.5fr 1fr; gap: 30px; }
+  .title { font-size: clamp(3.5rem, 7.8vw, 5.3rem); }
+  .storyGrid { gap: 45px; }
+  .craftGrid { gap: 35px; }
+  .craftImage { min-height: 570px; }
+  .craftContent h2 { font-size: 38px; }
+  .heroCaption { inset-inline: 25px; }
+  .philosophyHeader { gap: 35px; }
+  .value { padding-inline: 24px; }
+}
+
+@media (max-width: 800px) {
+  .intro { padding-top: 28px; }
+  .edition { display: none; }
+  .introGrid { grid-template-columns: 1fr; gap: 25px; padding-block: 35px; }
+  .title { font-size: clamp(3.6rem, 10.8vw, 5.5rem); }
+  .introAside { max-width: 460px; }
+  .introAside > p:first-child { font-size: 16px; }
+  .introDescription { margin-top: 9px; }
+  .storyLink { margin-top: 18px; }
+  .heroImage { height: 420px; }
+  .heroCaption { bottom: 25px; }
+  .heroImageTop { inset-inline: 22px; }
+  .heroImageTop span:last-child { display: none; }
+  .imageIndex { font-size: 34px; }
+  .imageIndex span { display: none; }
+  .story { padding-block: 65px; }
+  .storyGrid { grid-template-columns: 1fr; gap: 30px; margin-top: 35px; }
+  .story h2, .philosophy h2 { font-size: clamp(2.8rem, 7.3vw, 4rem); }
+  .brandSignature { display: none; }
+  .storyCopy .lead { max-width: 580px; }
+  .craftSection { padding-block: 45px; }
+  .craftGrid { grid-template-columns: 1fr; gap: 30px; }
+  .craftImage { min-height: 0; height: 450px; }
+  .craftContent { padding-block: 0; }
+  .craftContent h2 { font-size: clamp(2.5rem, 7vw, 3.4rem); }
+  .craftContent > p { max-width: 550px; }
+  .philosophy { padding-block: 65px 55px; }
+  .philosophyHeader { grid-template-columns: 1fr; gap: 22px; margin-top: 32px; }
+  .philosophyHeader > p { justify-self: start; max-width: 500px; }
+  .sanctuaryImage { height: 430px; }
+  .value { padding-inline: 17px; }
+  .value h3 { font-size: 20px; line-height: 1.35; }
+  .closing { padding-bottom: 40px; }
+}
+
+@media (max-width: 500px) {
+  .eyebrow { font-size: 9px; letter-spacing: 0.12em; }
+  .title { font-size: clamp(2.85rem, 11vw, 3.6rem); }
+  .heroImage { height: 360px; }
+  .heroCaption { inset-inline: 20px; bottom: 23px; }
+  .heroCaption p { font-size: 25px; }
+  .imageIndex { display: none; }
+  .signatureStrip { justify-content: space-between; gap: 7px; font-size: 8px; letter-spacing: 0.015em; padding-block: 23px; }
+  .signatureStrip > span:nth-child(even) { font-size: 10px; }
+  .sectionLabel { font-size: 8px; gap: 15px; }
+  .story { padding-block: 50px; }
+  .story h2, .philosophy h2 { font-size: 40px; }
+  .storyCopy .lead { font-size: 18px; }
+  .storyCopy p { font-size: 13px; }
+  .craftImage { height: 340px; }
+  .craftContent h2 { font-size: 35px; }
+  .materialTitle { font-size: 16px; }
+  .philosophy { padding-block: 50px 35px; }
+  .sanctuaryImage { height: 400px; }
+  .roomNote { top: 15px; left: 15px; padding: 9px 10px; font-size: 7px; letter-spacing: 0.08em; }
+  .galleryLink { left: 15px; right: 15px; bottom: 15px; min-width: 0; padding: 17px; }
+  .values { grid-template-columns: 1fr; margin-top: 8px; }
+  .value, .value:first-child, .value:last-child { position: relative; padding: 21px 0 21px 35px; border-left: 0; border-bottom: 1px solid var(--about-line); }
+  .value > span { position: absolute; left: 0; top: 28px; }
+  .value h3 { margin-top: 0; font-size: 23px; }
+  .value p { max-width: none; }
+  .closingInner { padding: 50px 20px 70px; }
+  .closing h2 { font-size: 48px; }
+  .closingInner > p { max-width: 250px; font-size: 12px; }
+  .primaryLink { width: 100%; gap: 18px; padding-inline: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getCategories, getProducts } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 
@@ -41,7 +42,7 @@ export default async function CollectionsPage() {
                 key={cat.slug}
                 className="category-card"
               >
-                <img src={cat.image} alt={cat.name} loading="lazy" />
+                <Image src={cat.image} alt={cat.name} width={400} height={400} loading="lazy" />
                 <div className="category-card-overlay">
                   <div className="category-card-name">{cat.name}</div>
                   <div className="category-card-count">

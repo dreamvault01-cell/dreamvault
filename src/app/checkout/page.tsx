@@ -1,11 +1,40 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
+
+interface RazorpayResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayErrorResponse {
+  error: {
+    description: string;
+    [key: string]: unknown;
+  };
+}
+
+interface RazorpayInstance {
+  on(event: string, callback: (response: RazorpayErrorResponse) => void): void;
+  open(): void;
+}
+
+interface RazorpayConstructor {
+  new (options: unknown): RazorpayInstance;
+}
+
+declare global {
+  interface Window {
+    Razorpay?: RazorpayConstructor;
+  }
+}
 
 export default function CheckoutPage() {
   const { items, totalPrice, totalSavings, clearCart } = useCart();
@@ -35,17 +64,17 @@ export default function CheckoutPage() {
     }
   }, [isLoaded, isSignedIn, router]);
 
-  // Pre-fill email and name
-  useEffect(() => {
-    if (user && !formData.email) {
-      setFormData(prev => ({
-        ...prev,
-        email: user.primaryEmailAddress?.emailAddress || '',
-        'first-name': user.firstName || '',
-        'last-name': user.lastName || '',
-      }));
-    }
-  }, [user]);
+  // Pre-fill email and name when user loads
+  const [syncedUserId, setSyncedUserId] = useState<string | null>(null);
+  if (user && user.id !== syncedUserId) {
+    setSyncedUserId(user.id);
+    setFormData((prev) => ({
+      ...prev,
+      email: prev.email || user.primaryEmailAddress?.emailAddress || '',
+      'first-name': prev['first-name'] || user.firstName || '',
+      'last-name': prev['last-name'] || user.lastName || '',
+    }));
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -94,7 +123,7 @@ export default function CheckoutPage() {
         name: 'DreamVault',
         description: 'Premium Poster Purchase',
         order_id: orderData.orderId,
-        handler: async function (response: any) {
+        handler: async function (response: RazorpayResponse) {
           // 3. Verify Payment
           const verifyRes = await fetch('/api/checkout/verify', {
             method: 'POST',
@@ -130,22 +159,23 @@ export default function CheckoutPage() {
         },
       };
 
-      if (!(window as any).Razorpay) {
+      if (!window.Razorpay) {
         alert('Payment gateway failed to load. Please disable adblockers and refresh.');
         setIsProcessing(false);
         return;
       }
 
-      const rzp1 = new (window as any).Razorpay(options);
-      rzp1.on('payment.failed', function (response: any) {
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response: RazorpayErrorResponse) {
         alert(response.error.description);
         setIsProcessing(false);
       });
       
       rzp1.open();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Something went wrong initializing payment.';
       console.error('Payment Error:', error);
-      alert(error.message || 'Something went wrong initializing payment.');
+      alert(message);
       setIsProcessing(false);
     }
   };
@@ -376,9 +406,11 @@ export default function CheckoutPage() {
                         background: 'var(--bg-tertiary)',
                       }}
                     >
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
+                        width={56}
+                        height={70}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     </div>
