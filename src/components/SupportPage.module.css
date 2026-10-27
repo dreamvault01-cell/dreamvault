@@ -1,0 +1,32 @@
+.page { background: var(--bg-primary); color: var(--text-primary); overflow: clip; }
+.container { width: min(1200px, 92%); margin-inline: auto; }
+.hero { padding-block: 35px 45px; border-bottom: 1px solid var(--border-light); }
+.breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 11px; color: var(--text-muted); font-size: 11px; }
+.breadcrumb > span:last-child { color: var(--text-secondary); }
+.breadcrumb a:hover { color: var(--accent-gold); }
+.heroContent { padding-top: 44px; }
+.withMeta { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 55px; }
+.heroCopy { min-width: 0; max-width: 840px; }
+.eyebrow { display: inline-flex; gap: 10px; align-items: center; color: var(--accent-gold); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; }
+.eyebrow > span { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.hero h1 { margin-top: 20px; font-family: var(--font-serif); font-size: clamp(3rem, 5.8vw, 5.1rem); font-weight: 400; letter-spacing: -0.05em; line-height: 1.12; text-wrap: balance; }
+.hero h1 em { color: var(--accent-gold); font-weight: 400; }
+.description { max-width: 620px; font-size: 14px; line-height: 1.9; color: var(--text-secondary); margin-top: 23px; }
+.meta { max-width: 280px; padding-left: 23px; border-left: 1px solid var(--border-light); margin-bottom: 4px; color: var(--text-secondary); font-size: 12px; line-height: 1.9; }
+.content { min-width: 0; padding-block: 40px 60px; }
+.page a:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 5px; border-radius: 2px; }
+@media (max-width: 850px) {
+  .withMeta { gap: 30px; }
+  .hero h1 { font-size: clamp(2.9rem, 6vw, 4rem); }
+}
+@media (max-width: 600px) {
+  .hero { padding-block: 26px 30px; }
+  .breadcrumb { font-size: 10px; gap: 9px; }
+  .heroContent { padding-top: 30px; }
+  .withMeta { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .hero h1 { font-size: clamp(2.6rem, 10vw, 3.5rem); margin-top: 17px; }
+  .description { font-size: 13px; margin-top: 17px; }
+  .meta { padding-left: 16px; font-size: 11px; }
+  .content { padding-block: 28px 40px; }
+}
+@media (prefers-reduced-motion: reduce) { .page * { transition: none !important; } }

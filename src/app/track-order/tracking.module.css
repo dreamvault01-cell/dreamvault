@@ -1,0 +1,48 @@
+.layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 70px; align-items: start; }
+.card { padding: 38px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; }
+.cardTop { display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--accent-gold); }
+.cardTop > span, .eyebrow, .resultEyebrow, .illustrationIndex { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.13em; }
+.card h2 { font-family: var(--font-serif); font-size: 37px; font-weight: 400; line-height: 1.25; letter-spacing: -0.04em; margin-top: 26px; }
+.intro { color: var(--text-secondary); font-size: 13px; line-height: 1.9; margin-top: 17px; }
+.card form { margin-top: 28px; }
+.card label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 9px; }
+.card input { display: block; width: 100%; border: 1px solid var(--border-light); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); padding: 14px; font: 14px var(--font-sans); line-height: 1.5; transition: border-color 180ms, box-shadow 180ms; }
+.card input::placeholder { color: var(--text-muted); }
+.card input:focus { outline: none; border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgb(179 134 0 / 8%); }
+.hint { font-size: 10px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; }
+.primary { display: flex; align-items: center; justify-content: space-between; gap: 25px; width: 100%; padding: 15px 19px; margin-top: 21px; background: var(--accent-gold); color: var(--btn-primary-text); border: 1px solid var(--accent-gold); border-radius: 4px; font-size: 12px; font-weight: 500; transition: transform 180ms; }
+.primary:hover { transform: translateY(-2px); }
+.note { display: flex; align-items: start; gap: 12px; padding-top: 22px; margin-top: 25px; border-top: 1px solid var(--border-light); }
+.note > svg { flex-shrink: 0; color: var(--accent-gold); margin-top: 3px; }
+.note p { font-size: 11px; color: var(--text-secondary); line-height: 1.8; }
+.result { margin-top: 27px; padding: 20px; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 4px; }
+.resultEyebrow { color: var(--accent-gold); font-size: 8px; }
+.reference { display: flex; align-items: center; gap: 15px; justify-content: space-between; padding-block: 15px; margin-block: 4px 12px; border-bottom: 1px solid var(--border-light); }
+.reference code { min-width: 0; font-size: 13px; overflow-wrap: anywhere; user-select: all; }
+.reference > button { color: var(--accent-gold); padding: 6px; flex-shrink: 0; }
+.result > p { font-size: 12px; line-height: 1.85; color: var(--text-secondary); }
+.result > .copyFeedback { font-size: 10px; color: var(--accent-gold); margin-bottom: 9px; }
+.result > a { display: inline-flex; align-items: center; gap: 22px; font-size: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--accent-gold); margin-top: 17px; }
+.result > a > svg { color: var(--accent-gold); }
+.guide { min-width: 0; }
+.packageIllustration { position: relative; display: grid; place-items: center; min-height: 230px; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 28px; overflow: hidden; }
+.packageIllustration::before { content: ''; position: absolute; width: 170px; height: 170px; border-radius: 50%; border: 1px solid var(--border-light); }
+.packageIllustration::after { content: ''; position: absolute; width: 240px; height: 240px; border-radius: 50%; border: 1px solid var(--border-subtle); }
+.packageIllustration > div { display: grid; justify-items: center; gap: 10px; color: var(--accent-gold); }
+.packageIllustration > div > span { font-family: var(--font-serif); font-size: 14px; font-style: italic; }
+.illustrationIndex { position: absolute; bottom: 17px; left: 20px; color: var(--text-muted); font-size: 8px; }
+.eyebrow { color: var(--accent-gold); }
+.guide h2 { font-family: var(--font-serif); font-size: 34px; line-height: 1.25; font-weight: 400; letter-spacing: -0.035em; margin-top: 12px; }
+.guide h2 em { color: var(--accent-gold); font-weight: 400; }
+.guide > p { color: var(--text-secondary); font-size: 12px; line-height: 1.9; max-width: 390px; margin-top: 15px; }
+.guideLinks { margin-top: 23px; }
+.guideLinks > a { display: flex; align-items: center; gap: 13px; padding-block: 17px; border-top: 1px solid var(--border-light); }
+.guideLinks > a > svg { color: var(--accent-gold); flex-shrink: 0; }
+.guideLinks > a > svg:last-child { margin-left: auto; color: var(--text-muted); }
+.guideLinks > a > span { font-size: 12px; }
+.guideLinks small { display: block; font-size: 10px; margin-top: 4px; color: var(--text-muted); }
+.layout button:focus-visible, .layout a:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 5px; border-radius: 2px; }
+@media (max-width: 900px) { .layout { gap: 35px; } .card { padding: 28px; } .card h2 { font-size: 31px; } }
+@media (max-width: 700px) { .layout { grid-template-columns: 1fr; gap: 35px; } .card { padding: 27px; } .card h2 { font-size: 34px; } .card input { font-size: 16px; } .guide h2 { font-size: 32px; } .guide > p { max-width: 100%; } }
+@media (max-width: 400px) { .card { padding: 23px; } .card h2 { font-size: 30px; } .result { padding: 15px; } }
+@media (prefers-reduced-motion: reduce) { .layout * { transition: none !important; } }

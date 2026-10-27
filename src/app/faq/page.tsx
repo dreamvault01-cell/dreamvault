@@ -1,6 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { ArrowDownRight, ArrowUpRight, Minus, Plus, Search, X } from 'lucide-react';
+import Link from 'next/link';
+import SupportPage from '@/components/SupportPage';
+import styles from './faq.module.css';
 
 const faqs = [
   {
@@ -82,135 +86,157 @@ const faqs = [
 ];
 
 export default function FAQPage() {
-  const [openIndex, setOpenIndex] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [openItems, setOpenItems] = useState<string[]>(['0-0']);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const sections = faqs.map((section, sectionIndex) => ({
+    ...section,
+    sectionIndex,
+    questions: section.questions
+      .map((item, questionIndex) => ({ ...item, id: `${sectionIndex}-${questionIndex}` }))
+      .filter((item) => `${item.q} ${item.a}`.toLocaleLowerCase().includes(normalizedQuery)),
+  }));
+  const resultCount = sections.reduce((count, section) => count + section.questions.length, 0);
 
   const toggle = (id: string) => {
-    setOpenIndex(openIndex === id ? null : id);
+    setOpenItems((current) => current.includes(id)
+      ? current.filter((openId) => openId !== id)
+      : [...current, id]);
+  };
+
+  const updateSearch = (value: string) => {
+    setQuery(value);
+    const nextQuery = value.trim().toLocaleLowerCase();
+    setOpenItems(nextQuery
+      ? faqs.flatMap((section, sectionIndex) => section.questions.flatMap((item, questionIndex) =>
+        `${item.q} ${item.a}`.toLocaleLowerCase().includes(nextQuery) ? [`${sectionIndex}-${questionIndex}`] : []))
+      : ['0-0']);
+  };
+
+  const resetSearch = () => {
+    updateSearch('');
+    searchInput.current?.focus();
   };
 
   return (
-    <div style={{ paddingTop: '10px' }}>
-      {/* Hero */}
-      <section
-        style={{
-          padding: 'clamp(3rem, 8vw, 6rem) 0',
-          background: 'var(--bg-secondary)',
-          borderBottom: '1px solid var(--border-subtle)',
-          textAlign: 'center',
-        }}
-      >
-        <div className="container" style={{ maxWidth: '700px' }}>
-          <div className="hero-tag" style={{ margin: '0 auto 1.5rem' }}>
-            SUPPORT
-          </div>
-          <h1
-            className="section-title"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '1rem' }}
-          >
-            Frequently Asked <span className="accent">Questions</span>
-          </h1>
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-              lineHeight: 1.8,
-            }}
-          >
-            Everything you need to know about DreamVault. Can&apos;t find what you&apos;re looking for?
-            Reach out to our team at hello@dreamvault.in.
-          </p>
-        </div>
-      </section>
-
-      {/* FAQ Sections */}
-      <section className="section">
-        <div className="container" style={{ maxWidth: '800px' }}>
-          {faqs.map((section, sIdx) => (
-            <div key={sIdx} style={{ marginBottom: '3rem' }}>
-              <h2
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: 'var(--accent-gold)',
-                  marginBottom: '1.5rem',
-                  paddingBottom: '0.75rem',
-                  borderBottom: '1px solid var(--border-subtle)',
-                }}
-              >
-                {section.category}
-              </h2>
-              {section.questions.map((item, qIdx) => {
-                const id = `${sIdx}-${qIdx}`;
-                const isOpen = openIndex === id;
-                return (
-                  <div
-                    key={qIdx}
-                    style={{
-                      borderBottom: '1px solid var(--border-subtle)',
-                    }}
-                  >
-                    <button
-                      onClick={() => toggle(id)}
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '1.25rem 0',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        color: 'var(--text-primary)',
-                        fontSize: '0.95rem',
-                        fontWeight: 500,
-                        fontFamily: 'inherit',
-                        transition: 'color 0.2s',
-                      }}
-                    >
-                      {item.q}
-                      <svg
-                        width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{
-                          flexShrink: 0,
-                          marginLeft: '1rem',
-                          transition: 'transform 0.3s ease',
-                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                          color: 'var(--text-muted)',
-                        }}
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </button>
-                    <div
-                      style={{
-                        maxHeight: isOpen ? '300px' : '0',
-                        overflow: 'hidden',
-                        transition: 'max-height 0.35s ease, opacity 0.3s ease',
-                        opacity: isOpen ? 1 : 0,
-                      }}
-                    >
-                      <p
-                        style={{
-                          color: 'var(--text-secondary)',
-                          fontSize: '0.88rem',
-                          lineHeight: 1.8,
-                          paddingBottom: '1.25rem',
-                        }}
-                      >
-                        {item.a}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+    <SupportPage
+      eyebrow="The help center"
+      title={<>Good questions.<br /><em>Clear answers.</em></>}
+      description="A little clarity, from choosing your first print to the moment it arrives. Find the details you need, all in one place."
+      breadcrumb="Frequently asked questions"
+      meta={<span>04 topics / 14 answers</span>}
+    >
+      <div className={styles.layout}>
+        <aside className={styles.sidebar}>
+          <nav aria-label="Frequently asked question topics" className={styles.topicNav}>
+            <span className={styles.eyebrow}>Browse by topic</span>
+            <div className={styles.topicList}>
+              {sections.map((section) => (
+                section.questions.length > 0 ? (
+                  <a href={`#faq-topic-${section.sectionIndex}`} className={styles.topic} key={section.category}>
+                    <span className={styles.topicNumber}>0{section.sectionIndex + 1}</span>
+                    <span>{section.category}</span>
+                    <ArrowDownRight size={15} aria-hidden="true" />
+                  </a>
+                ) : (
+                  <span className={`${styles.topic} ${styles.unavailableTopic}`} key={section.category}>
+                    <span className={styles.topicNumber}>0{section.sectionIndex + 1}</span>
+                    <span>{section.category}</span>
+                  </span>
+                )
+              ))}
             </div>
-          ))}
+          </nav>
+        </aside>
+
+        <div className={styles.content}>
+          <div className={styles.searchSection}>
+            <label htmlFor="faq-search" className={styles.searchLabel}>What can we help you with?</label>
+            <div className={styles.searchBox}>
+              <Search size={20} aria-hidden="true" />
+              <input
+                ref={searchInput}
+                id="faq-search"
+                type="search"
+                placeholder="Try delivery, sizes, returns…"
+                value={query}
+                onChange={(event) => updateSearch(event.target.value)}
+                aria-controls="faq-results"
+                autoComplete="off"
+              />
+              {query && (
+                <button type="button" onClick={resetSearch} aria-label="Clear search" className={styles.clearSearch}>
+                  <X size={17} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+            <div className={styles.searchMeta}>
+              <p role="status">{normalizedQuery ? `${resultCount} ${resultCount === 1 ? 'answer' : 'answers'} found` : 'The details, without the guesswork.'}</p>
+              <span>DreamVault / FAQ</span>
+            </div>
+          </div>
+
+          <div id="faq-results">
+            {resultCount === 0 ? (
+              <div className={styles.emptyState}>
+                <Search size={28} aria-hidden="true" />
+                <h2>No answers just yet.</h2>
+                <p>Try a different word, or reach out to us. We&apos;ll help you find what you need.</p>
+                <div className={styles.emptyActions}>
+                  <button type="button" onClick={resetSearch}>Show all questions</button>
+                  <Link href="/contact">Ask our team <ArrowUpRight size={15} aria-hidden="true" /></Link>
+                </div>
+              </div>
+            ) : sections.filter((section) => section.questions.length > 0).map((section) => (
+              <section
+                key={section.category}
+                id={`faq-topic-${section.sectionIndex}`}
+                aria-labelledby={`faq-heading-${section.sectionIndex}`}
+                className={styles.faqSection}
+              >
+                <div className={styles.sectionHeading}>
+                  <span className={styles.sectionNumber}>0{section.sectionIndex + 1}</span>
+                  <h2 id={`faq-heading-${section.sectionIndex}`}>{section.category}</h2>
+                  <span className={styles.questionCount}>{section.questions.length.toString().padStart(2, '0')}</span>
+                </div>
+                <div className={styles.questions}>
+                  {section.questions.map((item) => {
+                    const isOpen = openItems.includes(item.id);
+                    return (
+                      <div key={item.id} className={styles.question} data-open={isOpen}>
+                        <h3>
+                          <button
+                            id={`faq-question-${item.id}`}
+                            className={styles.questionButton}
+                            type="button"
+                            onClick={() => toggle(item.id)}
+                            aria-expanded={isOpen}
+                            aria-controls={`faq-answer-${item.id}`}
+                          >
+                            <span>{item.q}</span>
+                            <span className={styles.toggleIcon}>
+                              {isOpen ? <Minus size={16} aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
+                            </span>
+                          </button>
+                        </h3>
+                        <div
+                          id={`faq-answer-${item.id}`}
+                          aria-labelledby={`faq-question-${item.id}`}
+                          hidden={!isOpen}
+                          className={styles.answer}
+                        >
+                          <p>{item.a}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </SupportPage>
   );
 }

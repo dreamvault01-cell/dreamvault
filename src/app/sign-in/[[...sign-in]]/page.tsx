@@ -1,9 +1,11 @@
-import { SignIn } from "@clerk/nextjs";
+import type { Metadata } from 'next';
+import AuthPage from '@/components/AuthPage';
+
+export const metadata: Metadata = {
+  title: 'Welcome Back | DreamVault',
+  description: 'Sign in to your DreamVault account and find art for the way you live.',
+};
 
 export default function SignInPage() {
-  return (
-    <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center" }}>
-      <SignIn />
-    </div>
-  );
+  return <AuthPage mode="sign-in" />;
 }

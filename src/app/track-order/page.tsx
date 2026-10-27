@@ -1,92 +1,85 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { ArrowRight, ArrowUpRight, Check, Copy, FileText, LifeBuoy, Package, Truck } from 'lucide-react';
+import SupportPage from '@/components/SupportPage';
+import styles from './tracking.module.css';
 
 export default function TrackOrderPage() {
   const [orderId, setOrderId] = useState('');
   const [searched, setSearched] = useState(false);
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
 
-  const handleTrack = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleTrack = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!orderId.trim()) return;
+    setOrderId(orderId.trim());
     setSearched(true);
+    setCopyState('idle');
+  };
+
+  const copyReference = async () => {
+    try {
+      await navigator.clipboard.writeText(orderId);
+      setCopyState('copied');
+    } catch {
+      setCopyState('error');
+    }
   };
 
   return (
-    <div style={{ paddingTop: '10px' }}>
-      {/* Hero */}
-      <section
-        style={{
-          padding: 'clamp(3rem, 8vw, 6rem) 0',
-          background: 'var(--bg-secondary)',
-          borderBottom: '1px solid var(--border-subtle)',
-          textAlign: 'center',
-        }}
-      >
-        <div className="container" style={{ maxWidth: '700px' }}>
-          <div className="hero-tag" style={{ margin: '0 auto 1.5rem' }}>ORDER STATUS</div>
-          <h1 className="section-title" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '1rem' }}>
-            Track Your <span className="accent">Order</span>
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 'clamp(1rem, 1.5vw, 1.15rem)', lineHeight: 1.8 }}>
-            Enter your order ID to check the current status and estimated delivery date.
-          </p>
-        </div>
-      </section>
-
-      {/* Track Form */}
-      <section className="section">
-        <div className="container" style={{ maxWidth: '600px' }}>
-          <form onSubmit={handleTrack} style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
+    <SupportPage
+      eyebrow="A little help with your delivery"
+      title={<>Every print.<br /><em>A journey home.</em></>}
+      description="A question about your delivery? Have your order reference ready and we’ll help you find your next update."
+      breadcrumb="Track your order"
+    >
+      <div className={styles.layout}>
+        <section className={styles.card} aria-labelledby="reference-heading">
+          <div className={styles.cardTop}><span>Order care / DreamVault</span><Package size={22} strokeWidth={1.3} aria-hidden="true" /></div>
+          <h2 id="reference-heading">Let’s start with<br />your order reference.</h2>
+          <p className={styles.intro}>Keep the details together. Add your reference below, then share it with our support team for an update.</p>
+          <form onSubmit={handleTrack}>
+            <label htmlFor="order-reference">Order reference</label>
             <input
-              type="text"
-              placeholder="Enter your Order ID (e.g. DV-20261005-XXXX)"
+              id="order-reference"
+              name="order-reference"
+              placeholder="Enter your order reference"
               value={orderId}
-              onChange={(e) => { setOrderId(e.target.value); setSearched(false); }}
+              maxLength={120}
               required
-              style={{
-                flex: 1, padding: '0.9rem 1.25rem', borderRadius: '12px',
-                border: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)',
-                color: 'var(--text-primary)', fontSize: '0.9rem', fontFamily: 'inherit', outline: 'none',
-              }}
+              autoComplete="off"
+              aria-describedby="reference-hint"
+              onChange={(event) => { setOrderId(event.target.value); setSearched(false); setCopyState('idle'); }}
             />
-            <button type="submit" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
-              Track Order
-            </button>
+            <p id="reference-hint" className={styles.hint}>Use the reference associated with your order.</p>
+            <button type="submit" className={styles.primary}>Get order help <ArrowRight size={18} aria-hidden="true" /></button>
           </form>
-
-          {searched && orderId && (
-            <div style={{
-              background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)',
-              borderRadius: '16px', padding: '2rem', textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📦</div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-                No order found
-              </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.7 }}>
-                We couldn&apos;t find an order with ID &quot;{orderId}&quot;. Please double-check the ID from your
-                confirmation email or contact us at{' '}
-                <a href="mailto:hello@dreamvault.in" style={{ color: 'var(--accent-gold)' }}>hello@dreamvault.in</a>.
-              </p>
+          {searched ? (
+            <div className={styles.result} role="status" aria-live="polite">
+              <span className={styles.resultEyebrow}>Your reference is ready</span>
+              <div className={styles.reference}><code>{orderId}</code><button type="button" onClick={copyReference} aria-label={copyState === 'copied' ? 'Reference copied' : 'Copy order reference'}>{copyState === 'copied' ? <Check size={17} aria-hidden="true" /> : <Copy size={17} aria-hidden="true" />}</button></div>
+              {copyState === 'copied' && <p className={styles.copyFeedback}>Copied. You’re ready to share it.</p>}
+              {copyState === 'error' && <p className={styles.copyFeedback}>Please select and copy the reference above.</p>}
+              <p>Our team can help with the latest order update. Include this reference when you send your message.</p>
+              <Link href="/contact">Ask about this order <ArrowUpRight size={16} aria-hidden="true" /></Link>
             </div>
+          ) : (
+            <div className={styles.note}><FileText size={18} aria-hidden="true" /><p>Not sure where to find it? Check the order details you saved, or contact us with the email used at checkout.</p></div>
           )}
-
-          {!searched && (
-            <div style={{
-              background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)',
-              borderRadius: '16px', padding: '2.5rem', textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</div>
-              <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-                Where to find your Order ID?
-              </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>
-                Your Order ID was sent to your email after placing the order. It starts with &quot;DV-&quot; followed by the date and a unique code.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-    </div>
+        </section>
+        <aside className={styles.guide} aria-labelledby="guide-heading">
+          <div className={styles.packageIllustration} aria-hidden="true"><div><Package size={76} strokeWidth={0.7} /><span>Handled with care.</span></div><span className={styles.illustrationIndex}>DV / From print to place</span></div>
+          <span className={styles.eyebrow}>A personal touch</span>
+          <h2 id="guide-heading">A little care.<br /><em>All the way home.</em></h2>
+          <p>For delivery questions, a missing reference, or something that needs a second look, our team is a message away.</p>
+          <div className={styles.guideLinks}>
+            <Link href="/shipping-delivery"><Truck size={19} strokeWidth={1.4} aria-hidden="true" /><span>Shipping & delivery<small>Timeframes and the journey to your door</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+            <Link href="/contact"><LifeBuoy size={19} strokeWidth={1.4} aria-hidden="true" /><span>Talk to our team<small>A little help with your specific order</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
+          </div>
+        </aside>
+      </div>
+    </SupportPage>
   );
 }
