@@ -54,6 +54,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
             url: img.url,
             alt: img.alt || '',
             position: img.position,
+            isRoomPreview: img.isRoomPreview,
           })),
           badge: product.badge,
           status: product.status,

@@ -85,6 +85,34 @@ dreamvault/
 | `npm start` | Run production build |
 | `npm run lint` | Run ESLint |
 
+## Product room preview
+
+Apply the additive image update to the intended database before running the updated app:
+
+```bash
+npm run db:product-media
+```
+
+The script adds a dedicated `ProductImage.isRoomPreview` flag and enforces one
+preview image per product. It preserves the existing catalog and is safe to run
+again. Apply it to the Vercel database too if it is different from the local one.
+
+In **Admin > Products > Edit > Media**:
+
+1. Upload an artwork-only JPG, PNG or WebP: the final poster design without a
+   frame, room, furniture or mockup shadows. Use the print's actual proportions.
+2. Select **Use for room preview** on that image. The cover image is independent.
+3. Use **Preview room** to check sizes and wall colours before saving.
+4. Save the product. Its public product page now offers **Room preview**.
+
+Selecting another image replaces the previous choice. Select it again to disable
+room preview; removing the selected image also disables it. Reordering or removing
+other images preserves the choice. Image descriptions remain accessibility text,
+not a hidden setting. Room scenes are illustrative, not augmented reality or a
+promise of an exact photographic match.
+
+Run `npm run test:product` for product-size and media validation tests.
+
 ## Contact form
 
 The contact page posts to `POST /api/contact`. Messages are stored in PostgreSQL

@@ -14,6 +14,7 @@ export interface ProductImageData {
   id: string;
   url: string;
   alt: string | null;
+  isRoomPreview: boolean;
   position: number;
 }
 
@@ -75,6 +76,7 @@ const mapProduct = (p: ProductWithRelations): Product => ({
     id: img.id,
     url: img.url,
     alt: img.alt,
+    isRoomPreview: img.isRoomPreview,
     position: img.position,
   })),
   badge: p.badge || undefined,

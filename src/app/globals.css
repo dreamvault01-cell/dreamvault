@@ -3,8 +3,6 @@
    Premium dark-mode poster e-commerce
    ================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');
-
 /* ---------- CSS Custom Properties ---------- */
 :root {
   /* Base Colors (Light Mode) */
@@ -119,8 +117,8 @@
   --transition-slow: 0.5s var(--ease-out);
 
   /* Typography */
-  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: var(--font-outfit, 'Outfit'), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-playfair, 'Playfair Display'), Georgia, serif;
 }
 
 /* ---------- Reset & Base ---------- */

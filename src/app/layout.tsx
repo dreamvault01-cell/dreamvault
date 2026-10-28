@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Outfit, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
@@ -7,6 +8,19 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import ScrollToTop from '@/components/ScrollToTop';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ToastProvider } from '@/components/Toast';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
@@ -38,7 +52,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${outfit.variable} ${playfairDisplay.variable}`}
+      suppressHydrationWarning
+    >
       <body suppressHydrationWarning>
         <ClerkProvider>
           <ThemeProvider>

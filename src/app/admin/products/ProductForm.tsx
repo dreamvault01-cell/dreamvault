@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
-  Upload, Plus, X, Save, GripVertical, ChevronDown, ChevronUp,
+  Upload, Plus, X, Save, GripVertical, ChevronDown, ChevronUp, Check, Eye,
   ImageIcon, Tag as TagIcon, AlertCircle,
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import ProductDialog from '@/components/ProductDialog';
+import ProductGallery from '@/components/ProductGallery';
+import mediaStyles from './ProductMedia.module.css';
 
 interface Category {
   id: string;
@@ -28,6 +31,7 @@ interface ProductImageItem {
   url: string;
   alt: string;
   position: number;
+  isRoomPreview: boolean;
 }
 
 interface TagItem {
@@ -65,6 +69,85 @@ const SUGGESTED_TAGS = [
   'dark', 'colorful', 'typography', 'illustration', 'photography',
 ];
 
+const DEFAULT_VARIANTS: Variant[] = [
+  { size: 'A4', price: 149, compareAtPrice: null, sku: '', stock: 50 },
+  { size: 'A3', price: 199, compareAtPrice: null, sku: '', stock: 30 },
+  { size: 'A2', price: 349, compareAtPrice: null, sku: '', stock: 20 },
+];
+
+type SectionKey = 'media' | 'details' | 'pricing' | 'variants' | 'tags' | 'organization';
+type SectionsOpenState = Record<SectionKey, boolean>;
+
+interface FormSnapshot {
+  name: string;
+  slug: string;
+  description: string;
+  shortDescription: string;
+  price: number;
+  compareAtPrice: number | '';
+  badge: string;
+  status: string;
+  categoryId: string;
+  variants: Variant[];
+  images: ProductImageItem[];
+  tags: TagItem[];
+}
+
+function getBasePrice(variants: Variant[], fallbackPrice: number) {
+  return variants.length > 0
+    ? Math.min(...variants.map((variant) => variant.price))
+    : fallbackPrice;
+}
+
+function getFormSnapshot(values: FormSnapshot) {
+  return JSON.stringify(values);
+}
+
+function getSlugFromName(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function SectionHeader({
+  title,
+  icon,
+  sectionKey,
+  subtitle,
+  isOpen,
+  onToggle,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  sectionKey: SectionKey;
+  subtitle?: string;
+  isOpen: boolean;
+  onToggle: (sectionKey: SectionKey) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="pf-section-header"
+      onClick={() => onToggle(sectionKey)}
+    >
+      <div className="pf-section-header-left">
+        <span className="pf-section-icon">{icon}</span>
+        <div>
+          <span className="pf-section-title">{title}</span>
+          {subtitle && <span className="pf-section-subtitle">{subtitle}</span>}
+        </div>
+      </div>
+      {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+    </button>
+  );
+}
+
+function FieldError({ field, errors }: { field: string; errors: Record<string, string> }) {
+  return errors[field] ? (
+    <span className="pf-field-error">
+      <AlertCircle size={12} /> {errors[field]}
+    </span>
+  ) : null;
+}
+
 export default function ProductForm({ categories, existingTags = [], initialData }: ProductFormProps) {
   const router = useRouter();
   const { success, error: showError } = useToast();
@@ -76,28 +159,27 @@ export default function ProductForm({ categories, existingTags = [], initialData
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [shortDescription, setShortDescription] = useState(initialData?.shortDescription || '');
-  const [price, setPrice] = useState(initialData?.price || 0);
   const [compareAtPrice, setCompareAtPrice] = useState<number | ''>(initialData?.compareAtPrice || '');
   const [badge, setBadge] = useState(initialData?.badge || '');
   const [status, setStatus] = useState(initialData?.status || 'ACTIVE');
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
-  const [variants, setVariants] = useState<Variant[]>(
-    initialData?.variants || [
-      { size: 'A4', price: 149, compareAtPrice: null, sku: '', stock: 50 },
-      { size: 'A3', price: 199, compareAtPrice: null, sku: '', stock: 30 },
-      { size: 'A2', price: 349, compareAtPrice: null, sku: '', stock: 20 },
-    ]
-  );
+  const [variants, setVariants] = useState<Variant[]>(() => initialData?.variants || DEFAULT_VARIANTS);
+  const basePrice = getBasePrice(variants, initialData?.price ?? 0);
 
   // ---- Image Gallery State ----
   const [images, setImages] = useState<ProductImageItem[]>(
     initialData?.images?.length
-      ? initialData.images
+      ? initialData.images.map((image) => ({ ...image, isRoomPreview: image.isRoomPreview === true }))
       : initialData?.image
-        ? [{ url: initialData.image, alt: initialData.name, position: 0 }]
+        ? [{ url: initialData.image, alt: initialData.name, position: 0, isRoomPreview: false }]
         : []
   );
   const [uploading, setUploading] = useState(false);
+  const [roomPreviewOpen, setRoomPreviewOpen] = useState(false);
+  const [previewSize, setPreviewSize] = useState('A3');
+  const roomPreviewImage = images.find((image) => image.isRoomPreview);
+  const previewSizes = [...new Set(variants.map((variant) => variant.size))];
+  const selectedPreviewSize = previewSizes.includes(previewSize) ? previewSize : (previewSizes[0] || 'A3');
 
   // ---- Tags State ----
   const [tags, setTags] = useState<TagItem[]>(initialData?.tags || []);
@@ -108,9 +190,8 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
   // ---- UI State ----
   const [saving, setSaving] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [sectionsOpen, setSectionsOpen] = useState({
+  const [sectionsOpen, setSectionsOpen] = useState<SectionsOpenState>({
     media: true,
     details: true,
     pricing: true,
@@ -119,11 +200,22 @@ export default function ProductForm({ categories, existingTags = [], initialData
     organization: true,
   });
   const [dragIndex, setDragIndex] = useState<number | null>(null);
-
-  // Track changes
-  useEffect(() => {
-    setHasUnsavedChanges(true);
-  }, [name, slug, description, shortDescription, price, compareAtPrice, badge, status, categoryId, variants, images, tags]);
+  const currentFormSnapshot = getFormSnapshot({
+    name,
+    slug,
+    description,
+    shortDescription,
+    price: basePrice,
+    compareAtPrice,
+    badge,
+    status,
+    categoryId,
+    variants,
+    images,
+    tags,
+  });
+  const [savedFormSnapshot, setSavedFormSnapshot] = useState(() => currentFormSnapshot);
+  const hasUnsavedChanges = currentFormSnapshot !== savedFormSnapshot;
 
   // Unsaved changes warning
   useEffect(() => {
@@ -136,23 +228,16 @@ export default function ProductForm({ categories, existingTags = [], initialData
     return () => window.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
-  // Auto-generate slug from name
-  useEffect(() => {
+  const handleNameChange = (value: string) => {
+    setName(value);
     if (!isEdit) {
-      setSlug(name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''));
+      setSlug(getSlugFromName(value));
     }
-  }, [name, isEdit]);
-
-  // Auto-update base price to lowest variant price
-  useEffect(() => {
-    if (variants.length > 0) {
-      const minPrice = Math.min(...variants.map((v) => v.price));
-      setPrice(minPrice);
-    }
-  }, [variants]);
+    setErrors((previous) => ({ ...previous, name: '' }));
+  };
 
   // ---- Validation ----
-  const validate = useCallback(() => {
+  const validate = () => {
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = 'Product name is required';
     if (!slug.trim()) errs.slug = 'URL slug is required';
@@ -162,7 +247,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
     if (variants.length === 0) errs.variants = 'At least one size variant is required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [name, slug, description, images, categoryId, variants]);
+  };
 
   // ---- Image Upload ----
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,20 +266,22 @@ export default function ProductForm({ categories, existingTags = [], initialData
           body: formData,
         });
         const data = await res.json();
-        if (data.url) {
-          newImages.push({
-            url: data.url,
-            alt: name || file.name.replace(/\.[^/.]+$/, ''),
-            position: images.length + newImages.length,
-          });
+        if (!res.ok || typeof data.url !== 'string' || !data.url) {
+          throw new Error(typeof data.error === 'string' ? data.error : `Failed to upload ${file.name}`);
         }
-      } catch {
-        showError('Upload Failed', `Failed to upload ${file.name}`);
+        newImages.push({
+          url: data.url,
+          alt: name || file.name.replace(/\.[^/.]+$/, ''),
+          position: images.length + newImages.length,
+          isRoomPreview: false,
+        });
+      } catch (error) {
+        showError('Upload Failed', error instanceof Error ? error.message : `Failed to upload ${file.name}`);
       }
     }
 
     if (newImages.length > 0) {
-      setImages((prev) => [...prev, ...newImages]);
+      setImages((prev) => [...prev, ...newImages].map((image, position) => ({ ...image, position })));
       success('Images Uploaded', `${newImages.length} image(s) added`);
     }
     setUploading(false);
@@ -204,6 +291,23 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index).map((img, i) => ({ ...img, position: i })));
+  };
+
+  const toggleRoomPreview = (index: number) => {
+    setImages((previous) => previous.map((image, imageIndex) => ({
+      ...image,
+      isRoomPreview: imageIndex === index ? !image.isRoomPreview : false,
+    })));
+  };
+
+  const moveImage = (index: number, direction: -1 | 1) => {
+    setImages((previous) => {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= previous.length) return previous;
+      const reordered = [...previous];
+      [reordered[index], reordered[nextIndex]] = [reordered[nextIndex], reordered[index]];
+      return reordered.map((image, position) => ({ ...image, position }));
+    });
   };
 
   // ---- Image Drag & Drop Reorder ----
@@ -289,7 +393,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
     const usedSizes = variants.map((v) => v.size);
     const nextSize = SIZES.find((s) => !usedSizes.includes(s));
     if (nextSize) {
-      setVariants([...variants, { size: nextSize, price: price || 149, compareAtPrice: null, sku: '', stock: 10 }]);
+      setVariants([...variants, { size: nextSize, price: basePrice || 149, compareAtPrice: null, sku: '', stock: 10 }]);
     }
   };
 
@@ -298,13 +402,14 @@ export default function ProductForm({ categories, existingTags = [], initialData
   };
 
   // ---- Toggle Sections ----
-  const toggleSection = (key: keyof typeof sectionsOpen) => {
+  const toggleSection = (key: SectionKey) => {
     setSectionsOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   // ---- Submit ----
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploading || saving) return;
     if (!validate()) {
       showError('Validation Error', 'Please fix the highlighted fields');
       return;
@@ -312,7 +417,6 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
     setSaving(true);
     try {
-      const primaryImage = images[0]?.url || '';
       const url = isEdit ? `/api/admin/products/${initialData.id}` : '/api/admin/products';
       const method = isEdit ? 'PUT' : 'POST';
 
@@ -324,10 +428,9 @@ export default function ProductForm({ categories, existingTags = [], initialData
           slug,
           description,
           shortDescription: shortDescription || null,
-          price,
+          price: basePrice,
           compareAtPrice: compareAtPrice || null,
-          image: primaryImage,
-          images: images.map((img, i) => ({ url: img.url, alt: img.alt || name, position: i })),
+          images: images.map((img, i) => ({ url: img.url, alt: img.alt || name, position: i, isRoomPreview: img.isRoomPreview })),
           badge: badge || null,
           status,
           categoryId,
@@ -337,7 +440,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
       });
 
       if (res.ok) {
-        setHasUnsavedChanges(false);
+        setSavedFormSnapshot(currentFormSnapshot);
         success(
           isEdit ? 'Product Updated' : 'Product Created',
           `"${name}" has been ${isEdit ? 'updated' : 'created'} successfully`
@@ -357,41 +460,6 @@ export default function ProductForm({ categories, existingTags = [], initialData
     }
   };
 
-  // ---- Render Helpers ----
-  const SectionHeader = ({
-    title,
-    icon,
-    sectionKey,
-    subtitle,
-  }: {
-    title: string;
-    icon: React.ReactNode;
-    sectionKey: keyof typeof sectionsOpen;
-    subtitle?: string;
-  }) => (
-    <button
-      type="button"
-      className="pf-section-header"
-      onClick={() => toggleSection(sectionKey)}
-    >
-      <div className="pf-section-header-left">
-        <span className="pf-section-icon">{icon}</span>
-        <div>
-          <span className="pf-section-title">{title}</span>
-          {subtitle && <span className="pf-section-subtitle">{subtitle}</span>}
-        </div>
-      </div>
-      {sectionsOpen[sectionKey] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-    </button>
-  );
-
-  const FieldError = ({ field }: { field: string }) =>
-    errors[field] ? (
-      <span className="pf-field-error">
-        <AlertCircle size={12} /> {errors[field]}
-      </span>
-    ) : null;
-
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="pf-form">
       <div className="pf-layout">
@@ -399,32 +467,76 @@ export default function ProductForm({ categories, existingTags = [], initialData
         <div className="pf-left">
           {/* MEDIA Section */}
           <div className="pf-card">
-            <SectionHeader title="Media" icon={<ImageIcon size={18} />} sectionKey="media" subtitle={`${images.length} image(s)`} />
+            <SectionHeader title="Media" icon={<ImageIcon size={18} />} sectionKey="media" subtitle={`${images.length} image(s)`} isOpen={sectionsOpen.media} onToggle={toggleSection} />
             {sectionsOpen.media && (
               <div className="pf-card-body">
+                <div className={mediaStyles.help}>
+                  <div>
+                    <h3>Product images</h3>
+                    <p>The first image is the cover. Drag images or use the arrows to change their order.</p>
+                    <p>For an optional room preview, choose one artwork-only image: just the printed design, without a frame, wall or furniture.</p>
+                  </div>
+                  {roomPreviewImage && (
+                    <button type="button" className={mediaStyles.previewButton} onClick={() => setRoomPreviewOpen(true)} aria-haspopup="dialog">
+                      <Eye size={16} aria-hidden="true" /> Preview room
+                    </button>
+                  )}
+                </div>
+
                 {/* Image Gallery */}
                 {images.length > 0 && (
-                  <div className="pf-image-gallery">
+                  <div className={mediaStyles.grid}>
                     {images.map((img, index) => (
-                      <div
-                        key={`${img.url}-${index}`}
-                        className={`pf-image-item ${index === 0 ? 'pf-image-hero' : ''} ${dragIndex === index ? 'pf-image-dragging' : ''}`}
-                        draggable
-                        onDragStart={() => handleDragStart(index)}
+                      <article
+                        key={img.id || img.url}
+                        className={`${mediaStyles.card} ${dragIndex === index ? mediaStyles.dragging : ''}`}
                         onDragOver={(e) => handleDragOver(e, index)}
-                        onDragEnd={handleDragEnd}
                       >
-                        <div className="pf-image-grip">
-                          <GripVertical size={14} />
+                        <div
+                          className={mediaStyles.image}
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <span className={mediaStyles.grip} aria-hidden="true"><GripVertical size={16} /></span>
+                          <Image src={img.url} alt={img.alt || name || `Product image ${index + 1}`} fill sizes="(max-width: 600px) 90vw, (max-width: 1100px) 30vw, 240px" draggable={false} />
+                          {index === 0 && <span className={mediaStyles.coverBadge}>Cover image</span>}
+                          <button type="button" className={mediaStyles.remove} onClick={() => removeImage(index)} aria-label={`Remove image ${index + 1}`}>
+                            <X size={16} aria-hidden="true" />
+                          </button>
                         </div>
-                        <Image src={img.url} alt={img.alt || ''} width={index === 0 ? 300 : 100} height={index === 0 ? 375 : 125} style={{ objectFit: 'cover' }} />
-                        {index === 0 && <span className="pf-image-hero-badge">HERO</span>}
-                        <button type="button" className="pf-image-remove" onClick={() => removeImage(index)}>
-                          <X size={12} />
-                        </button>
-                      </div>
+                        <div className={mediaStyles.controls}>
+                          <div className={mediaStyles.order}>
+                            <span>Image {index + 1}</span>
+                            <div>
+                              <button type="button" onClick={() => moveImage(index, -1)} disabled={index === 0} aria-label={`Move image ${index + 1} earlier`}><ChevronUp size={16} aria-hidden="true" /></button>
+                              <button type="button" onClick={() => moveImage(index, 1)} disabled={index === images.length - 1} aria-label={`Move image ${index + 1} later`}><ChevronDown size={16} aria-hidden="true" /></button>
+                            </div>
+                          </div>
+                          <label className={mediaStyles.altLabel}>
+                            Image description
+                            <input
+                              type="text"
+                              className="pf-input pf-input-sm"
+                              value={img.alt}
+                              maxLength={500}
+                              placeholder="Describe the artwork or photo"
+                              onChange={(event) => setImages((previous) => previous.map((image, imageIndex) => imageIndex === index ? { ...image, alt: event.target.value } : image))}
+                            />
+                          </label>
+                          <button type="button" className={mediaStyles.previewToggle} aria-pressed={img.isRoomPreview} aria-label={`Use image ${index + 1} for room preview`} onClick={() => toggleRoomPreview(index)}>
+                            <span className={mediaStyles.toggleIndicator} aria-hidden="true">{img.isRoomPreview && <Check size={13} />}</span>
+                            {img.isRoomPreview ? 'Room preview image' : 'Use for room preview'}
+                          </button>
+                        </div>
+                      </article>
                     ))}
                   </div>
+                )}
+                {images.length > 0 && (
+                  <p className={mediaStyles.selectionStatus} role="status">
+                    {roomPreviewImage ? 'Room preview enabled. Save the product to update the storefront.' : 'No room preview selected. Customers will still see all product images.'}
+                  </p>
                 )}
 
                 {/* Upload Area */}
@@ -435,22 +547,22 @@ export default function ProductForm({ categories, existingTags = [], initialData
                     multiple
                     onChange={handleImageUpload}
                     style={{ display: 'none' }}
-                    disabled={uploading}
+                    disabled={uploading || saving}
                   />
                   <Upload size={24} style={{ opacity: 0.5 }} />
                   <span className="pf-upload-text">
-                    {uploading ? 'Uploading...' : 'Click to upload or drag images'}
+                    {uploading ? 'Uploading...' : 'Choose images to upload'}
                   </span>
                   <span className="pf-upload-hint">PNG, JPG, WebP · Multiple files supported</span>
                 </label>
-                <FieldError field="images" />
+                <FieldError field="images" errors={errors} />
               </div>
             )}
           </div>
 
           {/* DETAILS Section */}
           <div className="pf-card">
-            <SectionHeader title="Product Details" icon={<Save size={18} />} sectionKey="details" />
+            <SectionHeader title="Product Details" icon={<Save size={18} />} sectionKey="details" isOpen={sectionsOpen.details} onToggle={toggleSection} />
             {sectionsOpen.details && (
               <div className="pf-card-body">
                 <div className="pf-field">
@@ -459,10 +571,10 @@ export default function ProductForm({ categories, existingTags = [], initialData
                     type="text"
                     className={`pf-input ${errors.name ? 'pf-input-error' : ''}`}
                     value={name}
-                    onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: '' })); }}
+                    onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g. Cosmic Serenity — Nebula Art Print"
                   />
-                  <FieldError field="name" />
+                  <FieldError field="name" errors={errors} />
                 </div>
 
                 <div className="pf-field">
@@ -477,7 +589,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
                       placeholder="auto-generated"
                     />
                   </div>
-                  <FieldError field="slug" />
+                  <FieldError field="slug" errors={errors} />
                 </div>
 
                 <div className="pf-field">
@@ -502,7 +614,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
                     placeholder="Full product description..."
                     rows={6}
                   />
-                  <FieldError field="description" />
+                  <FieldError field="description" errors={errors} />
                 </div>
               </div>
             )}
@@ -510,7 +622,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
           {/* SIZE VARIANTS Section */}
           <div className="pf-card">
-            <SectionHeader title="Size Variants & Pricing" icon={<span style={{ fontSize: '1rem' }}>📐</span>} sectionKey="variants" subtitle={`${variants.length} variant(s)`} />
+            <SectionHeader title="Size Variants & Pricing" icon={<span style={{ fontSize: '1rem' }}>📐</span>} sectionKey="variants" subtitle={`${variants.length} variant(s)`} isOpen={sectionsOpen.variants} onToggle={toggleSection} />
             {sectionsOpen.variants && (
               <div className="pf-card-body">
                 {variants.map((variant, index) => (
@@ -555,7 +667,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
                     <Plus size={16} /> Add Size Variant
                   </button>
                 )}
-                <FieldError field="variants" />
+                <FieldError field="variants" errors={errors} />
               </div>
             )}
           </div>
@@ -590,7 +702,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
           {/* ORGANIZATION Card */}
           <div className="pf-card">
-            <SectionHeader title="Organization" icon={<span style={{ fontSize: '1rem' }}>📂</span>} sectionKey="organization" />
+            <SectionHeader title="Organization" icon={<span style={{ fontSize: '1rem' }}>📂</span>} sectionKey="organization" isOpen={sectionsOpen.organization} onToggle={toggleSection} />
             {sectionsOpen.organization && (
               <div className="pf-card-body">
                 <div className="pf-field">
@@ -605,7 +717,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
-                  <FieldError field="categoryId" />
+                  <FieldError field="categoryId" errors={errors} />
                 </div>
 
                 <div className="pf-field">
@@ -624,13 +736,13 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
           {/* PRICING Summary Card */}
           <div className="pf-card">
-            <SectionHeader title="Pricing" icon={<span style={{ fontSize: '1rem' }}>💰</span>} sectionKey="pricing" />
+            <SectionHeader title="Pricing" icon={<span style={{ fontSize: '1rem' }}>💰</span>} sectionKey="pricing" isOpen={sectionsOpen.pricing} onToggle={toggleSection} />
             {sectionsOpen.pricing && (
               <div className="pf-card-body">
                 <div className="pf-pricing-summary">
                   <div className="pf-pricing-row">
                     <span className="pf-pricing-label">Base Price (auto)</span>
-                    <span className="pf-pricing-value">₹{price}</span>
+                    <span className="pf-pricing-value">₹{basePrice}</span>
                   </div>
                   <span className="pf-pricing-hint">Automatically set to lowest variant price</span>
                 </div>
@@ -651,7 +763,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
 
           {/* TAGS Card */}
           <div className="pf-card">
-            <SectionHeader title="Tags" icon={<TagIcon size={18} />} sectionKey="tags" subtitle={`${tags.length} tag(s)`} />
+            <SectionHeader title="Tags" icon={<TagIcon size={18} />} sectionKey="tags" subtitle={`${tags.length} tag(s)`} isOpen={sectionsOpen.tags} onToggle={toggleSection} />
             {sectionsOpen.tags && (
               <div className="pf-card-body">
                 <div className="pf-tags-input-wrap">
@@ -722,11 +834,33 @@ export default function ProductForm({ categories, existingTags = [], initialData
           >
             Cancel
           </button>
-          <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
-            <Save size={16} /> {saving ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
+          <button type="submit" className="admin-btn admin-btn-primary" disabled={saving || uploading}>
+            <Save size={16} /> {saving ? 'Saving...' : uploading ? 'Uploading images...' : isEdit ? 'Update Product' : 'Create Product'}
           </button>
         </div>
       </div>
+
+      <ProductDialog open={roomPreviewOpen && Boolean(roomPreviewImage)} onClose={() => setRoomPreviewOpen(false)} title="Room preview" className={mediaStyles.previewDialog}>
+        <div className={mediaStyles.previewIntro}>
+          <p>Preview your selected artwork before saving. This illustration is not a product photo.</p>
+          <label>
+            Print size
+            <select value={selectedPreviewSize} onChange={(event) => setPreviewSize(event.target.value)} aria-label="Room preview print size">
+              {(previewSizes.length ? previewSizes : ['A3']).map((size) => <option key={size} value={size}>{size}</option>)}
+            </select>
+          </label>
+        </div>
+        <div className={mediaStyles.previewGallery}>
+          <ProductGallery
+            key={roomPreviewImage?.url || 'none'}
+            mainImage={images[0]?.url || ''}
+            images={images.map((image, index) => ({ ...image, id: image.id || `preview-${index}` }))}
+            productName={name || 'Your artwork'}
+            selectedSize={selectedPreviewSize}
+            initialView="room"
+          />
+        </div>
+      </ProductDialog>
     </form>
   );
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { requireAdminApi } from '@/lib/admin-auth';
+import { normalizeProductImages, ProductMediaValidationError } from '@/lib/product-media';
 
 // GET /api/admin/products — List all products
 export async function GET() {
@@ -25,12 +27,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       name, slug, description, shortDescription,
-      price, compareAtPrice, image, images,
+      price, compareAtPrice, images,
       badge, status, categoryId, variants, tags,
     } = body;
 
-    if (!name || !slug || !description || !categoryId) {
+    if (typeof name !== 'string' || !name.trim() || !slug || !description || !categoryId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const productImages = normalizeProductImages(images, name);
+    if (productImages.length === 0) {
+      return NextResponse.json({ error: 'At least one product image is required.' }, { status: 400 });
     }
 
     // Resolve tags: find existing or create new
@@ -55,7 +62,9 @@ export async function POST(req: Request) {
         shortDescription: shortDescription || null,
         price,
         compareAtPrice: compareAtPrice || null,
-        image: image || (images && images[0]?.url) || '',
+        // The cover is always the first saved gallery image. Do not trust a
+        // separate client-supplied URL that could bypass media validation.
+        image: productImages[0].url,
         badge,
         status: status || 'ACTIVE',
         categoryId,
@@ -69,11 +78,7 @@ export async function POST(req: Request) {
           })),
         },
         images: {
-          create: (images || []).map((img: { url: string; alt?: string; position: number }) => ({
-            url: img.url,
-            alt: img.alt || name,
-            position: img.position,
-          })),
+          create: productImages,
         },
         tags: {
           connect: tagConnections,
@@ -82,8 +87,16 @@ export async function POST(req: Request) {
       include: { variants: true, images: { orderBy: { position: 'asc' } }, tags: true },
     });
 
+    revalidatePath('/product/[slug]', 'page');
+    revalidatePath('/collections');
+    revalidatePath('/collections/[slug]', 'page');
+    revalidatePath('/');
+
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
+    if (error instanceof ProductMediaValidationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error('Create product error:', error);
     const message = error instanceof Error ? error.message : 'Server error';
     const status = message === 'Unauthorized' ? 401 : message === 'Forbidden' ? 403 : 500;

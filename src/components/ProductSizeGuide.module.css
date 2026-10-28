@@ -1,0 +1,268 @@
+.dialog {
+  max-width: 780px;
+}
+
+.content {
+  min-width: 0;
+  padding: 0;
+  font-family: var(--font-sans, 'Outfit', system-ui, -apple-system, sans-serif);
+}
+
+.intro {
+  max-width: 540px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.comparison {
+  margin-top: 24px;
+  padding: 18px 16px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--bg-secondary);
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.baseline {
+  stroke: var(--border-light);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.paper {
+  fill: var(--bg-card);
+  stroke: var(--text-secondary);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: fill 160ms, stroke 160ms;
+}
+
+.paperInset {
+  fill: none;
+  stroke: var(--border-light);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.paperLabel {
+  fill: var(--text-secondary);
+  font-family: var(--font-sans, 'Outfit', system-ui, -apple-system, sans-serif);
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.chartLabel {
+  fill: var(--text-secondary);
+  font-family: var(--font-sans, 'Outfit', system-ui, -apple-system, sans-serif);
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.selectedSilhouette .paper {
+  fill: color-mix(in srgb, var(--accent-gold) 7%, var(--bg-card));
+  stroke: var(--accent-gold);
+  stroke-opacity: 1;
+  stroke-width: 1.5;
+}
+
+.selectedSilhouette .paperLabel,
+.selectedSilhouette .chartLabel {
+  fill: var(--product-highlight, var(--accent-gold-dark));
+}
+
+.comparison figcaption {
+  margin-top: 11px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.tableWrap {
+  margin-top: 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.table thead th {
+  padding: 0 8px 12px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.table thead th:first-child,
+.table tbody th {
+  padding-left: 0;
+}
+
+.table tbody th,
+.table tbody td {
+  height: 58px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.table tbody th {
+  padding-left: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.selectedRow th {
+  color: var(--product-highlight, var(--accent-gold-dark)) !important;
+}
+
+.table .choiceCell {
+  padding-right: 0;
+  text-align: right;
+}
+
+.chooseButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  transition: border-color 160ms, color 160ms, background 160ms;
+}
+
+.chooseButton:hover {
+  border-color: var(--accent-gold);
+  color: var(--product-highlight, var(--accent-gold-dark));
+}
+
+.chooseButton:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 3px;
+}
+
+.chosen {
+  border-color: var(--border-accent);
+  background: color-mix(in srgb, var(--accent-gold) 7%, transparent);
+  color: var(--product-highlight, var(--accent-gold-dark));
+}
+
+.notOffered {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.note {
+  margin-top: 18px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0;
+  }
+
+  .comparison {
+    margin-top: 20px;
+    padding: 12px 6px;
+  }
+
+  .comparison figcaption {
+    padding-inline: 8px;
+  }
+
+  .paperLabel {
+    font-size: 40px;
+  }
+
+  .chartLabel {
+    display: none;
+  }
+
+  .table thead th {
+    padding-inline: 4px;
+    font-size: 12px;
+  }
+
+  .table tbody th,
+  .table tbody td {
+    padding-inline: 4px;
+    font-size: 12px;
+  }
+
+  .table tbody th {
+    padding-left: 0;
+    font-size: 12px;
+  }
+
+  .chooseButton {
+    padding: 6px;
+    font-size: 12px;
+    gap: 3px;
+  }
+
+  .notOffered {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .table tbody th,
+  .table tbody td {
+    padding-inline: 3px;
+    font-size: 11.5px;
+  }
+
+  .table tbody th {
+    padding-left: 0;
+  }
+
+  .chooseButton {
+    gap: 3px;
+    padding-inline: 5px;
+    font-size: 11.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper,
+  .chooseButton {
+    transition: none;
+  }
+}
