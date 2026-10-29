@@ -31,6 +31,21 @@ test('fully sold-out prints still have a visible option instead of becoming unre
   assert.equal(initialProductOption(options).stock, 0);
 });
 
+test('one size can offer different real configurations without their prices or identities colliding', () => {
+  const options = getProductOptions({
+    ...base,
+    variants: [
+      { id: 'a3-walnut', size: 'A3', format: 'FRAMED_ART_PRINT', paper: 'PREMIUM_FINE_ART', frame: 'WALNUT', configurationKey: 'A3:FRAMED_ART_PRINT:PREMIUM_FINE_ART:WALNUT', price: 699, compareAtPrice: null, stock: 2, sku: 'DV-A3-WALNUT' },
+      { id: 'a3-poster', size: 'A3', format: 'POSTER', paper: 'CLASSIC_MATTE', frame: 'NONE', configurationKey: 'A3:POSTER:CLASSIC_MATTE:NONE', price: 199, compareAtPrice: null, stock: 8, sku: 'DV-A3-POSTER' },
+    ],
+  });
+  assert.equal(options.length, 2);
+  assert.deepEqual(options.map((option) => option.id), ['a3-poster', 'a3-walnut']);
+  assert.notEqual(options[0].configurationKey, options[1].configurationKey);
+  assert.equal(options[1].frame, 'WALNUT');
+  assert.equal(options[1].price, 699);
+});
+
 test('size comparisons use ISO paper dimensions and unknown sizes have no guessed dimensions', () => {
   assert.deepEqual(getPrintDimensions('A4 (21x30 cm)'), { width: 21, height: 29.7 });
   assert.deepEqual(getPrintDimensions('a1'), { width: 59.4, height: 84.1 });

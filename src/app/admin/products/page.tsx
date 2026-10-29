@@ -69,7 +69,7 @@ export default async function AdminProducts() {
                     <td>
                       {product.variants.length > 0 ? (
                         <span style={{ fontSize: '0.82rem' }}>
-                          {product.variants.map((v) => v.size).join(', ')}
+                          {[...new Set(product.variants.map((variant) => variant.size))].join(', ')} · {product.variants.length} configuration{product.variants.length === 1 ? '' : 's'}
                         </span>
                       ) : (
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>None</span>

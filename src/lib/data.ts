@@ -4,10 +4,17 @@ import { Prisma } from '@prisma/client';
 export interface ProductVariantData {
   id: string;
   size: string;
+  format: string;
+  paper: string;
+  frame: string;
+  configurationKey: string;
   price: number;
   compareAtPrice: number | null;
   sku: string | null;
+  /** Units a customer can still buy. Physical stock is never exposed as sellable while held. */
   stock: number;
+  inventoryStock: number;
+  reservedStock: number;
 }
 
 export interface ProductImageData {
@@ -86,10 +93,16 @@ const mapProduct = (p: ProductWithRelations): Product => ({
   variants: p.variants.map((v) => ({
     id: v.id,
     size: v.size,
+    format: v.format,
+    paper: v.paper,
+    frame: v.frame,
+    configurationKey: v.configurationKey,
     price: v.price,
     compareAtPrice: v.compareAtPrice,
     sku: v.sku,
-    stock: v.stock,
+    stock: Math.max(0, v.stock - v.reservedStock),
+    inventoryStock: v.stock,
+    reservedStock: v.reservedStock,
   })),
   tags: (p.tags || []).map((t) => ({
     id: t.id,

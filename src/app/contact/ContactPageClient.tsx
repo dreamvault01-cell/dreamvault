@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ArrowUpRight, Check, CircleAlert, Clock, HelpCircle, LoaderCircle, Mail, MapPin, MessageCircle, Package, Phone, Ruler, Sparkles, Truck, Undo2 } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, CircleAlert, HelpCircle, LoaderCircle, Mail, MessageCircle, Package, Ruler, Sparkles, Truck, Undo2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './contact.module.css';
@@ -105,14 +105,8 @@ export default function ContactPageClient({ supportEmail, developmentMode }: { s
               <span><span className={styles.detailLabel}>Write to us</span><span className={styles.detailValue}>{supportEmail}</span></span>
               <ArrowUpRight size={18} aria-hidden="true" />
             </a>
-            <a href="tel:+919876543210" className={styles.contactLink}>
-              <span className={styles.contactIcon}><Phone size={18} strokeWidth={1.5} aria-hidden="true" /></span>
-              <span><span className={styles.detailLabel}>Prefer a call?</span><span className={styles.detailValue}>+91 98765 43210</span></span>
-              <ArrowUpRight size={18} aria-hidden="true" />
-            </a>
             <div className={styles.practicalDetails}>
-              <p><Clock size={15} aria-hidden="true" /><span>Mon–Sat, 10am–7pm IST</span></p>
-              <p><MapPin size={15} aria-hidden="true" /><span>Mumbai, Maharashtra, India</span></p>
+              <p><Mail size={15} aria-hidden="true" /><span>We reply to the email address you provide, so your conversation stays together.</span></p>
             </div>
           </aside>
 

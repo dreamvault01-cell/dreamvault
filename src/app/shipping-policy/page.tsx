@@ -8,31 +8,26 @@ export default function ShippingPolicyPage() {
       tag="POLICIES"
       title="Shipping"
       titleAccent="Policy"
-      subtitle="We're committed to delivering your art safely and on time. Here's everything you need to know about our shipping process."
+      subtitle="How fulfilment, delivery updates, and shipping questions are handled for DreamVault orders."
       lastUpdated="October 1, 2026"
     >
-      <PolicySection id="processing-time" title="Processing Time">
-        <p>All orders are processed within 1–2 business days (excluding weekends and public holidays). You will receive a confirmation email with tracking details once your order has shipped.</p>
+      <PolicySection id="order-preparation" title="Order Preparation">
+        <p>Orders are prepared after payment is confirmed or, for cash on delivery, after the order is accepted. Product availability and the delivery address are checked before an order is dispatched. We do not promise a universal dispatch time because it can vary by artwork, format, and delivery location.</p>
       </PolicySection>
-      <PolicySection id="shipping-rates" title="Shipping Rates">
-        <p><strong>Free Standard Shipping</strong> on all orders above ₹499. For orders below ₹499, a flat shipping fee of ₹79 applies. Express shipping (2–3 business days) is available at checkout for ₹149.</p>
+      <PolicySection id="delivery-cost" title="Delivery Cost">
+        <p>The final checkout total is shown before you place an order. If delivery is included, it is reflected in that total; if a delivery charge is introduced in the future, it will be shown before payment.</p>
       </PolicySection>
-      <PolicySection id="delivery-timeframes" title="Delivery Timeframes">
-        <p><strong>Standard Delivery:</strong> 5–7 business days across India.</p>
-        <p><strong>Express Delivery:</strong> 2–3 business days (available in select cities).</p>
-        <p>Delivery times may vary during festive seasons, sales, or due to unforeseen circumstances. We&apos;ll notify you of any delays via email.</p>
+      <PolicySection id="tracking" title="Tracking and Delivery Updates">
+        <p>When an order ships, DreamVault records the courier and tracking number on the order. You can view the latest available update in <a href="/track-order">Track Your Order</a> using the order reference and checkout email. When order email delivery is enabled, the same update is also sent to that email address.</p>
       </PolicySection>
       <PolicySection id="packaging" title="Packaging">
-        <p>Each poster is carefully rolled in a protective tube or packed flat with rigid cardboard backing to prevent bending, creasing, or water damage during transit. We take extra care to ensure your art arrives in pristine condition.</p>
+        <p>Prints are packed in a format-appropriate protective mailer or tube. The final packaging method may vary by the selected print size and frame option.</p>
       </PolicySection>
-      <PolicySection id="shipping-partners" title="Shipping Partners">
-        <p>We work with India&apos;s leading logistics partners including Delhivery, BlueDart, and India Post to ensure reliable and trackable deliveries across all pin codes.</p>
+      <PolicySection id="delivery-area" title="Delivery Area">
+        <p>Checkout currently supports delivery addresses in India. International checkout is not available at this time.</p>
       </PolicySection>
-      <PolicySection id="international-shipping" title="International Shipping">
-        <p>Currently, we only ship within India. International shipping is coming soon — sign up for our newsletter to be notified when we expand globally.</p>
-      </PolicySection>
-      <PolicySection id="damaged-or-lost-shipments" title="Damaged or Lost Shipments">
-        <p>If your order arrives damaged or is lost in transit, please contact us within 48 hours at <a href={`mailto:${supportEmail}`}>{supportEmail}</a> with your order ID and photos. We&apos;ll arrange a free replacement or full refund.</p>
+      <PolicySection id="delivery-problems" title="Delivery Problems">
+        <p>If an order is damaged, missing, or appears to have a delivery issue, contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a> with the order reference and clear photos where relevant. We will review the situation and confirm the appropriate next step.</p>
       </PolicySection>
     </PolicyLayout>
   );

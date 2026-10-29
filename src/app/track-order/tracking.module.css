@@ -5,6 +5,7 @@
 .card h2 { font-family: var(--font-serif); font-size: 37px; font-weight: 400; line-height: 1.25; letter-spacing: -0.04em; margin-top: 26px; }
 .intro { color: var(--text-secondary); font-size: 13px; line-height: 1.9; margin-top: 17px; }
 .card form { margin-top: 28px; }
+.secondLabel { margin-top: 17px; }
 .card label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 9px; }
 .card input { display: block; width: 100%; border: 1px solid var(--border-light); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); padding: 14px; font: 14px var(--font-sans); line-height: 1.5; transition: border-color 180ms, box-shadow 180ms; }
 .card input::placeholder { color: var(--text-muted); }
@@ -24,6 +25,8 @@
 .result > .copyFeedback { font-size: 10px; color: var(--accent-gold); margin-bottom: 9px; }
 .result > a { display: inline-flex; align-items: center; gap: 22px; font-size: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--accent-gold); margin-top: 17px; }
 .result > a > svg { color: var(--accent-gold); }
+.result h3 { font-family: var(--font-serif); font-size: 24px; font-weight: 400; margin: 8px 0 18px; }
+.error { margin-top: 16px; padding: 11px; border: 1px solid rgb(180 35 24 / 35%); color: #b42318; background: rgb(180 35 24 / 6%); border-radius: 4px; font-size: 11px; line-height: 1.6; }
 .guide { min-width: 0; }
 .packageIllustration { position: relative; display: grid; place-items: center; min-height: 230px; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 28px; overflow: hidden; }
 .packageIllustration::before { content: ''; position: absolute; width: 170px; height: 170px; border-radius: 50%; border: 1px solid var(--border-light); }

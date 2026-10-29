@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { requireAdminApi } from '@/lib/admin-auth';
+import { hasSameOrigin } from '@/lib/request-origin';
 import { normalizeProductImages, ProductMediaValidationError } from '@/lib/product-media';
+import {
+  getLowestConfigurationPricing,
+  normalizeProductVariants,
+  ProductConfigurationValidationError,
+} from '@/lib/product-configuration';
 
 // GET /api/admin/products — List all products
 export async function GET() {
@@ -24,10 +30,11 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await requireAdminApi();
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
     const body = await req.json();
     const {
       name, slug, description, shortDescription,
-      price, compareAtPrice, images,
+      images,
       badge, status, categoryId, variants, tags,
     } = body;
 
@@ -39,6 +46,8 @@ export async function POST(req: Request) {
     if (productImages.length === 0) {
       return NextResponse.json({ error: 'At least one product image is required.' }, { status: 400 });
     }
+    const sellableVariants = normalizeProductVariants(variants);
+    const cataloguePricing = getLowestConfigurationPricing(sellableVariants);
 
     // Resolve tags: find existing or create new
     const tagConnections = [];
@@ -60,8 +69,10 @@ export async function POST(req: Request) {
         slug,
         description,
         shortDescription: shortDescription || null,
-        price,
-        compareAtPrice: compareAtPrice || null,
+        // Product cards show "From" the lowest genuinely sellable
+        // configuration. Individual selections always use variant pricing.
+        price: cataloguePricing.price,
+        compareAtPrice: cataloguePricing.compareAtPrice,
         // The cover is always the first saved gallery image. Do not trust a
         // separate client-supplied URL that could bypass media validation.
         image: productImages[0].url,
@@ -69,11 +80,15 @@ export async function POST(req: Request) {
         status: status || 'ACTIVE',
         categoryId,
         variants: {
-          create: (variants || []).map((v: { size: string; price: number; compareAtPrice?: number; sku?: string; stock: number }) => ({
+          create: sellableVariants.map((v) => ({
             size: v.size,
+            format: v.format,
+            paper: v.paper,
+            frame: v.frame,
+            configurationKey: v.configurationKey,
             price: v.price,
-            compareAtPrice: v.compareAtPrice || null,
-            sku: v.sku || null,
+            compareAtPrice: v.compareAtPrice,
+            sku: v.sku,
             stock: v.stock,
           })),
         },
@@ -94,7 +109,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    if (error instanceof ProductMediaValidationError) {
+    if (error instanceof ProductMediaValidationError || error instanceof ProductConfigurationValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('Create product error:', error);

@@ -1,15 +1,16 @@
 import prisma from '@/lib/prisma';
 import { IndianRupee, ShoppingCart, Package, Clock, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
+import { getFulfillmentStatusLabel, getPaymentStatusLabel } from '@/lib/order-types';
 
 export default async function AdminDashboard() {
   const [totalRevenue, totalOrders, pendingOrders, totalProducts, recentOrders] = await Promise.all([
     prisma.order.aggregate({
       _sum: { totalAmount: true },
-      where: { status: { in: ['PAID', 'SHIPPED', 'DELIVERED'] } },
+      where: { paymentStatus: 'PAID', fulfillmentStatus: { not: 'CANCELLED' } },
     }),
     prisma.order.count(),
-    prisma.order.count({ where: { status: 'PENDING' } }),
+    prisma.order.count({ where: { fulfillmentStatus: 'UNFULFILLED', paymentStatus: { in: ['PAID', 'COD_PENDING'] } } }),
     prisma.product.count(),
     prisma.order.findMany({
       take: 10,
@@ -22,10 +23,6 @@ export default async function AdminDashboard() {
   ]);
 
   const revenue = totalRevenue._sum.totalAmount || 0;
-
-  const statusClass = (status: string) => {
-    return `admin-status admin-status-${status.toLowerCase()}`;
-  };
 
   return (
     <>
@@ -103,7 +100,7 @@ export default async function AdminDashboard() {
                 {recentOrders.map((order) => (
                   <tr key={order.id}>
                     <td style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>
-                      #{order.id.slice(-6).toUpperCase()}
+                      {order.orderReference}
                     </td>
                     <td>
                       <div className="admin-table-product-name">{order.shippingName}</div>
@@ -129,9 +126,9 @@ export default async function AdminDashboard() {
                       </div>
                     </td>
                     <td style={{ fontWeight: 600 }}>₹{order.totalAmount.toLocaleString('en-IN')}</td>
-                    <td style={{ fontSize: '0.82rem' }}>{order.paymentMethod}</td>
+                    <td style={{ fontSize: '0.82rem' }}>{getPaymentStatusLabel(order.paymentStatus, order.paymentMethod)}</td>
                     <td>
-                      <span className={statusClass(order.status)}>{order.status}</span>
+                      <span className="admin-status admin-status-paid">{getFulfillmentStatusLabel(order.fulfillmentStatus)}</span>
                     </td>
                     <td style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                       {new Date(order.createdAt).toLocaleDateString('en-IN', {

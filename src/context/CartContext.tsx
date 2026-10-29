@@ -1,9 +1,17 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore } from 'react';
+import type { FrameStyle, PaperQuality, ProductFormat } from '@/lib/product-configuration';
 
 export interface CartItem {
   id: string;
+  /** The exact database ProductVariant ID for new configuration-aware carts. */
+  variantId?: string;
+  configurationKey?: string;
+  format?: ProductFormat;
+  paper?: PaperQuality;
+  frame?: FrameStyle;
+  configurationLabel?: string;
   name: string;
   price: number;
   compareAtPrice: number | null;
@@ -16,8 +24,8 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string, size: string) => void;
-  updateQuantity: (id: string, size: string, quantity: number) => void;
+  removeFromCart: (itemKey: string) => void;
+  updateQuantity: (itemKey: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -27,61 +35,104 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+const EMPTY_CART: CartItem[] = [];
+const subscribeToHydration = () => () => undefined;
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+/**
+ * A configuration is the cart identity, not just the artwork and size. This
+ * makes an A3 poster and an A3 walnut-framed print separate line items.
+ */
+export function getCartItemKey(item: Pick<CartItem, 'id' | 'size' | 'variantId'>) {
+  return item.variantId ? `variant:${item.variantId}` : `legacy:${item.id}:${item.size}`;
+}
+
+export function getCartItemDescription(item: Pick<CartItem, 'size' | 'configurationLabel'>) {
+  return item.configurationLabel ? `${item.size} · ${item.configurationLabel}` : item.size;
+}
+
+function isStoredCartItem(value: unknown): value is CartItem {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const item = value as Record<string, unknown>;
+  return typeof item.id === 'string'
+    && typeof item.name === 'string'
+    && typeof item.image === 'string'
+    && typeof item.size === 'string'
+    && typeof item.slug === 'string'
+    && typeof item.price === 'number'
+    && Number.isFinite(item.price)
+    && typeof item.quantity === 'number'
+    && Number.isInteger(item.quantity)
+    && item.quantity > 0;
+}
+
+function readStoredCart() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem('dreamvault-cart');
+    if (!raw) return [];
+    const value: unknown = JSON.parse(raw);
+    return Array.isArray(value) ? value.filter(isStoredCartItem) : [];
+  } catch {
+    return [];
+  }
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const saved = localStorage.getItem('dreamvault-cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const hydrated = useSyncExternalStore(subscribeToHydration, getClientSnapshot, getServerSnapshot);
+  const [storedItems, setItems] = useState<CartItem[]>(readStoredCart);
+  // Hydration must render the same empty cart as the server before exposing
+  // the browser's saved selections. Never persist that temporary snapshot.
+  const items = hydrated ? storedItems : EMPTY_CART;
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Save cart to localStorage on change
   useEffect(() => {
-    localStorage.setItem('dreamvault-cart', JSON.stringify(items));
-  }, [items]);
+    if (!hydrated) return;
+    try {
+      localStorage.setItem('dreamvault-cart', JSON.stringify(storedItems));
+    } catch {
+      // Storage can be unavailable or full; the in-memory cart remains usable.
+    }
+  }, [hydrated, storedItems]);
 
   const addToCart = useCallback((item: CartItem) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id && i.size === item.size);
+    const itemKey = getCartItemKey(item);
+    setItems((previous) => {
+      const existing = previous.find((candidate) => getCartItemKey(candidate) === itemKey);
       if (existing) {
-        return prev.map((i) =>
-          i.id === item.id && i.size === item.size
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
-        );
+        return previous.map((candidate) => (
+          getCartItemKey(candidate) === itemKey
+            ? { ...item, quantity: candidate.quantity + item.quantity }
+            : candidate
+        ));
       }
-      return [...prev, item];
+      return [...previous, item];
     });
     setIsCartOpen(true);
   }, []);
 
-  const removeFromCart = useCallback((id: string, size: string) => {
-    setItems((prev) => prev.filter((i) => !(i.id === id && i.size === size)));
+  const removeFromCart = useCallback((itemKey: string) => {
+    setItems((previous) => previous.filter((item) => getCartItemKey(item) !== itemKey));
   }, []);
 
-  const updateQuantity = useCallback((id: string, size: string, quantity: number) => {
-    if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => !(i.id === id && i.size === size)));
+  const updateQuantity = useCallback((itemKey: string, quantity: number) => {
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      setItems((previous) => previous.filter((item) => getCartItemKey(item) !== itemKey));
       return;
     }
-    setItems((prev) =>
-      prev.map((i) => (i.id === id && i.size === size ? { ...i, quantity } : i))
-    );
+    setItems((previous) => previous.map((item) => (
+      getCartItemKey(item) === itemKey ? { ...item, quantity } : item
+    )));
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
-
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
-  const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = items.reduce((sum, item) => sum + Math.round(item.price * 100) * item.quantity, 0) / 100;
   const totalSavings = items.reduce(
-    (sum, i) => sum + ((i.compareAtPrice || i.price) - i.price) * i.quantity,
+    (sum, item) => sum + Math.max(0, Math.round((item.compareAtPrice || item.price) * 100) - Math.round(item.price * 100)) * item.quantity,
     0
-  );
+  ) / 100;
 
   return (
     <CartContext.Provider
@@ -104,8 +155,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart must be used within a CartProvider');
-  return ctx;
+  const context = useContext(CartContext);
+  if (!context) throw new Error('useCart must be used within a CartProvider');
+  return context;
 }
-

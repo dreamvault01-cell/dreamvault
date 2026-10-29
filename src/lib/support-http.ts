@@ -2,6 +2,7 @@ import 'server-only';
 import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { SupportError } from './support-validation';
+import { hasSameOrigin } from './request-origin';
 
 export const SUPPORT_NO_CACHE = { 'Cache-Control': 'no-store, private', Vary: 'Cookie, Authorization' };
 
@@ -25,9 +26,7 @@ export function supportApiError(error: unknown) {
 }
 
 export function assertSupportOrigin(request: Request) {
-  const origin = request.headers.get('origin');
-  const fetchSite = request.headers.get('sec-fetch-site');
-  if (!origin || origin !== new URL(request.url).origin || fetchSite === 'cross-site') {
+  if (!hasSameOrigin(request)) {
     throw new SupportError(403, 'Please perform this action from your website dashboard.');
   }
 }

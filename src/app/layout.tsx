@@ -25,7 +25,7 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: 'DreamVault — Premium Art Prints & Posters',
   description:
-    'Elevate your space with personalized artistry. Browse our collection of customized and designer posters, meticulously crafted to reflect your unique style. Premium 300 GSM prints starting from ₹149.',
+    'Discover curated posters, premium art prints, and framed wall art with clear paper, size, and frame choices before checkout.',
   keywords: [
     'posters',
     'art prints',
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'DreamVault — Premium Art Prints & Posters',
     description:
-      'Elevate your space with personalized artistry. Premium 300 GSM art prints & posters.',
+      'Curated posters, premium art prints, and framed wall art for your space.',
     type: 'website',
     siteName: 'DreamVault',
   },

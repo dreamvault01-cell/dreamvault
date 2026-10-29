@@ -6,19 +6,19 @@ import styles from './about.module.css';
 
 export const metadata: Metadata = {
   title: 'Our Story | DreamVault — Art for the Way You Live',
-  description: 'Meet DreamVault. Thoughtfully curated art, premium 300 GSM matte prints, and a belief that your space should feel like you.',
+  description: 'Meet DreamVault. Thoughtfully curated art, considered paper and frame choices, and a belief that your space should feel like you.',
 };
 
 const materials = [
   {
     number: '01', icon: Layers, title: 'Feel the difference.', label: 'The paper',
-    description: '300 GSM art paper. A substantial feel. A beautifully soft matte finish.',
-    detail: 'We use heavyweight 300 GSM matte art paper for a print that feels as considered as the artwork itself. Its low-glare surface lets the colors and details take the spotlight.',
+    description: 'A considered matte finish, chosen to suit the way you want to display it.',
+    detail: 'Poster Prints use Classic Matte paper. Premium Art Prints and Framed Art Prints use Premium Fine-Art Matte paper. The exact option is shown before you add a piece to your cart.',
   },
   {
     number: '02', icon: Scan, title: 'Make it your own.', label: 'The finish',
-    description: 'Clean edges. Standard sizes. The freedom to find your perfect frame.',
-    detail: 'Our art prints are sold unframed and offered in standard paper sizes. Choose the size on the product page, then pair it with a frame that suits your space and your style.',
+    description: 'Choose your print. Choose your finish. Find the frame that feels right.',
+    detail: 'Choose a Poster Print or Premium Art Print for an unframed piece, or select a Framed Art Print in Black, White, Natural Oak, or Walnut when available for the artwork and size you love.',
   },
   {
     number: '03', icon: Package, title: 'Care, all the way.', label: 'The journey',
@@ -78,7 +78,7 @@ export default function AboutPage() {
         <div className={[styles.container, styles.craftGrid].join(' ')}>
           <figure className={styles.craftImage}>
             <Image src="/images/about/craftsmanship.jpg" alt="A close-up of the texture and careful finishing of an art print" fill sizes="(max-width: 800px) 92vw, 46vw" />
-            <figcaption><span>The details make the difference.</span><span>300 GSM / Matte</span></figcaption>
+            <figcaption><span>The details make the difference.</span><span>Matte / Fine-Art</span></figcaption>
           </figure>
           <div className={styles.craftContent}>
             <span className={styles.eyebrow}>02 / Considered in every detail</span>

@@ -1,85 +1,66 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Check, Copy, FileText, LifeBuoy, Package, Truck } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ExternalLink, LifeBuoy, Package, Truck } from 'lucide-react';
 import SupportPage from '@/components/SupportPage';
+import OrderStatusTimeline from '@/components/OrderStatusTimeline';
+import { getCustomerOrderStatus } from '@/lib/order-types';
 import styles from './tracking.module.css';
 
+interface TrackedOrder {
+  orderReference: string;
+  createdAt: string;
+  paymentStatus: string;
+  fulfillmentStatus: string;
+  trackingCarrier: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
+}
+
 export default function TrackOrderPage() {
-  const [orderId, setOrderId] = useState('');
-  const [searched, setSearched] = useState(false);
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
+  const [reference, setReference] = useState('');
+  const [email, setEmail] = useState('');
+  const [order, setOrder] = useState<TrackedOrder | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleTrack = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleTrack = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!orderId.trim()) return;
-    setOrderId(orderId.trim());
-    setSearched(true);
-    setCopyState('idle');
-  };
-
-  const copyReference = async () => {
+    setLoading(true); setError(null); setOrder(null);
     try {
-      await navigator.clipboard.writeText(orderId);
-      setCopyState('copied');
-    } catch {
-      setCopyState('error');
-    }
+      const response = await fetch('/api/orders/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderReference: reference, email }) });
+      const result: { order?: TrackedOrder; error?: string } = await response.json();
+      if (!response.ok || !result.order) throw new Error(result.error || 'We could not find that order.');
+      setOrder(result.order);
+    } catch (trackingError) {
+      setError(trackingError instanceof Error ? trackingError.message : 'Order tracking is temporarily unavailable.');
+    } finally { setLoading(false); }
   };
 
-  return (
-    <SupportPage
-      eyebrow="A little help with your delivery"
-      title={<>Every print.<br /><em>A journey home.</em></>}
-      description="A question about your delivery? Have your order reference ready and we’ll help you find your next update."
-      breadcrumb="Track your order"
-    >
-      <div className={styles.layout}>
-        <section className={styles.card} aria-labelledby="reference-heading">
-          <div className={styles.cardTop}><span>Order care / DreamVault</span><Package size={22} strokeWidth={1.3} aria-hidden="true" /></div>
-          <h2 id="reference-heading">Let’s start with<br />your order reference.</h2>
-          <p className={styles.intro}>Keep the details together. Add your reference below, then share it with our support team for an update.</p>
-          <form onSubmit={handleTrack}>
-            <label htmlFor="order-reference">Order reference</label>
-            <input
-              id="order-reference"
-              name="order-reference"
-              placeholder="Enter your order reference"
-              value={orderId}
-              maxLength={120}
-              required
-              autoComplete="off"
-              aria-describedby="reference-hint"
-              onChange={(event) => { setOrderId(event.target.value); setSearched(false); setCopyState('idle'); }}
-            />
-            <p id="reference-hint" className={styles.hint}>Use the reference associated with your order.</p>
-            <button type="submit" className={styles.primary}>Get order help <ArrowRight size={18} aria-hidden="true" /></button>
-          </form>
-          {searched ? (
-            <div className={styles.result} role="status" aria-live="polite">
-              <span className={styles.resultEyebrow}>Your reference is ready</span>
-              <div className={styles.reference}><code>{orderId}</code><button type="button" onClick={copyReference} aria-label={copyState === 'copied' ? 'Reference copied' : 'Copy order reference'}>{copyState === 'copied' ? <Check size={17} aria-hidden="true" /> : <Copy size={17} aria-hidden="true" />}</button></div>
-              {copyState === 'copied' && <p className={styles.copyFeedback}>Copied. You’re ready to share it.</p>}
-              {copyState === 'error' && <p className={styles.copyFeedback}>Please select and copy the reference above.</p>}
-              <p>Our team can help with the latest order update. Include this reference when you send your message.</p>
-              <Link href="/contact">Ask about this order <ArrowUpRight size={16} aria-hidden="true" /></Link>
-            </div>
-          ) : (
-            <div className={styles.note}><FileText size={18} aria-hidden="true" /><p>Not sure where to find it? Check the order details you saved, or contact us with the email used at checkout.</p></div>
-          )}
-        </section>
-        <aside className={styles.guide} aria-labelledby="guide-heading">
-          <div className={styles.packageIllustration} aria-hidden="true"><div><Package size={76} strokeWidth={0.7} /><span>Handled with care.</span></div><span className={styles.illustrationIndex}>DV / From print to place</span></div>
-          <span className={styles.eyebrow}>A personal touch</span>
-          <h2 id="guide-heading">A little care.<br /><em>All the way home.</em></h2>
-          <p>For delivery questions, a missing reference, or something that needs a second look, our team is a message away.</p>
-          <div className={styles.guideLinks}>
-            <Link href="/shipping-delivery"><Truck size={19} strokeWidth={1.4} aria-hidden="true" /><span>Shipping & delivery<small>Timeframes and the journey to your door</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-            <Link href="/contact"><LifeBuoy size={19} strokeWidth={1.4} aria-hidden="true" /><span>Talk to our team<small>A little help with your specific order</small></span><ArrowUpRight size={16} aria-hidden="true" /></Link>
-          </div>
-        </aside>
-      </div>
-    </SupportPage>
-  );
+  return <SupportPage eyebrow="Order care" title={<>Every print.<br /><em>A journey home.</em></>} description="Enter the order reference and the email used at checkout to see a live delivery update." breadcrumb="Track your order">
+    <div className={styles.layout}>
+      <section className={styles.card} aria-labelledby="reference-heading">
+        <div className={styles.cardTop}><span>Order tracking / DreamVault</span><Package size={22} strokeWidth={1.3} aria-hidden="true" /></div>
+        <h2 id="reference-heading">Find your<br />order update.</h2>
+        <p className={styles.intro}>For privacy, we match the reference with your checkout email before showing delivery details.</p>
+        <form onSubmit={handleTrack}>
+          <label htmlFor="order-reference">Order reference</label>
+          <input id="order-reference" name="order-reference" placeholder="DV-20261028-AB12CD34" value={reference} maxLength={64} required autoComplete="off" onChange={(event) => setReference(event.target.value.toUpperCase())} />
+          <label htmlFor="tracking-email" className={styles.secondLabel}>Checkout email</label>
+          <input id="tracking-email" name="email" type="email" placeholder="you@example.com" value={email} maxLength={254} required autoComplete="email" onChange={(event) => setEmail(event.target.value)} />
+          <button type="submit" className={styles.primary} disabled={loading}>{loading ? 'Finding your update…' : <>Track order <ArrowRight size={18} aria-hidden="true" /></>}</button>
+        </form>
+        {error && <p className={styles.error} role="alert">{error}</p>}
+        {order && <div className={styles.result} role="status" aria-live="polite"><span className={styles.resultEyebrow}>{order.orderReference}</span><h3>{getCustomerOrderStatus(order.fulfillmentStatus, order.paymentStatus)}</h3><OrderStatusTimeline paymentStatus={order.paymentStatus} fulfillmentStatus={order.fulfillmentStatus} createdAt={order.createdAt} shippedAt={order.shippedAt} deliveredAt={order.deliveredAt} cancelledAt={order.cancelledAt} />
+          {order.trackingCarrier && order.trackingNumber && <p><strong>{order.trackingCarrier}</strong><br />Tracking number: {order.trackingNumber}</p>}
+          {order.trackingUrl && <a href={order.trackingUrl} target="_blank" rel="noreferrer">Open courier tracking <ExternalLink size={15} /></a>}
+        </div>}
+      </section>
+      <aside className={styles.guide} aria-labelledby="guide-heading"><div className={styles.packageIllustration} aria-hidden="true"><div><Package size={76} strokeWidth={.7} /><span>Handled with care.</span></div><span className={styles.illustrationIndex}>DV / From print to place</span></div><span className={styles.eyebrow}>Need a hand?</span><h2 id="guide-heading">A little care.<br /><em>All the way home.</em></h2><p>If an update needs a closer look, our support team can help with your reference.</p><div className={styles.guideLinks}><Link href="/shipping-delivery"><Truck size={19} strokeWidth={1.4} /><span>Shipping & delivery<small>Timeframes and delivery information</small></span><ArrowUpRight size={16} /></Link><Link href="/contact"><LifeBuoy size={19} strokeWidth={1.4} /><span>Talk to our team<small>Help with a specific order</small></span><ArrowUpRight size={16} /></Link></div></aside>
+    </div>
+  </SupportPage>;
 }

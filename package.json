@@ -9,8 +9,11 @@
     "lint": "eslint",
     "db:support": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/support-inbox.sql",
     "db:product-media": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/product-room-preview.sql",
-    "test:product": "node --import tsx --test src/lib/product-options.test.ts src/lib/product-media.test.ts",
-    "test:product:db": "node --import tsx --test src/lib/product-media.integration.test.ts",
+    "db:product-configurations": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/product-configurations.sql",
+    "db:order-fulfillment": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/order-fulfillment.sql",
+    "test:product": "node --import tsx --test src/lib/product-options.test.ts src/lib/product-media.test.ts src/lib/product-configuration.test.ts",
+    "test:product:db": "node --import tsx --test src/lib/product-media.integration.test.ts src/lib/product-configuration.integration.test.ts",
+    "test:orders": "node --conditions=react-server --import tsx --test src/lib/order-types.test.ts src/lib/order-validation.test.ts src/lib/order-mail.test.ts src/lib/order-notifications.test.ts src/lib/razorpay-webhook.test.ts src/lib/razorpay-refund.test.ts src/lib/order-migration.test.ts",
     "test:support": "node --conditions=react-server --import tsx --test src/lib/contact.test.ts src/app/api/contact/route.test.ts src/lib/support-config.test.ts src/lib/support-mail.test.ts src/lib/support-http.test.ts src/lib/support-validation.test.ts src/lib/support-outbox.test.ts src/lib/support-inbound.test.ts src/lib/support-store.integration.test.ts"
   },
   "dependencies": {

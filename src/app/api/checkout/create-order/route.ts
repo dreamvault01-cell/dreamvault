@@ -1,163 +1,111 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
-import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
+import prisma from '@/lib/prisma';
+import { processOrderOutbox } from '@/lib/order-notifications';
+import {
+  attachRazorpayOrder,
+  cancelUnstartedPayment,
+  createCheckoutOrder,
+  OrderStoreError,
+} from '@/lib/order-store';
+import { OrderValidationError, validateCheckoutPayload } from '@/lib/order-validation';
 
-const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'dummy_key',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
-});
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
-export async function POST(req: Request) {
+function paymentConfig() {
+  const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  return keyId && keySecret ? { keyId, keySecret } : null;
+}
+
+async function findOrCreateCustomer(clerkId: string, clerkUser: NonNullable<Awaited<ReturnType<typeof currentUser>>>) {
+  const email = clerkUser.primaryEmailAddress?.emailAddress
+    ?? clerkUser.emailAddresses[0]?.emailAddress
+    ?? `${clerkId}@customer.invalid`;
+  // Upsert closes the small race where two rapid checkout requests arrive
+  // before the local customer row has been created.
+  return prisma.user.upsert({
+    where: { clerkId },
+    update: {},
+    create: {
+      clerkId,
+      email: email.toLowerCase(),
+      firstName: clerkUser.firstName,
+      lastName: clerkUser.lastName,
+      role: 'USER',
+    },
+  });
+}
+
+export async function POST(request: Request) {
+  let createdOrderId: string | null = null;
   try {
     const clerkUser = await currentUser();
-    const userId = clerkUser?.id;
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!clerkUser) return NextResponse.json({ error: 'Please sign in before checking out.' }, { status: 401 });
+    if (!request.headers.get('content-type')?.toLowerCase().includes('application/json')) {
+      return NextResponse.json({ error: 'Checkout must be sent as JSON.' }, { status: 415 });
     }
 
-    const body = await req.json();
-    const { items, shippingDetails, paymentMethod } = body;
+    const input = validateCheckoutPayload(await request.json());
+    const customer = await findOrCreateCustomer(clerkUser.id, clerkUser);
+    const order = await createCheckoutOrder(input, customer.id);
+    createdOrderId = order.id;
 
-    if (!items || !items.length || !shippingDetails) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
-    }
-
-    // 🔒 PRODUCTION READY: Verify prices against the Database
-    let totalAmount = 0;
-    const validatedItems = [];
-
-    for (const item of items) {
-      const dbProduct = await prisma.product.findUnique({
-        where: { id: item.id },
-        include: { variants: true },
-      });
-
-      if (!dbProduct) {
-        return NextResponse.json({ error: `Product not found: ${item.name}` }, { status: 400 });
-      }
-
-      // 🔒 SECURITY: Prevent negative or fractional quantities
-      if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-        return NextResponse.json({ error: `Invalid quantity for product: ${dbProduct.name}` }, { status: 400 });
-      }
-
-      // Look up the correct variant price based on the selected size
-      let unitPrice = dbProduct.price;
-      if (item.size && dbProduct.variants.length > 0) {
-        // Normalize: strip dimension labels like "A4 (21×30 cm)" → "A4"
-        const sizeKey = item.size.split(' ')[0].toUpperCase();
-        const variant = dbProduct.variants.find((v) => v.size.toUpperCase() === sizeKey);
-        if (variant) {
-          unitPrice = variant.price;
-        }
-      }
-
-      totalAmount += unitPrice * item.quantity;
-      validatedItems.push({
-        productId: dbProduct.id,
-        quantity: item.quantity,
-        price: unitPrice,
-        size: item.size || null,
-      });
-    }
-
-    // Apply ₹50 discount if UPI
-    if (paymentMethod === 'UPI (₹50 OFF)') {
-      totalAmount = Math.max(1, totalAmount - 50);
-    }
-
-    // 🔒 SECURITY: Ensure total amount is at least 1 INR
-    if (totalAmount < 1) {
-      return NextResponse.json({ error: 'Order total must be at least ₹1' }, { status: 400 });
-    }
-
-    // Get internal user id from Clerk ID
-    let internalUser = await prisma.user.findUnique({
-      where: { clerkId: userId },
-    });
-
-    if (!internalUser) {
-      const email = clerkUser?.emailAddresses?.[0]?.emailAddress || `${userId}@placeholder.com`;
-      internalUser = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: email,
-          firstName: clerkUser?.firstName,
-          lastName: clerkUser?.lastName,
-          role: 'USER',
-        }
-      });
-    }
-
-    const isCOD = paymentMethod === 'Cash on Delivery';
-
-    // If it's Cash on Delivery, we don't need Razorpay
-    if (isCOD) {
-      const order = await prisma.order.create({
-        data: {
-          userId: internalUser.id,
-          status: 'PENDING', // Will be updated to delivered later
-          paymentMethod: 'COD',
-          totalAmount,
-          shippingName: shippingDetails.name,
-          shippingPhone: shippingDetails.phone,
-          shippingAddress: shippingDetails.address,
-          shippingCity: shippingDetails.city,
-          shippingState: shippingDetails.state,
-          shippingPin: shippingDetails.pin,
-          items: {
-            create: validatedItems,
-          },
-        },
-      });
-
+    if (order.paymentMethod === 'COD') {
+      // Delivery is durable in the outbox; a temporary mail failure must never
+      // undo a valid order or its committed inventory.
+      after(async () => { await processOrderOutbox({ orderId: order.id, limit: 1, budgetMs: 7_000 }).catch(() => undefined); });
       return NextResponse.json({
         success: true,
-        dbOrderId: order.id,
-      });
+        paymentMethod: 'COD',
+        orderReference: order.orderReference,
+      }, { status: 201 });
     }
 
-    // Create Razorpay Order for online payments
-    const options = {
-      amount: Math.round(totalAmount * 100), // paise
-      currency: 'INR',
-      receipt: `rcpt_${Date.now()}`,
-    };
+    const config = paymentConfig();
+    if (!config) {
+      await cancelUnstartedPayment(order.id);
+      return NextResponse.json({ error: 'Online payments are not configured yet. Please choose cash on delivery or try again later.' }, { status: 503 });
+    }
 
-    const razorpayOrder = await razorpay.orders.create(options);
-
-    // Save PENDING order to our DB
-    const order = await prisma.order.create({
-      data: {
-        userId: internalUser.id,
-        razorpayOrderId: razorpayOrder.id,
-        status: 'PENDING',
-        paymentMethod: paymentMethod || 'RAZORPAY',
-        totalAmount,
-        shippingName: shippingDetails.name,
-        shippingPhone: shippingDetails.phone,
-        shippingAddress: shippingDetails.address,
-        shippingCity: shippingDetails.city,
-        shippingState: shippingDetails.state,
-        shippingPin: shippingDetails.pin,
-        items: {
-          create: validatedItems,
-        },
-      },
-    });
-
-    return NextResponse.json({
-      orderId: razorpayOrder.id,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency,
-      dbOrderId: order.id,
-    });
+    try {
+      const razorpay = new Razorpay({ key_id: config.keyId, key_secret: config.keySecret });
+      const gatewayOrder = await razorpay.orders.create({
+        amount: Math.round(order.totalAmount * 100),
+        currency: 'INR',
+        receipt: order.orderReference,
+        notes: { dreamvault_order_reference: order.orderReference },
+      });
+      if (!gatewayOrder.id || typeof gatewayOrder.amount !== 'number' || !gatewayOrder.currency) {
+        throw new Error('The payment provider returned an incomplete payment session.');
+      }
+      if (gatewayOrder.amount !== Math.round(order.totalAmount * 100) || gatewayOrder.currency.toUpperCase() !== 'INR') {
+        throw new Error('The payment provider returned an order with an unexpected amount.');
+      }
+      await attachRazorpayOrder(order.id, gatewayOrder.id);
+      return NextResponse.json({
+        success: true,
+        paymentMethod: 'RAZORPAY',
+        orderId: gatewayOrder.id,
+        amount: gatewayOrder.amount,
+        currency: gatewayOrder.currency,
+        orderReference: order.orderReference,
+        reservationExpiresAt: order.reservationExpiresAt?.toISOString() ?? null,
+      }, { status: 201 });
+    } catch (error) {
+      await cancelUnstartedPayment(order.id).catch(() => undefined);
+      throw error;
+    }
   } catch (error) {
-    console.error('Error creating checkout order:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    if (error instanceof OrderValidationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    if (error instanceof OrderStoreError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    console.error('Checkout order creation failed', { createdOrderId, error });
+    return NextResponse.json({ error: 'We could not start checkout. No payment has been taken.' }, { status: 500 });
   }
 }

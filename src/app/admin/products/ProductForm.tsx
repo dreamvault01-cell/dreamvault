@@ -10,6 +10,16 @@ import {
 import { useToast } from '@/components/Toast';
 import ProductDialog from '@/components/ProductDialog';
 import ProductGallery from '@/components/ProductGallery';
+import {
+  PRODUCT_OFFERINGS,
+  PRODUCT_SIZES,
+  getConfigurationLabel,
+  getPaperLabel,
+  normalizeProductConfiguration,
+  type FrameStyle,
+  type PaperQuality,
+  type ProductFormat,
+} from '@/lib/product-configuration';
 import mediaStyles from './ProductMedia.module.css';
 
 interface Category {
@@ -19,11 +29,17 @@ interface Category {
 }
 
 interface Variant {
+  id?: string;
   size: string;
+  format: ProductFormat;
+  paper: PaperQuality;
+  frame: FrameStyle;
   price: number;
   compareAtPrice: number | null;
   sku: string;
   stock: number;
+  /** Active checkout holds; shown so staff never reduce stock below it. */
+  reservedStock?: number;
 }
 
 interface ProductImageItem {
@@ -61,7 +77,7 @@ interface ProductFormProps {
   };
 }
 
-const SIZES = ['A4', 'A3', 'A2', 'A1'];
+const SIZES = PRODUCT_SIZES;
 
 const SUGGESTED_TAGS = [
   'trending', 'bestseller', 'new-arrival', 'limited-edition',
@@ -70,9 +86,9 @@ const SUGGESTED_TAGS = [
 ];
 
 const DEFAULT_VARIANTS: Variant[] = [
-  { size: 'A4', price: 149, compareAtPrice: null, sku: '', stock: 50 },
-  { size: 'A3', price: 199, compareAtPrice: null, sku: '', stock: 30 },
-  { size: 'A2', price: 349, compareAtPrice: null, sku: '', stock: 20 },
+  { size: 'A4', format: 'POSTER', paper: 'CLASSIC_MATTE', frame: 'NONE', price: 149, compareAtPrice: null, sku: '', stock: 50 },
+  { size: 'A3', format: 'POSTER', paper: 'CLASSIC_MATTE', frame: 'NONE', price: 199, compareAtPrice: null, sku: '', stock: 30 },
+  { size: 'A2', format: 'POSTER', paper: 'CLASSIC_MATTE', frame: 'NONE', price: 349, compareAtPrice: null, sku: '', stock: 20 },
 ];
 
 type SectionKey = 'media' | 'details' | 'pricing' | 'variants' | 'tags' | 'organization';
@@ -84,7 +100,6 @@ interface FormSnapshot {
   description: string;
   shortDescription: string;
   price: number;
-  compareAtPrice: number | '';
   badge: string;
   status: string;
   categoryId: string;
@@ -97,6 +112,36 @@ function getBasePrice(variants: Variant[], fallbackPrice: number) {
   return variants.length > 0
     ? Math.min(...variants.map((variant) => variant.price))
     : fallbackPrice;
+}
+
+function normaliseVariantForForm(variant: Partial<Variant>): Variant {
+  const configuration = normalizeProductConfiguration({
+    size: variant.size || 'A4',
+    format: variant.format,
+    paper: variant.paper,
+    frame: variant.frame,
+  });
+  return {
+    id: variant.id,
+    ...configuration,
+    price: Number.isFinite(variant.price) && (variant.price || 0) > 0 ? variant.price! : 149,
+    compareAtPrice: variant.compareAtPrice ?? null,
+    sku: variant.sku || '',
+    stock: Number.isInteger(variant.stock) && (variant.stock || 0) >= 0 ? variant.stock! : 0,
+    reservedStock: Number.isInteger(variant.reservedStock) && (variant.reservedStock || 0) > 0 ? variant.reservedStock : 0,
+  };
+}
+
+function getVariantKey(variant: Pick<Variant, 'id' | 'size' | 'format' | 'paper' | 'frame'>) {
+  return variant.id || normalizeProductConfiguration(variant).configurationKey;
+}
+
+function getSuggestedConfigurationPrice(variants: Variant[], next: Pick<Variant, 'size' | 'format'>, fallbackPrice: number) {
+  const sameSizePoster = variants.find((variant) => variant.size === next.size && variant.format === 'POSTER')?.price;
+  const baseline = sameSizePoster || fallbackPrice || 149;
+  if (next.format === 'ART_PRINT') return baseline + 100;
+  if (next.format === 'FRAMED_ART_PRINT') return baseline + 400;
+  return baseline;
 }
 
 function getFormSnapshot(values: FormSnapshot) {
@@ -159,11 +204,13 @@ export default function ProductForm({ categories, existingTags = [], initialData
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [shortDescription, setShortDescription] = useState(initialData?.shortDescription || '');
-  const [compareAtPrice, setCompareAtPrice] = useState<number | ''>(initialData?.compareAtPrice || '');
   const [badge, setBadge] = useState(initialData?.badge || '');
   const [status, setStatus] = useState(initialData?.status || 'ACTIVE');
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
-  const [variants, setVariants] = useState<Variant[]>(() => initialData?.variants || DEFAULT_VARIANTS);
+  const [variants, setVariants] = useState<Variant[]>(() => (initialData?.variants || DEFAULT_VARIANTS).map(normaliseVariantForForm));
+  const [expectedStocks] = useState<Record<string, number>>(() => Object.fromEntries(
+    (initialData?.variants || []).filter((variant) => variant.id).map((variant) => [variant.id!, variant.stock])
+  ));
   const basePrice = getBasePrice(variants, initialData?.price ?? 0);
 
   // ---- Image Gallery State ----
@@ -176,10 +223,9 @@ export default function ProductForm({ categories, existingTags = [], initialData
   );
   const [uploading, setUploading] = useState(false);
   const [roomPreviewOpen, setRoomPreviewOpen] = useState(false);
-  const [previewSize, setPreviewSize] = useState('A3');
+  const [previewVariantKey, setPreviewVariantKey] = useState('');
   const roomPreviewImage = images.find((image) => image.isRoomPreview);
-  const previewSizes = [...new Set(variants.map((variant) => variant.size))];
-  const selectedPreviewSize = previewSizes.includes(previewSize) ? previewSize : (previewSizes[0] || 'A3');
+  const selectedPreviewVariant = variants.find((variant) => getVariantKey(variant) === previewVariantKey) || variants[0] || DEFAULT_VARIANTS[0];
 
   // ---- Tags State ----
   const [tags, setTags] = useState<TagItem[]>(initialData?.tags || []);
@@ -206,7 +252,6 @@ export default function ProductForm({ categories, existingTags = [], initialData
     description,
     shortDescription,
     price: basePrice,
-    compareAtPrice,
     badge,
     status,
     categoryId,
@@ -244,7 +289,40 @@ export default function ProductForm({ categories, existingTags = [], initialData
     if (!description.trim()) errs.description = 'Description is required';
     if (images.length === 0) errs.images = 'At least one image is required';
     if (!categoryId) errs.categoryId = 'Category is required';
-    if (variants.length === 0) errs.variants = 'At least one size variant is required';
+    if (variants.length === 0) {
+      errs.variants = 'Add at least one sellable configuration';
+    } else {
+      const keys = new Set<string>();
+      for (const variant of variants) {
+        try {
+          const configuration = normalizeProductConfiguration(variant);
+          if (keys.has(configuration.configurationKey)) {
+            errs.variants = 'Each size and finish combination can appear only once';
+            break;
+          }
+          keys.add(configuration.configurationKey);
+          if (!Number.isFinite(variant.price) || variant.price <= 0) {
+            errs.variants = 'Every configuration needs a valid price';
+            break;
+          }
+          if (!Number.isInteger(variant.stock) || variant.stock < 0) {
+            errs.variants = 'Every configuration needs a whole-number stock level';
+            break;
+          }
+          if ((variant.reservedStock ?? 0) > variant.stock) {
+            errs.variants = `Stock cannot be lower than the ${variant.reservedStock} unit(s) currently held at checkout`;
+            break;
+          }
+          if (variant.compareAtPrice !== null && variant.compareAtPrice <= variant.price) {
+            errs.variants = 'Compare-at price must be higher than the selling price';
+            break;
+          }
+        } catch (error) {
+          errs.variants = error instanceof Error ? error.message : 'A configuration is invalid';
+          break;
+        }
+      }
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -389,15 +467,47 @@ export default function ProductForm({ categories, existingTags = [], initialData
     );
   };
 
+  const updateVariantFormat = (index: number, format: ProductFormat) => {
+    setVariants((previous) => previous.map((variant, variantIndex) => {
+      if (variantIndex !== index) return variant;
+      const offering = PRODUCT_OFFERINGS.find((candidate) => (
+        candidate.format === format
+        && (format !== 'FRAMED_ART_PRINT' || candidate.frame === variant.frame)
+      )) ?? PRODUCT_OFFERINGS.find((candidate) => candidate.format === format);
+      return offering ? { ...variant, ...offering } : variant;
+    }));
+  };
+
+  const updateVariantFrame = (index: number, frame: FrameStyle) => {
+    setVariants((previous) => previous.map((variant, variantIndex) => (
+      variantIndex === index
+        ? { ...variant, format: 'FRAMED_ART_PRINT', paper: 'PREMIUM_FINE_ART', frame }
+        : variant
+    )));
+  };
+
   const addVariant = () => {
-    const usedSizes = variants.map((v) => v.size);
-    const nextSize = SIZES.find((s) => !usedSizes.includes(s));
-    if (nextSize) {
-      setVariants([...variants, { size: nextSize, price: basePrice || 149, compareAtPrice: null, sku: '', stock: 10 }]);
-    }
+    const usedKeys = new Set(variants.map((variant) => normalizeProductConfiguration(variant).configurationKey));
+    const next = SIZES.flatMap((size) => PRODUCT_OFFERINGS.map((offering) => ({ size, ...offering })))
+      .find((configuration) => !usedKeys.has(normalizeProductConfiguration(configuration).configurationKey));
+    if (!next) return;
+    setVariants((previous) => [
+      ...previous,
+      {
+        ...next,
+        price: getSuggestedConfigurationPrice(previous, next, basePrice),
+        compareAtPrice: null,
+        sku: '',
+        stock: 10,
+      },
+    ]);
   };
 
   const removeVariant = (index: number) => {
+    if ((variants[index]?.reservedStock ?? 0) > 0) {
+      showError('Configuration is held', 'This configuration has an active checkout hold. Wait for it to complete or expire before removing it.');
+      return;
+    }
     setVariants(variants.filter((_, i) => i !== index));
   };
 
@@ -429,12 +539,12 @@ export default function ProductForm({ categories, existingTags = [], initialData
           description,
           shortDescription: shortDescription || null,
           price: basePrice,
-          compareAtPrice: compareAtPrice || null,
           images: images.map((img, i) => ({ url: img.url, alt: img.alt || name, position: i, isRoomPreview: img.isRoomPreview })),
           badge: badge || null,
           status,
           categoryId,
           variants,
+          expectedStocks: isEdit ? expectedStocks : undefined,
           tags: tags.map((t) => ({ name: t.name, slug: t.slug })),
         }),
       });
@@ -620,20 +730,50 @@ export default function ProductForm({ categories, existingTags = [], initialData
             )}
           </div>
 
-          {/* SIZE VARIANTS Section */}
+          {/* SELLABLE CONFIGURATIONS Section */}
           <div className="pf-card">
-            <SectionHeader title="Size Variants & Pricing" icon={<span style={{ fontSize: '1rem' }}>📐</span>} sectionKey="variants" subtitle={`${variants.length} variant(s)`} isOpen={sectionsOpen.variants} onToggle={toggleSection} />
+            <SectionHeader title="Sellable Configurations" icon={<span style={{ fontSize: '1rem' }}>▣</span>} sectionKey="variants" subtitle={`${variants.length} configuration(s)`} isOpen={sectionsOpen.variants} onToggle={toggleSection} />
             {sectionsOpen.variants && (
               <div className="pf-card-body">
+                <div className="pf-configuration-intro">
+                  <p>Each row is one exact item customers can buy: its size, paper, frame, price, and physical stock.</p>
+                  <p>Poster Print uses Classic Matte. Premium Art Print and Framed Art Print use Premium Fine-Art Matte.</p>
+                </div>
                 {variants.map((variant, index) => (
-                  <div key={variant.size} className="pf-variant-card">
+                  <div key={getVariantKey(variant)} className="pf-variant-card">
                     <div className="pf-variant-header">
-                      <span className="pf-variant-size-badge">{variant.size}</span>
+                      <div className="pf-configuration-title">
+                        <span className="pf-variant-size-badge">{variant.size}</span>
+                        <span>{getConfigurationLabel(normalizeProductConfiguration(variant))}</span>
+                      </div>
                       <button type="button" className="pf-variant-remove" onClick={() => removeVariant(index)}>
                         <X size={14} />
                       </button>
                     </div>
-                    <div className="pf-variant-fields">
+                    <div className="pf-variant-fields pf-configuration-fields">
+                      <div className="pf-field pf-field-compact">
+                        <label className="pf-label-sm">Product form</label>
+                        <select className="pf-input pf-input-sm" value={variant.format} onChange={(event) => updateVariantFormat(index, event.target.value as ProductFormat)}>
+                          <option value="POSTER">Poster Print</option>
+                          <option value="ART_PRINT">Premium Art Print</option>
+                          <option value="FRAMED_ART_PRINT">Framed Art Print</option>
+                        </select>
+                      </div>
+                      <div className="pf-field pf-field-compact">
+                        <label className="pf-label-sm">Paper</label>
+                        <div className="pf-readonly-value">{getPaperLabel(variant.paper)}</div>
+                      </div>
+                      {variant.format === 'FRAMED_ART_PRINT' && (
+                        <div className="pf-field pf-field-compact">
+                          <label className="pf-label-sm">Frame</label>
+                          <select className="pf-input pf-input-sm" value={variant.frame} onChange={(event) => updateVariantFrame(index, event.target.value as FrameStyle)}>
+                            <option value="BLACK">Black</option>
+                            <option value="WHITE">White</option>
+                            <option value="NATURAL_OAK">Natural Oak</option>
+                            <option value="WALNUT">Walnut</option>
+                          </select>
+                        </div>
+                      )}
                       <div className="pf-field pf-field-compact">
                         <label className="pf-label-sm">Size</label>
                         <select className="pf-input pf-input-sm" value={variant.size} onChange={(e) => updateVariant(index, 'size', e.target.value)}>
@@ -655,16 +795,17 @@ export default function ProductForm({ categories, existingTags = [], initialData
                         <input type="text" className="pf-input pf-input-sm" value={variant.sku} onChange={(e) => updateVariant(index, 'sku', e.target.value)} placeholder="DV-001" />
                       </div>
                       <div className="pf-field pf-field-compact">
-                        <label className="pf-label-sm">Stock</label>
-                        <input type="number" className="pf-input pf-input-sm" value={variant.stock} onChange={(e) => updateVariant(index, 'stock', Number(e.target.value))} min={0} />
+                        <label className="pf-label-sm">On-hand stock</label>
+                        <input type="number" className="pf-input pf-input-sm" value={variant.stock} onChange={(e) => updateVariant(index, 'stock', Number(e.target.value))} min={variant.reservedStock ?? 0} />
+                        {(variant.reservedStock ?? 0) > 0 && <small className="pf-field-note">{variant.reservedStock} temporarily held · {variant.stock - (variant.reservedStock ?? 0)} available</small>}
                       </div>
                     </div>
                   </div>
                 ))}
 
-                {variants.length < SIZES.length && (
+                {variants.length < SIZES.length * PRODUCT_OFFERINGS.length && (
                   <button type="button" className="pf-add-variant-btn" onClick={addVariant}>
-                    <Plus size={16} /> Add Size Variant
+                    <Plus size={16} /> Add another configuration
                   </button>
                 )}
                 <FieldError field="variants" errors={errors} />
@@ -746,17 +887,9 @@ export default function ProductForm({ categories, existingTags = [], initialData
                   </div>
                   <span className="pf-pricing-hint">Automatically set to lowest variant price</span>
                 </div>
-                <div className="pf-field" style={{ marginTop: '1rem' }}>
-                  <label className="pf-label">Compare at Price (MRP)</label>
-                  <input
-                    type="number"
-                    className="pf-input"
-                    value={compareAtPrice}
-                    onChange={(e) => setCompareAtPrice(e.target.value ? Number(e.target.value) : '')}
-                    placeholder="Shows strikethrough if higher"
-                    min={0}
-                  />
-                </div>
+                <p className="pf-pricing-hint" style={{ marginTop: '1rem' }}>
+                  Set any compare-at price on the individual sellable configuration. This keeps discounts accurate for the exact print a customer selected.
+                </p>
               </div>
             )}
           </div>
@@ -844,9 +977,13 @@ export default function ProductForm({ categories, existingTags = [], initialData
         <div className={mediaStyles.previewIntro}>
           <p>Preview your selected artwork before saving. This illustration is not a product photo.</p>
           <label>
-            Print size
-            <select value={selectedPreviewSize} onChange={(event) => setPreviewSize(event.target.value)} aria-label="Room preview print size">
-              {(previewSizes.length ? previewSizes : ['A3']).map((size) => <option key={size} value={size}>{size}</option>)}
+            Sellable configuration
+            <select value={getVariantKey(selectedPreviewVariant)} onChange={(event) => setPreviewVariantKey(event.target.value)} aria-label="Room preview configuration">
+              {variants.map((variant) => (
+                <option key={getVariantKey(variant)} value={getVariantKey(variant)}>
+                  {variant.size} · {getConfigurationLabel(normalizeProductConfiguration(variant))}
+                </option>
+              ))}
             </select>
           </label>
         </div>
@@ -856,7 +993,10 @@ export default function ProductForm({ categories, existingTags = [], initialData
             mainImage={images[0]?.url || ''}
             images={images.map((image, index) => ({ ...image, id: image.id || `preview-${index}` }))}
             productName={name || 'Your artwork'}
-            selectedSize={selectedPreviewSize}
+            selectedSize={selectedPreviewVariant.size}
+            selectedFormat={selectedPreviewVariant.format}
+            selectedPaper={selectedPreviewVariant.paper}
+            selectedFrame={selectedPreviewVariant.frame}
             initialView="room"
           />
         </div>

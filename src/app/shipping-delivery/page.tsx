@@ -1,5 +1,4 @@
 import PolicyLayout, { PolicySection } from '@/components/PolicyLayout';
-import styles from '@/components/PolicyLayout.module.css';
 import { getSupportConfig } from '@/lib/support-config';
 
 export default function ShippingDeliveryPage() {
@@ -9,45 +8,23 @@ export default function ShippingDeliveryPage() {
       tag="INFORMATION"
       title="Shipping &"
       titleAccent="Delivery"
-      subtitle="Everything you need to know about how we get your art to your doorstep."
+      subtitle="A simple view of what happens after you place a DreamVault order."
       lastUpdated="October 1, 2026"
     >
-      <PolicySection id="delivery-zones-and-timeframes" title="Delivery Zones & Timeframes">
-        <div className={styles.tableWrap} role="region" aria-label="Delivery zones, timeframes and costs" tabIndex={0}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                {['Zone', 'Estimated Delivery', 'Standard Cost', 'Express Cost'].map((h) => (
-                  <th key={h} scope="col">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['Metro Cities', '3–5 days', 'Free (₹499+)', '₹149'],
-                ['Tier 2 Cities', '5–7 days', 'Free (₹499+)', '₹149'],
-                ['Rural Areas', '7–10 days', '₹79', '₹199'],
-                ['North East', '7–12 days', '₹99', '₹249'],
-              ].map(([zone, time, std, exp], i) => (
-                <tr key={i}>
-                  <td>{zone}</td>
-                  <td>{time}</td>
-                  <td>{std}</td>
-                  <td>{exp}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <PolicySection id="after-you-order" title="After You Order">
+        <p>Once your order is accepted, it moves from preparation to shipment. A courier is selected when the parcel is ready to leave. Delivery timing depends on the selected print, destination, courier network, and local conditions, so the courier update is the most accurate estimate.</p>
       </PolicySection>
-      <PolicySection id="how-we-pack-your-art" title="How We Pack Your Art">
-        <p>Every poster is printed on premium 300 GSM art card stock, then carefully packed in a rigid cardboard mailer or protective tube to ensure it arrives without bends, creases, or damage. We also add a moisture-resistant inner sleeve for extra protection.</p>
+      <PolicySection id="how-to-track" title="How to Track an Order">
+        <p>When an order ships, its courier and tracking number appear on your order record. Visit <a href="/track-order">Track Your Order</a> and enter the order reference plus the email used at checkout. If email delivery is active, the shipping update is also sent there.</p>
       </PolicySection>
-      <PolicySection id="order-tracking" title="Order Tracking">
-        <p>Once your order ships, you&apos;ll receive an email and SMS with a live tracking link. You can also visit our <a href="/track-order">Track Your Order</a> page and enter your Order ID to check real-time status.</p>
+      <PolicySection id="delivery-address" title="Delivery Address">
+        <p>Please check your delivery address carefully before placing an order. If a correction is needed, contact us as soon as possible with your order reference. Changes may not be possible after the courier has received the parcel.</p>
+      </PolicySection>
+      <PolicySection id="packing" title="Packing Your Print">
+        <p>We use a protective mailer or tube chosen for the selected format and size. Framed and unframed pieces may use different protective packaging.</p>
       </PolicySection>
       <PolicySection id="need-help" title="Need Help?">
-        <p>If you have any questions about shipping or delivery, contact us at <a href={`mailto:${supportEmail}`}>{supportEmail}</a> or call +91 98765 43210.</p>
+        <p>For a delivery question, email <a href={`mailto:${supportEmail}`}>{supportEmail}</a> and include your order reference.</p>
       </PolicySection>
     </PolicyLayout>
   );

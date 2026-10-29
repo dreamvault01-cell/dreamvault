@@ -60,11 +60,16 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           status: product.status,
           categoryId: product.categoryId,
           variants: product.variants.map((v) => ({
+            id: v.id,
             size: v.size,
+            format: v.format as 'POSTER' | 'ART_PRINT' | 'FRAMED_ART_PRINT',
+            paper: v.paper as 'CLASSIC_MATTE' | 'PREMIUM_FINE_ART',
+            frame: v.frame as 'NONE' | 'BLACK' | 'WHITE' | 'NATURAL_OAK' | 'WALNUT',
             price: v.price,
             compareAtPrice: v.compareAtPrice,
             sku: v.sku || '',
             stock: v.stock,
+            reservedStock: v.reservedStock,
           })),
           tags: product.tags.map((t) => ({
             id: t.id,

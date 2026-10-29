@@ -2,7 +2,20 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { requireAdminApi } from '@/lib/admin-auth';
+import { hasSameOrigin } from '@/lib/request-origin';
 import { normalizeProductImages, ProductMediaValidationError } from '@/lib/product-media';
+import {
+  getLowestConfigurationPricing,
+  normalizeProductVariants,
+  ProductConfigurationValidationError,
+} from '@/lib/product-configuration';
+
+class ProductStockConflictError extends Error {
+  constructor() {
+    super('Stock changed while this product was open. Refresh the page to load the latest stock, then apply your changes again.');
+    this.name = 'ProductStockConflictError';
+  }
+}
 
 // GET /api/admin/products/[id]
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -31,12 +44,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdminApi();
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
     const { id } = await params;
     const body = await req.json();
     const {
       name, slug, description, shortDescription,
-      price, compareAtPrice, images,
-      badge, status, categoryId, variants, tags,
+      images,
+      badge, status, categoryId, variants, expectedStocks, tags,
     } = body;
 
     // Validate the complete gallery before any product data can be changed.
@@ -46,10 +60,42 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     if (productImages !== undefined && productImages.length === 0) {
       return NextResponse.json({ error: 'At least one product image is required.' }, { status: 400 });
     }
+    const sellableVariants = variants === undefined ? undefined : normalizeProductVariants(variants);
+    const cataloguePricing = sellableVariants ? getLowestConfigurationPricing(sellableVariants) : undefined;
+    const stockSnapshot = expectedStocks && typeof expectedStocks === 'object' && !Array.isArray(expectedStocks)
+      ? expectedStocks as Record<string, unknown>
+      : null;
 
     // Replacing related records must be atomic: a failed save must not leave a
     // product without its previous images, variants, or tag connections.
     const updated = await prisma.$transaction(async (tx) => {
+      // Use the same lock order as the inventory editor. Checkout holds and
+      // payment capture lock inventory rows too, so read stock and order
+      // history only after those operations have finished.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`product/${id}`}))`;
+      if (sellableVariants) {
+        const variantIds = await tx.productVariant.findMany({
+          where: { productId: id },
+          select: { id: true },
+        });
+        for (const variantId of variantIds.map((variant) => variant.id).sort()) {
+          await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`inventory/${variantId}`}))`;
+        }
+      }
+
+      const existingVariants = sellableVariants ? await tx.productVariant.findMany({
+        where: { productId: id },
+        select: { id: true, configurationKey: true, stock: true, reservedStock: true },
+      }) : [];
+      // A sale may have completed while staff were editing. Reject the stale
+      // form before any writes instead of putting sold units back in stock.
+      for (const variant of existingVariants) {
+        const expectedStock = stockSnapshot?.[variant.id];
+        if (!Number.isInteger(expectedStock) || expectedStock !== variant.stock) {
+          throw new ProductStockConflictError();
+        }
+      }
+
       await tx.product.update({
         where: { id },
         data: {
@@ -57,8 +103,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
           slug,
           description,
           shortDescription: shortDescription !== undefined ? (shortDescription || null) : undefined,
-          price,
-          compareAtPrice: compareAtPrice !== undefined ? (compareAtPrice || null) : undefined,
+          // The product-level price is a catalogue "From" price. It is always
+          // derived from the exact sellable configurations instead of trusting
+          // a second client-supplied price field.
+          price: cataloguePricing?.price,
+          compareAtPrice: cataloguePricing?.compareAtPrice,
           // When a gallery is updated, its first image is the cover. When it
           // is omitted, retain the existing cover instead of accepting an
           // unvalidated standalone image URL.
@@ -70,19 +119,82 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         },
       });
 
-      // Replace variants: delete existing then create new
-      if (variants) {
-        await tx.productVariant.deleteMany({ where: { productId: id } });
-        await tx.productVariant.createMany({
-          data: variants.map((v: { size: string; price: number; compareAtPrice?: number; sku?: string; stock: number }) => ({
-            productId: id,
-            size: v.size,
-            price: v.price,
-            compareAtPrice: v.compareAtPrice || null,
-            sku: v.sku || null,
-            stock: v.stock,
-          })),
+      // Preserve IDs for unchanged configurations so saved carts remain valid.
+      // If an admin changes the actual configuration (for example A3 Classic
+      // Matte to A3 Walnut), deliberately retire that old variant and create a
+      // new one rather than silently changing what an existing cart means.
+      if (sellableVariants) {
+        const existingById = new Map(existingVariants.map((variant) => [variant.id, variant]));
+        const preserved = sellableVariants.filter((variant) => {
+          if (!variant.id) return false;
+          const existing = existingById.get(variant.id);
+          if (!existing) {
+            throw new ProductConfigurationValidationError('A sellable configuration belongs to a different product or no longer exists. Refresh the page and try again.');
+          }
+          return existing.configurationKey === variant.configurationKey;
         });
+        const preservedIds = new Set(preserved.map((variant) => variant.id!));
+        const retiredIds = existingVariants
+          .filter((variant) => !preservedIds.has(variant.id))
+          .map((variant) => variant.id);
+
+        // Variants referenced by a reservation form part of an order audit
+        // trail. Removing or silently reconfiguring them would make an old
+        // order impossible to reconcile, so staff must retain the row and
+        // mark the product as Draft instead.
+        if (retiredIds.length > 0) {
+          const [reservationCount, orderItemCount] = await Promise.all([
+            tx.inventoryReservation.count({ where: { variantId: { in: retiredIds } } }),
+            tx.orderItem.count({ where: { variantId: { in: retiredIds } } }),
+          ]);
+          if (reservationCount > 0 || orderItemCount > 0) {
+            throw new ProductConfigurationValidationError('A configuration with order history cannot be removed or changed. Keep it for the audit trail and set the product to Draft if it should no longer be sold.');
+          }
+        }
+
+        for (const variant of preserved) {
+          const existing = existingById.get(variant.id!);
+          if (existing && variant.stock < existing.reservedStock) {
+            throw new ProductConfigurationValidationError(`On-hand stock cannot be lower than the ${existing.reservedStock} unit(s) currently held for checkout.`);
+          }
+        }
+
+        await tx.productVariant.deleteMany({
+          where: {
+            productId: id,
+            id: { notIn: [...preservedIds] },
+          },
+        });
+
+        for (const variant of preserved) {
+          await tx.productVariant.update({
+            where: { id: variant.id! },
+            data: {
+              price: variant.price,
+              compareAtPrice: variant.compareAtPrice,
+              sku: variant.sku,
+              stock: variant.stock,
+            },
+          });
+        }
+
+        const replacements = sellableVariants.filter((variant) => !variant.id || !preservedIds.has(variant.id));
+        if (replacements.length > 0) {
+          await tx.productVariant.createMany({
+            data: replacements.map((variant) => ({
+              productId: id,
+              size: variant.size,
+              format: variant.format,
+              paper: variant.paper,
+              frame: variant.frame,
+              configurationKey: variant.configurationKey,
+              price: variant.price,
+              compareAtPrice: variant.compareAtPrice,
+              sku: variant.sku,
+              stock: variant.stock,
+            })),
+          });
+        }
       }
 
       // Replace images: delete existing then create new
@@ -151,7 +263,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     return NextResponse.json(updated);
   } catch (error) {
-    if (error instanceof ProductMediaValidationError) {
+    if (error instanceof ProductStockConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    if (error instanceof ProductMediaValidationError || error instanceof ProductConfigurationValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('Update product error:', error);
@@ -162,10 +277,15 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 // DELETE /api/admin/products/[id]
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdminApi();
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
     const { id } = await params;
+    const orderItemCount = await prisma.orderItem.count({ where: { productId: id } });
+    if (orderItemCount > 0) {
+      return NextResponse.json({ error: 'This product has order history and cannot be deleted. Set it to Draft instead so past orders remain auditable.' }, { status: 409 });
+    }
     await prisma.product.delete({ where: { id } });
     revalidatePath('/product/[slug]', 'page');
     revalidatePath('/collections');

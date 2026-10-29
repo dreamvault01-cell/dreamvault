@@ -1,34 +1,39 @@
 import PolicyLayout, { PolicySection } from '@/components/PolicyLayout';
+import { getSupportConfig } from '@/lib/support-config';
 
 export default function TermsOfServicePage() {
+  const supportEmail = getSupportConfig().supportEmail || 'support@soliheleug.resend.app';
   return (
     <PolicyLayout
       tag="LEGAL"
       title="Terms of"
       titleAccent="Service"
-      subtitle="Please read these terms carefully before using our website or placing an order."
+      subtitle="The straightforward terms that apply when you browse DreamVault or place an order."
       lastUpdated="October 1, 2026"
     >
-      <PolicySection id="acceptance-of-terms" title="Acceptance of Terms">
-        <p>By accessing or using DreamVault&apos;s website, you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree with any part of these terms, you may not access the website or place orders.</p>
+      <PolicySection id="acceptance-of-terms" title="Using DreamVault">
+        <p>By using DreamVault or placing an order, you agree to these terms and the Privacy Policy. If you do not agree, please do not use the checkout or create an account.</p>
       </PolicySection>
-      <PolicySection id="products-and-pricing" title="Products & Pricing">
-        <p>All product descriptions, images, and prices are displayed as accurately as possible. We reserve the right to modify prices at any time without prior notice. Prices are listed in Indian Rupees (INR) and include applicable taxes unless stated otherwise.</p>
+      <PolicySection id="products-and-pricing" title="Products and Pricing">
+        <p>Product images, descriptions, configurations, and prices are presented as accurately as possible. The exact selected size, paper, and frame option, together with the final INR total shown at checkout, form the order details. We may correct an obvious listing or pricing error before an order is dispatched.</p>
       </PolicySection>
-      <PolicySection id="orders" title="Orders">
-        <p>Placing an order constitutes an offer to purchase. We reserve the right to refuse or cancel any order for reasons including product availability, errors in pricing or product information, or suspected fraudulent activity. You will be notified if your order is cancelled.</p>
+      <PolicySection id="orders" title="Orders and Payment">
+        <p>An order is subject to product availability and payment confirmation where applicable. We may cancel an order where stock is unavailable, a listing contains a material error, payment cannot be confirmed, or fraud is suspected. If this happens, we will contact the email used at checkout and handle any applicable refund through the original payment method.</p>
       </PolicySection>
-      <PolicySection id="intellectual-property" title="Intellectual Property">
-        <p>All content on this website — including designs, images, logos, and text — is the property of DreamVault and is protected by copyright laws. You may not reproduce, distribute, or create derivative works from our content without written permission.</p>
+      <PolicySection id="delivery-and-returns" title="Delivery and Returns">
+        <p>Shipping, delivery issues, returns, and refunds are described in the <a href="/shipping-policy">Shipping Policy</a> and <a href="/refund-policy">Refund Policy</a>. Those policies form part of these terms.</p>
       </PolicySection>
-      <PolicySection id="user-accounts" title="User Accounts">
-        <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized use of your account. DreamVault is not liable for any loss arising from unauthorized access to your account.</p>
+      <PolicySection id="intellectual-property" title="Website Content">
+        <p>The DreamVault name, branding, site design, and other material we publish are protected by applicable intellectual-property laws. Do not copy, reproduce, or use them commercially without written permission. Artwork rights may be subject to the information shown on the relevant product listing.</p>
       </PolicySection>
-      <PolicySection id="limitation-of-liability" title="Limitation of Liability">
-        <p>DreamVault shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products. Our total liability shall not exceed the amount paid for the product in question.</p>
+      <PolicySection id="accounts" title="Accounts">
+        <p>You are responsible for keeping your account access secure and for giving accurate information at checkout. Tell us promptly if you believe your account has been used without permission.</p>
       </PolicySection>
-      <PolicySection id="governing-law" title="Governing Law">
-        <p>These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Mumbai, Maharashtra.</p>
+      <PolicySection id="liability" title="Liability">
+        <p>To the extent permitted by applicable law, DreamVault is not liable for indirect or consequential loss arising from use of the site or products. Our liability for a valid claim relating to an order is limited to the amount paid for that order.</p>
+      </PolicySection>
+      <PolicySection id="governing-law" title="Applicable Law">
+        <p>These terms are intended to operate under applicable laws in India. Questions about an order or these terms can be sent to <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.</p>
       </PolicySection>
     </PolicyLayout>
   );

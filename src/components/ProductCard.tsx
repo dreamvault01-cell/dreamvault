@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import type { Product } from '@/lib/data';
-import { useCart } from '@/context/CartContext';
 import { Heart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
@@ -12,26 +12,17 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, index = 0 }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const router = useRouter();
 
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
   const discount = hasDiscount
     ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
     : 0;
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
+  const handleChooseOptions = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      compareAtPrice: product.compareAtPrice,
-      image: product.image,
-      size: "A4 (21x30 cm)",
-      quantity: 1,
-      slug: product.slug,
-    });
+    router.push(`/product/${product.slug}`);
   };
 
   return (
@@ -66,7 +57,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
 
         <div className="product-card-quick-add">
-          <button onClick={handleQuickAdd}>Add to Cart</button>
+          <button onClick={handleChooseOptions}>Choose options</button>
         </div>
       </div>
 
@@ -78,6 +69,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         )}
 
         <div className="product-card-price">
+          {product.variants.length > 1 && <span className="product-card-from">From</span>}
           <span className="current">₹{product.price}</span>
           {hasDiscount && (
             <>

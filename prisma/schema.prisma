@@ -72,49 +72,163 @@ model Tag {
 }
 
 model ProductVariant {
-  id             String   @id @default(cuid())
-  productId      String
-  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  size           String   // "A4", "A3", "A2", "A1"
-  price          Float    // Selling price for this size
-  compareAtPrice Float?   // MRP for this size
-  sku            String?  // Stock Keeping Unit
-  stock          Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(cuid())
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size             String   // "A4", "A3", "A2", "A1"
+  format           String   @default("POSTER") // POSTER, ART_PRINT, FRAMED_ART_PRINT
+  paper            String   @default("CLASSIC_MATTE") // CLASSIC_MATTE, PREMIUM_FINE_ART
+  frame            String   @default("NONE") // NONE, BLACK, WHITE, NATURAL_OAK, WALNUT
+  configurationKey String   // Stable: size:format:paper:frame
+  price            Float    // Selling price for this exact configuration
+  compareAtPrice   Float?   // MRP for this exact configuration
+  sku              String?  // Stock Keeping Unit
+  stock            Int      @default(0) // Physical units on hand
+  reservedStock    Int      @default(0) // Unpaid checkout holds; never shown as available stock
+  reservations     InventoryReservation[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  @@unique([productId, size])
+  @@unique([productId, configurationKey])
+  @@index([productId, size])
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  userId          String?
-  user            User?       @relation(fields: [userId], references: [id])
-  razorpayOrderId String?     @unique
-  razorpayPaymentId String?
-  status          String      @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
-  totalAmount     Float
-  shippingName    String
-  shippingPhone   String
-  shippingAddress String
-  shippingCity    String
-  shippingState   String
-  shippingPin     String
-  paymentMethod   String      @default("RAZORPAY") // RAZORPAY or COD
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                   String      @id @default(cuid())
+  orderReference       String      @unique // Safe customer-facing reference, e.g. DV-20261028-AB12CD34
+  userId               String?
+  user                 User?       @relation(fields: [userId], references: [id])
+  razorpayOrderId      String?     @unique
+  razorpayPaymentId    String?
+  razorpayRefundId     String?     @unique
+  status               String      @default("PENDING") // Legacy summary: PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, PAYMENT_REVIEW
+  paymentStatus        String      @default("PENDING") // PENDING, PAID, COD_PENDING, FAILED, EXPIRED, CANCELLED, PAID_REVIEW, REFUNDED
+  fulfillmentStatus    String      @default("UNFULFILLED") // UNFULFILLED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  refundStatus         String      @default("NONE") // NONE, NOT_REQUIRED, PENDING, REFUNDED
+  totalAmount          Float
+  shippingName         String
+  shippingEmail        String?
+  shippingPhone        String
+  shippingAddress      String
+  shippingCity         String
+  shippingState        String
+  shippingPin          String
+  paymentMethod        String      @default("RAZORPAY") // RAZORPAY or COD
+  reservationExpiresAt DateTime?
+  stockCommittedAt     DateTime?
+  processingAt         DateTime?
+  shippedAt            DateTime?
+  deliveredAt          DateTime?
+  cancelledAt          DateTime?
+  refundCompletedAt    DateTime?
+  cancellationReason   String?
+  trackingCarrier      String?
+  trackingNumber       String?
+  trackingUrl          String?
+  items                OrderItem[]
+  reservations         InventoryReservation[]
+  events               OrderEvent[]
+  notifications        OrderNotification[]
+  paymentWebhookEvents PaymentWebhookEvent[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([reservationExpiresAt])
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id            String  @id @default(cuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+  variantId     String? // Snapshot only: variants may be removed from the catalogue later
+  variantSku    String?
+  configuration Json?   // Exact size, format, paper, frame, and label at checkout
+  quantity      Int
+  price         Float   // Store price at the time of purchase
+  size          String? // Kept for older orders and quick reporting
+
+  @@index([variantId])
+}
+
+// One row per exact sellable configuration held for a checkout. Stock is only
+// permanently reduced when payment is confirmed (or when a COD order is made).
+model InventoryReservation {
+  id          String         @id @default(uuid())
+  orderId     String
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId   String
+  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  quantity    Int
+  status      String         @default("RESERVED") // RESERVED, COMMITTED, RELEASED, RESTOCKED
+  expiresAt   DateTime?
+  committedAt DateTime?
+  releasedAt  DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@unique([orderId, variantId])
+  @@index([status, expiresAt])
+  @@index([variantId, status])
+}
+
+// Append-only operational timeline. It makes fulfilment changes auditable and
+// lets customers see a real order journey without exposing staff notes.
+model OrderEvent {
+  id        String   @id @default(uuid())
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float   // Store price at the time of purchase
-  size      String? // Track which size was ordered
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      String
+  message   String?
+  data      Json     @default("{}")
+  actorId   String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// Durable, idempotent transactional email outbox. This is intentionally kept
+// separate from customer-support conversations.
+model OrderNotification {
+  id              String   @id @default(uuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  kind            String
+  toEmail         String
+  subject         String
+  text            String
+  html            String
+  deliveryStatus  String   @default("QUEUED") // QUEUED, SENDING, SENT, FAILED, BLOCKED
+  attempts        Int      @default(0)
+  nextAttemptAt   DateTime @default(now())
+  firstAttemptAt  DateTime?
+  lockedUntil     DateTime?
+  lockToken       String?
+  providerEmailId String?  @unique
+  lastError       String?
+  sentAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  @@unique([orderId, kind])
+  @@index([deliveryStatus, nextAttemptAt])
+}
+
+// Razorpay may retry and deliver events out of order. Store the provider event
+// identifier once so payment automation is safe to run more than once.
+model PaymentWebhookEvent {
+  id              String   @id @default(uuid())
+  providerEventId String   @unique
+  eventType       String
+  orderId         String?
+  order           Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  paymentId       String?
+  payloadHash     String
+  occurredAt      DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([orderId, createdAt])
+  @@index([paymentId])
 }
 
 model ContactMessage {

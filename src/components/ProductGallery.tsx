@@ -6,6 +6,14 @@ import { ArrowLeft, ArrowRight, Check, Image as ImageIcon, Maximize2, Minus, Mov
 import type { ProductImageData } from '@/lib/data';
 import { getPrintDimensions } from '@/lib/product-options';
 import { getRoomPreviewImage } from '@/lib/product-media';
+import {
+  getConfigurationShortLabel,
+  getFrameLabel,
+  getPaperLabel,
+  type FrameStyle,
+  type PaperQuality,
+  type ProductFormat,
+} from '@/lib/product-configuration';
 import ProductDialog from './ProductDialog';
 import styles from './ProductGallery.module.css';
 
@@ -14,6 +22,9 @@ interface ProductGalleryProps {
   images: ProductImageData[];
   productName: string;
   selectedSize?: string;
+  selectedFormat?: ProductFormat;
+  selectedPaper?: PaperQuality;
+  selectedFrame?: FrameStyle;
   initialView?: 'art' | 'room';
 }
 
@@ -23,7 +34,16 @@ const WALL_COLORS = [
   { name: 'Stone', color: '#c9c4bd' },
 ];
 
-export default function ProductGallery({ mainImage, images, productName, selectedSize = 'A3', initialView = 'art' }: ProductGalleryProps) {
+export default function ProductGallery({
+  mainImage,
+  images,
+  productName,
+  selectedSize = 'A3',
+  selectedFormat = 'POSTER',
+  selectedPaper = 'CLASSIC_MATTE',
+  selectedFrame = 'NONE',
+  initialView = 'art',
+}: ProductGalleryProps) {
   const seenImages = new Set<string>();
   const galleryImages = [
     { url: mainImage, alt: productName },
@@ -53,6 +73,8 @@ export default function ProductGallery({ mainImage, images, productName, selecte
   const dimensions = getPrintDimensions(selectedSize);
   const printDimensions = dimensions || getPrintDimensions('A3')!;
   const roomDimensions = landscape ? { width: printDimensions.height, height: printDimensions.width } : printDimensions;
+  const isFramed = selectedFrame !== 'NONE';
+  const selectedConfiguration = { format: selectedFormat, paper: selectedPaper, frame: selectedFrame };
 
   function selectImage(index: number) {
     const next = galleryImages[(index + galleryImages.length) % galleryImages.length];
@@ -125,6 +147,14 @@ export default function ProductGallery({ mainImage, images, productName, selecte
     '--wall-color': WALL_COLORS[wallColor].color,
     '--print-width': `${roomDimensions.width / 140 * 74}%`,
     '--print-ratio': `${roomDimensions.width} / ${roomDimensions.height}`,
+    '--frame-width': isFramed ? 'clamp(7px, 1.25vw, 14px)' : '0px',
+    '--frame-color': {
+      BLACK: '#272625',
+      WHITE: '#f4f1ea',
+      NATURAL_OAK: '#b98859',
+      WALNUT: '#5d3d2c',
+      NONE: 'transparent',
+    }[selectedFrame],
   } as CSSProperties;
 
   return (
@@ -166,10 +196,13 @@ export default function ProductGallery({ mainImage, images, productName, selecte
         ) : (
           <div className={styles.roomScene} style={roomStyle}>
             <span className={styles.roomLabel}>{dimensions ? selectedSize : 'Size reference'} · {roomDimensions.width} × {roomDimensions.height} cm</span>
+            <span className={styles.roomSelection}>{getConfigurationShortLabel(selectedConfiguration)}</span>
             <div className={styles.roomLight} aria-hidden="true" />
             <div className={styles.roomFloor} aria-hidden="true" />
-            <button type="button" className={styles.roomPrint} onClick={openZoom} aria-label={`Enlarge ${productName}`} aria-haspopup="dialog">
-              <Image src={flatArtwork!.url} alt={`${productName}, shown unframed above a console`} fill sizes="(max-width: 760px) 50vw, 360px" className={styles.roomArt} draggable={false} onLoad={(event) => setLandscape(event.currentTarget.naturalWidth > event.currentTarget.naturalHeight)} onError={() => setFailedRoomImage(flatArtwork!.url)} />
+            <button type="button" className={`${styles.roomPrint} ${isFramed ? styles.framedPrint : styles.unframedPrint}`} onClick={openZoom} aria-label={`Enlarge ${productName}`} aria-haspopup="dialog">
+              <span className={styles.roomArtWindow}>
+                <Image src={flatArtwork!.url} alt={`${productName}, ${isFramed ? `${getFrameLabel(selectedFrame)} framed` : 'unframed'} above a console`} fill sizes="(max-width: 760px) 50vw, 360px" className={styles.roomArt} draggable={false} onLoad={(event) => setLandscape(event.currentTarget.naturalWidth > event.currentTarget.naturalHeight)} onError={() => setFailedRoomImage(flatArtwork!.url)} />
+              </span>
             </button>
             <div className={styles.console} aria-hidden="true"><i /><i /></div>
             <div className={styles.books} aria-hidden="true"><i /><i /><i /></div>
@@ -199,7 +232,7 @@ export default function ProductGallery({ mainImage, images, productName, selecte
               <button key={wall.name} type="button" aria-label={wall.name} aria-pressed={wallColor === index} title={wall.name} style={{ backgroundColor: wall.color }} onClick={() => setWallColor(index)}>{wallColor === index && <Check size={12} aria-hidden="true" />}</button>
             ))}
           </div>
-          <p>Illustrative room preview. Print shown unframed.</p>
+          <p>Illustrative room preview. {isFramed ? `${getFrameLabel(selectedFrame)} frame selected.` : `${getPaperLabel(selectedPaper)} selected, unframed.`}</p>
         </div>
       )}
 

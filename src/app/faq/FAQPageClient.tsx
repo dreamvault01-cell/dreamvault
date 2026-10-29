@@ -13,19 +13,19 @@ function getFaqs(supportEmail: string) {
     questions: [
       {
         q: 'How long does delivery take?',
-        a: 'We typically process orders within 1–2 business days. Standard delivery takes 5–7 business days across India. Express shipping (2–3 days) is available at checkout for an additional fee.',
+        a: 'Timing depends on your print format, destination, and courier. Once the order ships, its courier and tracking details appear on your order page so you can follow the latest available estimate.',
       },
       {
         q: 'Do you ship internationally?',
-        a: 'Currently, we only ship within India. We are working on expanding to international markets soon. Sign up for our newsletter to stay updated!',
+        a: 'Checkout currently supports delivery addresses in India. International delivery is not available yet.',
       },
       {
         q: 'How can I track my order?',
-        a: 'Once your order ships, you\'ll receive a tracking link via email and SMS. You can also track your order from the "Track Your Order" page using your order ID.',
+        a: 'Once your order ships, we send a tracking update to the email used at checkout when order email is enabled. You can always use the Track Your Order page with your order reference and checkout email.',
       },
       {
         q: 'What are the shipping charges?',
-        a: 'We offer free standard shipping on all orders above ₹499. For orders below ₹499, a flat shipping fee of ₹79 applies.',
+        a: 'Delivery is currently included in the checkout total. If this changes, the full charge will be shown before you place an order.',
       },
     ],
   },
@@ -34,19 +34,19 @@ function getFaqs(supportEmail: string) {
     questions: [
       {
         q: 'What paper quality do you use?',
-        a: 'We use premium 300 GSM art card stock with a rich matte finish. Our prints are vibrant, long-lasting, and designed to look stunning on any wall.',
+        a: 'Poster Prints use Classic Matte paper. Premium Art Prints and Framed Art Prints use Premium Fine-Art Matte paper. The exact choice is shown before you add a print to your cart.',
       },
       {
         q: 'What sizes are available?',
-        a: 'Our posters are available in A4 (8.3 × 11.7 in), A3 (11.7 × 16.5 in), and A2 (16.5 × 23.4 in). Select sizes are also available in custom dimensions.',
+        a: 'Each product shows the sizes available for that artwork and format. Common sizes include A4 (8.3 × 11.7 in), A3 (11.7 × 16.5 in), and A2 (16.5 × 23.4 in). Custom dimensions are not currently offered at checkout.',
       },
       {
         q: 'Are frames included?',
-        a: 'Posters are sold unframed to keep them affordable and to give you the flexibility to choose a frame that matches your decor. We may offer framing options in the future.',
+        a: 'Poster Prints and Premium Art Prints are sold unframed. Choose a Framed Art Print for Black, White, Natural Oak, or Walnut framing where that configuration is available.',
       },
       {
         q: 'Can I request a custom poster?',
-        a: 'Absolutely! Visit our Custom Poster page to submit your design idea. Our team will work with you to create a one-of-a-kind piece tailored to your vision.',
+        a: 'Custom photo and quote prints are not open for checkout yet. Today, you can choose from our ready-to-order Poster Prints, Premium Art Prints, and Framed Art Prints. Contact us if you would like to share what you want to see next.',
       },
     ],
   },
@@ -55,15 +55,15 @@ function getFaqs(supportEmail: string) {
     questions: [
       {
         q: 'What is your return policy?',
-        a: 'We accept returns within 7 days of delivery if the product is damaged, defective, or not as described. Custom orders are non-returnable.',
+        a: 'If an item arrives damaged, defective, or materially different from the order, contact us within 7 days of delivery with your order reference and clear photos. We will review it and confirm the next step.',
       },
       {
         q: 'How do I initiate a return?',
-        a: `Contact us at ${supportEmail} with your order ID and photos of the issue. We'll process your return within 24 hours.`,
+        a: `Contact us at ${supportEmail} with your order reference and photos of the issue. We will review your request and confirm any return instructions before you send the item.`,
       },
       {
         q: 'How long do refunds take?',
-        a: 'Refunds are processed within 5–7 business days after we receive and inspect the returned item. The amount will be credited to your original payment method.',
+        a: 'Once a refund is approved and completed through the payment provider, the time to appear in your balance depends on your bank or payment method. We will confirm the refund status with you.',
       },
     ],
   },
@@ -72,15 +72,15 @@ function getFaqs(supportEmail: string) {
     questions: [
       {
         q: 'What payment methods do you accept?',
-        a: 'We accept all major credit/debit cards (Visa, Mastercard, RuPay), UPI, net banking, and popular wallets through Razorpay — India\'s most trusted payment gateway.',
+        a: 'Online checkout uses Razorpay. The payment methods available for your transaction, such as UPI, cards, net banking, or wallets, are shown in its secure payment window. Cash on delivery is also available at checkout.',
       },
       {
         q: 'Is my payment information secure?',
-        a: 'Yes. All transactions are processed through Razorpay with 256-bit SSL encryption. We never store your card details on our servers.',
+        a: 'Online payment details are entered in Razorpay’s secure payment window. DreamVault stores the payment reference and status needed to confirm the order, without storing complete card, bank, or UPI credentials.',
       },
       {
         q: 'Do you offer Cash on Delivery?',
-        a: 'Currently, we do not offer COD. We support all digital payment methods to ensure a seamless and secure checkout experience.',
+        a: 'Yes. Cash on Delivery is available alongside secure online payment at checkout.',
       },
     ],
   },

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
-import SearchModal from './SearchModal';
-import CartDrawer from './CartDrawer';
-import ThemeToggle from './ThemeToggle';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { Menu, Package, Search, ShoppingCart, X } from 'lucide-react';
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
+import { useCart } from '@/context/CartContext';
+import CartDrawer from './CartDrawer';
+import SearchModal from './SearchModal';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -22,132 +22,30 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  return (
-    <>
-      <div className="announcement-bar">
-        <span className="marquee">
-          ✨ FREE Express Shipping &nbsp;•&nbsp; 🎨 Premium 300 GSM Art Paper &nbsp;•&nbsp; 
-          💎 Archival Inks &nbsp;•&nbsp; 🔒 Secure Payments &nbsp;•&nbsp; ⭐ 100% Satisfaction Guaranteed 
-          &nbsp;•&nbsp; ✨ FREE Express Shipping &nbsp;•&nbsp; 🎨 Premium 300 GSM Art Paper 
-          &nbsp;•&nbsp; 💎 Archival Inks &nbsp;•&nbsp; 🔒 Secure Payments &nbsp;•&nbsp; ⭐ 100% Satisfaction Guaranteed
-        </span>
+  const closeMobile = () => setMobileOpen(false);
+  return <>
+    <div className="announcement-bar"><span className="marquee">Delivery included &nbsp;•&nbsp; Curated paper &amp; frame options &nbsp;•&nbsp; Secure payments &nbsp;•&nbsp; Made for your wall &nbsp;•&nbsp; Delivery included &nbsp;•&nbsp; Curated paper &amp; frame options &nbsp;•&nbsp; Secure payments &nbsp;•&nbsp; Made for your wall</span></div>
+    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="main-nav"><div className="container navbar-inner">
+      <Link href="/" className="navbar-logo" onClick={closeMobile}>Dream<span className="logo-accent">Vault</span></Link>
+      <div className={`navbar-nav ${mobileOpen ? 'mobile-open' : ''}`}>
+        <Link href="/" onClick={closeMobile}>Home</Link><Link href="/collections" onClick={closeMobile}>Collections</Link><Link href="/collections/wall-setup-packs" onClick={closeMobile}>Wall Setups</Link><Link href="/about" onClick={closeMobile}>About</Link>
+        <Show when="signed-in"><Link href="/orders" onClick={closeMobile}>My Orders</Link></Show>
+        <Show when="signed-out"><div className="mobile-auth-buttons"><SignInButton mode="modal"><button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>Login</button></SignInButton><SignUpButton mode="modal"><button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>Sign Up</button></SignUpButton></div></Show>
       </div>
-
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="main-nav">
-        <div className="container navbar-inner">
-          <Link href="/" className="navbar-logo">
-            Dream<span className="logo-accent">Vault</span>
-          </Link>
-
-          <div className={`navbar-nav ${mobileOpen ? 'mobile-open' : ''}`}>
-            <Link href="/" onClick={() => setMobileOpen(false)}>
-              Home
-            </Link>
-            <Link href="/collections" onClick={() => setMobileOpen(false)}>
-              Collections
-            </Link>
-            <Link href="/collections/wall-setup-packs" onClick={() => setMobileOpen(false)}>
-              Wall Setups
-            </Link>
-            <Link href="/custom" onClick={() => setMobileOpen(false)}>
-              Custom Poster
-            </Link>
-            <Link href="/about" onClick={() => setMobileOpen(false)}>
-              About
-            </Link>
-
-            {/* Auth buttons inside mobile menu */}
-            <Show when="signed-out">
-              <div className="mobile-auth-buttons">
-                <SignInButton mode="modal">
-                  <button className="btn btn-secondary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
-                    Login
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </div>
-            </Show>
-          </div>
-
-          <div className="navbar-actions">
-            <ThemeToggle />
-            
-            <button
-              className="navbar-action-btn"
-              onClick={() => setSearchOpen(true)}
-              aria-label="Search"
-              id="search-btn"
-            >
-              <Search size={20} />
-            </button>
-
-            <Show when="signed-out">
-              <div className="desktop-auth">
-                <SignInButton mode="modal">
-                  <button className="navbar-action-btn navbar-login-btn" aria-label="Sign In">
-                    Login
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="navbar-signup-btn">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </div>
-            </Show>
-
-            <Show when="signed-in">
-              <div className="user-button-wrapper" style={{ margin: '0 0.25rem', display: 'flex', alignItems: 'center' }}>
-                <UserButton 
-                  appearance={{
-                    elements: {
-                      avatarBox: { width: '36px', height: '36px', border: '1.5px solid #d4af37' }
-                    },
-                    variables: {
-                      colorPrimary: '#d4af37'
-                    }
-                  }}
-                />
-              </div>
-            </Show>
-
-            <button
-              className="navbar-action-btn"
-              onClick={() => setIsCartOpen(true)}
-              aria-label="Cart"
-              id="cart-btn"
-            >
-              <ShoppingCart size={20} />
-              {totalItems > 0 && (
-                <span className="navbar-cart-count">{totalItems}</span>
-              )}
-            </button>
-
-            <button
-              className="navbar-toggle"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
-              id="menu-toggle"
-            >
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
-      <CartDrawer />
-    </>
-  );
+      <div className="navbar-actions">
+        <ThemeToggle />
+        <button className="navbar-action-btn" onClick={() => setSearchOpen(true)} aria-label="Search" id="search-btn"><Search size={20} /></button>
+        <Show when="signed-out"><div className="desktop-auth"><SignInButton mode="modal"><button className="navbar-action-btn navbar-login-btn" aria-label="Sign in">Login</button></SignInButton><SignUpButton mode="modal"><button className="navbar-signup-btn">Sign Up</button></SignUpButton></div></Show>
+        <Show when="signed-in"><Link href="/orders" className="navbar-action-btn" aria-label="My orders" title="My orders"><Package size={19} /></Link><div className="user-button-wrapper" style={{ margin: '0 .25rem', display: 'flex', alignItems: 'center' }}><UserButton appearance={{ elements: { avatarBox: { width: '36px', height: '36px', border: '1.5px solid #d4af37' } }, variables: { colorPrimary: '#d4af37' } }} /></div></Show>
+        <button className="navbar-action-btn" onClick={() => setIsCartOpen(true)} aria-label="Cart" id="cart-btn"><ShoppingCart size={20} />{totalItems > 0 && <span className="navbar-cart-count">{totalItems}</span>}</button>
+        <button className="navbar-toggle" onClick={() => setMobileOpen((open) => !open)} aria-label="Toggle menu" id="menu-toggle">{mobileOpen ? <X size={24} /> : <Menu size={24} />}</button>
+      </div>
+    </div></nav>
+    <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+    <CartDrawer />
+  </>;
 }
