@@ -1,0 +1,43 @@
+name: DreamVault background jobs
+
+on:
+  schedule:
+    # UTC, every five minutes, offset from the busiest minute of the hour.
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dreamvault-background-jobs
+  cancel-in-progress: false
+
+jobs:
+  process:
+    # Explicit opt-in avoids silently consuming private-repository runner quota.
+    # Manual runs work before enabling the recurring schedule.
+    if: >-
+      github.ref_name == github.event.repository.default_branch &&
+      (github.event_name == 'workflow_dispatch' || vars.BACKGROUND_JOBS_ENABLED == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out scheduler only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # verified official v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/background-jobs.yml
+            scripts/run-background-jobs.mjs
+            scripts/run-background-jobs.test.mjs
+
+      - name: Check scheduler safeguards
+        run: node --test scripts/run-background-jobs.test.mjs
+
+      - name: Process stock reservations and email queues
+        env:
+          BACKGROUND_APP_URL: ${{ vars.BACKGROUND_APP_URL || 'https://dream-vault-rho.vercel.app' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: node scripts/run-background-jobs.mjs

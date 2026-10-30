@@ -3,6 +3,7 @@ import 'server-only';
 import { randomBytes } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import prisma from './prisma';
+import { isExpiredUnpaidOrder, runReservationCleanup } from './order-reservations';
 import { queueOrderNotification, type OrderForNotification } from './order-notifications';
 import {
   canApplyFulfillmentAction,
@@ -497,42 +498,42 @@ export async function processRazorpayWebhook(input: RazorpayWebhookInput) {
 }
 
 /** Release payment holds that passed their expiry. Safe on overlapping workers. */
-export async function releaseExpiredReservations(options: { limit?: number } = {}) {
-  const limit = Math.max(1, Math.min(100, options.limit ?? 25));
-  const candidates = await prisma.order.findMany({
-    where: {
-      paymentStatus: 'PENDING',
-      stockCommittedAt: null,
-      reservationExpiresAt: { lt: new Date() },
-    },
-    select: { id: true },
-    take: limit,
-    orderBy: { reservationExpiresAt: 'asc' },
-  });
-  let released = 0;
-  for (const candidate of candidates) {
-    const changed = await inOrderTransaction(async (tx) => {
-      await lockOrder(tx, candidate.id);
-      const order = await getOrderWithReservations(tx, candidate.id);
-      if (!order || order.paymentStatus !== 'PENDING' || order.stockCommittedAt || !order.reservationExpiresAt || order.reservationExpiresAt >= new Date()) return false;
-      await releaseReservations(tx, order.id, order.reservations, new Date());
+export async function releaseExpiredReservations(options: { limit?: number; budgetMs?: number } = {}) {
+  return runReservationCleanup(options, {
+    now: Date.now,
+    candidates: (take, before) => prisma.$transaction((tx) => tx.order.findMany({
+      where: { paymentStatus: 'PENDING', stockCommittedAt: null, reservationExpiresAt: { lt: before } },
+      select: { id: true },
+      take,
+      orderBy: [{ reservationExpiresAt: 'asc' }, { id: 'asc' }],
+    }), { maxWait: 500, timeout: 3_000 }),
+    release: (id, before, timeoutMs) => prisma.$transaction(async (tx) => {
+      // Checkout/payment/admin mutations use the same order -> sorted variants
+      // lock order. A scheduler must skip busy rows, not delay a payment.
+      const tryLock = async (key: string) => {
+        const rows = await tx.$queryRaw<Array<{ locked: boolean }>>`SELECT pg_try_advisory_xact_lock(hashtext(${key})) AS locked`;
+        return rows[0]?.locked === true;
+      };
+      if (!await tryLock(`order/${id}`)) return 'skipped' as const;
+      const order = await getOrderWithReservations(tx, id);
+      if (!isExpiredUnpaidOrder(order, before)) return 'skipped' as const;
+      const variants = [...new Set(order!.reservations.filter((item) => item.status === 'RESERVED').map((item) => item.variantId))].sort();
+      for (const variantId of variants) {
+        if (!await tryLock(`inventory/${variantId}`)) return 'skipped' as const;
+      }
+      await releaseReservations(tx, id, order!.reservations, before);
       await tx.order.update({
-        where: { id: order.id },
+        where: { id },
         data: {
-          status: 'CANCELLED',
-          paymentStatus: 'EXPIRED',
-          fulfillmentStatus: 'CANCELLED',
-          reservationExpiresAt: null,
-          cancelledAt: new Date(),
+          status: 'CANCELLED', paymentStatus: 'EXPIRED', fulfillmentStatus: 'CANCELLED',
+          reservationExpiresAt: null, cancelledAt: before,
           cancellationReason: 'Payment window expired before a captured payment was confirmed.',
         },
       });
-      await addEvent(tx, order.id, 'RESERVATION_EXPIRED', 'Unpaid checkout hold expired and inventory was released.');
-      return true;
-    });
-    if (changed) released++;
-  }
-  return { checked: candidates.length, released };
+      await addEvent(tx, id, 'RESERVATION_EXPIRED', 'Unpaid checkout hold expired and inventory was released.');
+      return 'released' as const;
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, maxWait: Math.min(500, timeoutMs), timeout: timeoutMs }),
+  });
 }
 
 export interface FulfillmentTransitionInput {

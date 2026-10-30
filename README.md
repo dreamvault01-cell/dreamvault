@@ -85,6 +85,17 @@ dreamvault/
 | `npm start` | Run production build |
 | `npm run lint` | Run ESLint |
 
+## Automatic background jobs
+
+The protected `/api/cron/fulfillment` endpoint releases expired unpaid checkout
+holds and processes due order/support email queues. The repository includes an
+opt-in GitHub Actions schedule for development on Vercel Hobby, with manual runs,
+bounded retries and aggregate-only summaries. It is not active until deployed
+and configured. See [the setup and verification guide](docs/BACKGROUND_JOBS_SETUP.md).
+
+Run `npm run test:background` for the mocked scheduler, authentication and cleanup
+checks. No live emails or database mutations are performed by these unit tests.
+
 ## Product room preview
 
 Apply the additive image update to the intended database before running the updated app:

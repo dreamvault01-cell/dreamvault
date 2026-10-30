@@ -158,13 +158,13 @@ Click **Process outbox** on the admin Messages screen to process jobs that are d
 For unattended retries, configure a scheduler to call:
 
 ```text
-GET https://dream-vault-rho.vercel.app/api/support/process
+POST https://dream-vault-rho.vercel.app/api/cron/fulfillment
 Authorization: Bearer YOUR_PRIVATE_CRON_SECRET
 ```
 
-The endpoint also accepts POST with the same authentication. Keep the secret in the scheduler's protected header settings, not in the URL. Do not expose it to a public browser script.
+The combined endpoint also accepts GET with the same authentication. It handles expired order reservations, order email retries and support email retries independently. Keep the secret in the scheduler's protected header settings, not in the URL. Do not expose it to a public browser script. The existing `/api/support/process` endpoint remains available for support-only processing; do not configure a second recurring support schedule alongside the combined one.
 
-No scheduler account or Vercel plan change is created automatically by this implementation. Vercel Hobby cron jobs are currently restricted to daily execution, so a daily cron is not a fast-retry guarantee. For prompt unattended retries, use a suitably configured more frequent scheduler or a compatible Vercel plan. [Vercel cron limits](https://vercel.com/docs/cron-jobs/usage-and-pricing).
+The repository includes an opt-in five-minute GitHub Actions scheduler, with a manual run and safe processing summaries. Follow [the background-jobs setup guide](BACKGROUND_JOBS_SETUP.md) to deploy it, set the private GitHub/Vercel secret, verify a run, review runner usage and explicitly enable the schedule. No scheduler account, GitHub setting or Vercel plan change is created automatically. Vercel Hobby cron jobs are restricted to daily execution, so no incompatible five-minute native cron is added. [Vercel cron limits](https://vercel.com/docs/cron-jobs/usage-and-pricing).
 
 Before promising customers a response time, choose a retry schedule, monitor failed jobs, and test recovery from a temporary provider failure.
 
