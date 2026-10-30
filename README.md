@@ -28,8 +28,8 @@ A premium e-commerce website for art prints and posters, built with Next.js 16. 
 
 ```bash
 # Clone the repository
-git clone https://github.com/RishuJaiz/DreamVault.git
-cd DreamVault
+git clone https://github.com/dreamvault01-cell/dreamvault.git
+cd dreamvault
 
 # Install dependencies
 npm install
