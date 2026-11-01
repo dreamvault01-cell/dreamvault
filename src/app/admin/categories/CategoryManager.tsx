@@ -50,7 +50,7 @@ export default function CategoryManager({ initialCategories }: { initialCategori
     setSaving(true);
 
     const slug = form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const payload = { ...form, slug };
+    const payload = { ...form, slug, image: form.image.trim() };
 
     try {
       if (editingId) {
@@ -188,9 +188,9 @@ export default function CategoryManager({ initialCategories }: { initialCategori
                 <tr key={cat.id}>
                   <td>
                     <div className="admin-table-product">
-                      {cat.image && (
+                      {cat.image?.trim() && (
                         <Image
-                          src={cat.image}
+                          src={cat.image.trim()}
                           alt={cat.name}
                           width={42}
                           height={42}

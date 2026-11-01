@@ -9,6 +9,7 @@
     "lint": "eslint",
     "brand:icons": "node scripts/generate-brand-icons.mjs",
     "test:brand": "node --import tsx --test src/lib/brand.test.ts src/lib/brand-assets.test.ts",
+    "test:categories": "node --import tsx --test src/lib/category-media.test.ts",
     "db:support": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/support-inbox.sql",
     "db:product-media": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/product-room-preview.sql",
     "db:product-configurations": "prisma db execute --schema prisma/schema.prisma --file prisma/sql/product-configurations.sql",

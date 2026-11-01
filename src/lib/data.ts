@@ -1,5 +1,6 @@
 import prisma from './prisma';
 import { Prisma } from '@prisma/client';
+import { getCategoryImageSrc } from './category-media';
 
 export interface ProductVariantData {
   id: string;
@@ -137,7 +138,7 @@ export async function getCategories(): Promise<Category[]> {
     name: c.name,
     slug: c.slug,
     description: c.description || '',
-    image: c.image || '',
+    image: getCategoryImageSrc(c.image),
     productCount: c._count.products,
   }));
 }
