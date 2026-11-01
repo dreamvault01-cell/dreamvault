@@ -12,11 +12,34 @@ test('defaults explicitly to development, including on production hosting', () =
   const config = getSupportConfig({ ...secrets, NODE_ENV: 'production' });
   assert.equal(config.mode, 'development');
   assert.equal(config.fromEmail, 'onboarding@resend.dev');
+  assert.equal(config.fromName, 'RareDaze Support');
   assert.equal(config.supportEmail, 'support@soliheleug.resend.app');
   assert.equal(config.testRecipient, 'dreamvault01@gmail.com');
   assert.equal(config.configured, true);
   assert.equal(config.webhookConfigured, true);
   assert.deepEqual(config.issues, []);
+});
+
+test('support sender names normalize legacy branding and preserve custom display names', () => {
+  for (const [name, expected] of [
+    ['', 'RareDaze Support'], ['   ', 'RareDaze Support'], ['DreamVault Support', 'RareDaze Support'],
+    [' DreamVault ', 'RareDaze'], [' Custom Support ', 'Custom Support'],
+    ['DreamVault Studio', 'DreamVault Studio'],
+  ]) {
+    const config = getSupportConfig({ ...secrets, SUPPORT_FROM_NAME: name });
+    assert.equal(config.fromName, expected);
+    assert.equal(config.configured, true);
+    assert.equal(config.webhookConfigured, true);
+  }
+});
+
+test('support sender normalization retains display name header validation', () => {
+  for (const name of ['DreamVault Support\r\n', '\nDreamVault Support', 'Custom Support\r\nBcc: other@example.com', 'Custom <Support>', 'a'.repeat(101)]) {
+    const config = getSupportConfig({ ...secrets, SUPPORT_FROM_NAME: name });
+    assert.equal(config.configured, false);
+    assert.equal(config.webhookConfigured, false);
+    assert.ok(config.issues.some((issue) => issue.startsWith('SUPPORT_FROM_NAME')));
+  }
 });
 
 test('missing credentials disable only their relevant capabilities', () => {

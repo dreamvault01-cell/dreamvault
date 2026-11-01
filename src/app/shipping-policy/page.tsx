@@ -8,7 +8,7 @@ export default function ShippingPolicyPage() {
       tag="POLICIES"
       title="Shipping"
       titleAccent="Policy"
-      subtitle="How fulfilment, delivery updates, and shipping questions are handled for DreamVault orders."
+      subtitle="How fulfilment, delivery updates, and shipping questions are handled for RareDaze orders."
       lastUpdated="October 1, 2026"
     >
       <PolicySection id="order-preparation" title="Order Preparation">
@@ -18,7 +18,7 @@ export default function ShippingPolicyPage() {
         <p>The final checkout total is shown before you place an order. If delivery is included, it is reflected in that total; if a delivery charge is introduced in the future, it will be shown before payment.</p>
       </PolicySection>
       <PolicySection id="tracking" title="Tracking and Delivery Updates">
-        <p>When an order ships, DreamVault records the courier and tracking number on the order. You can view the latest available update in <a href="/track-order">Track Your Order</a> using the order reference and checkout email. When order email delivery is enabled, the same update is also sent to that email address.</p>
+        <p>When an order ships, RareDaze records the courier and tracking number on the order. You can view the latest available update in <a href="/track-order">Track Your Order</a> using the order reference and checkout email. When order email delivery is enabled, the same update is also sent to that email address.</p>
       </PolicySection>
       <PolicySection id="packaging" title="Packaging">
         <p>Prints are packed in a format-appropriate protective mailer or tube. The final packaging method may vary by the selected print size and frame option.</p>

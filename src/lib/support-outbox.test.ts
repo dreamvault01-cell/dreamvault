@@ -212,11 +212,25 @@ test('sender, reply address, message identity, and payload stay immutable across
   assert.deepEqual(second.sends[0].input, first.sends[0].input);
   assert.equal(second.sends[0].input.id, MESSAGE_ID, 'Stable transport idempotency must use the existing message ID.');
   assert.equal(second.sends[0].config.fromEmail, 'support@old.example');
-  assert.equal(second.sends[0].config.fromName, 'DreamVault Support');
+  assert.equal(second.sends[0].config.fromName, 'RareDaze Support');
   assert.equal(second.sends[0].input.replyTo, `r+${original.replyToken}@old.example`);
   assert.equal(second.finishes[0].message.attempts, 2);
   assert.equal(second.finishes[0].message.lockToken, retryJob.lockToken);
   assert.equal(second.begins[0].replyTo, `r+${original.replyToken}@new.example`);
+});
+
+test('a sender saved before the rebrand stays exact when an existing message is retried', async () => {
+  const saved = message({
+    fromEmail: 'support@old.example', fromName: 'DreamVault Support',
+    replyToEmail: 'support@old.example', attempts: 1, firstAttemptAt: new Date(NOW - 60_000),
+  });
+  const h = harness([saved], liveConfig('new.example'));
+  await processSupportOutbox({}, h.dependencies);
+  assert.equal(h.sends[0].config.fromName, 'DreamVault Support');
+  assert.equal(h.sends[0].config.fromEmail, saved.fromEmail);
+  assert.equal(h.sends[0].input.subject, saved.subject);
+  assert.equal(h.sends[0].input.text, saved.body);
+  assert.equal(h.sends[0].input.replyTo, saved.replyToEmail);
 });
 
 test('a live-mode retry of a previously attempted development sender is blocked, not silently changed', async () => {

@@ -5,8 +5,8 @@ import { ArrowDown, ArrowRight, ArrowUpRight, Layers, Plus, Scan, Package } from
 import styles from './about.module.css';
 
 export const metadata: Metadata = {
-  title: 'Our Story | DreamVault — Art for the Way You Live',
-  description: 'Meet DreamVault. Thoughtfully curated art, considered paper and frame choices, and a belief that your space should feel like you.',
+  title: 'Our Story | RareDaze — Art for the Way You Live',
+  description: 'Meet RareDaze. Thoughtfully curated art, considered paper and frame choices, and a belief that your space should feel like you.',
 };
 
 const materials = [
@@ -32,7 +32,7 @@ export default function AboutPage() {
     <div className={styles.page}>
       <section className={[styles.container, styles.intro].join(' ')} aria-labelledby="about-heading">
         <div className={styles.topline}>
-          <span className={styles.eyebrow}><span className={styles.dot} /> The world of DreamVault</span>
+          <span className={styles.eyebrow}><span className={styles.dot} /> The world of RareDaze</span>
           <span className={styles.edition}>Art. Space. A little perspective.</span>
         </div>
         <div className={styles.introGrid}>
@@ -46,10 +46,10 @@ export default function AboutPage() {
         <figure className={styles.heroImage}>
           <Image src="/images/about/atelier.jpg" alt="A softly lit contemporary gallery filled with expressive abstract art" fill preload sizes="(max-width: 1350px) 94vw, 1280px" />
           <div className={styles.imageShade} />
-          <div className={styles.heroImageTop}><span>A different point of view.</span><span>DreamVault / Our story</span></div>
+          <div className={styles.heroImageTop}><span>A different point of view.</span><span>RareDaze / Our story</span></div>
           <figcaption className={styles.heroCaption}>
             <p>Good art changes a wall.<br /><em>Great art changes a feeling.</em></p>
-            <span className={styles.imageIndex}>DV<span>001 — A sense of place</span></span>
+            <span className={styles.imageIndex}>RD<span>001 — A sense of place</span></span>
           </figcaption>
         </figure>
         <div className={styles.signatureStrip} aria-label="Our approach">
@@ -63,11 +63,11 @@ export default function AboutPage() {
           <div className={styles.storyHeading}>
             <span className={styles.eyebrow}>A simple belief</span>
             <h2 id="story-heading">A space should<br />feel like <em>you.</em></h2>
-            <div className={styles.brandSignature}>Dream<span>Vault</span><span className={styles.signatureNote}>Art for the everyday.</span></div>
+            <div className={styles.brandSignature}>Rare<span>Daze</span><span className={styles.signatureNote}>Art for the everyday.</span></div>
           </div>
           <div className={styles.storyCopy}>
             <p className={styles.lead}>The print above your desk. The color that pulls a room together. The piece you stop to look at, every single day.</p>
-            <p>We believe those little things matter. DreamVault began with the idea that surrounding yourself with art should be personal, approachable, and a pleasure from the very first print.</p>
+            <p>We believe those little things matter. RareDaze began with the idea that surrounding yourself with art should be personal, approachable, and a pleasure from the very first print.</p>
             <p>So we focus on what makes a difference: art with character, paper you can feel, and pieces that fit naturally into the way you live. From a quiet abstract to a bold gallery wall, there is no right way to make a space yours.</p>
             <Link href="/collections" className={styles.textLink}>Find your point of view <ArrowUpRight size={18} aria-hidden="true" /></Link>
           </div>
@@ -130,7 +130,7 @@ export default function AboutPage() {
           <p>Find a print that feels like it was always meant to be yours.</p>
           <Link href="/collections" className={styles.primaryLink} id="about-cta-shop-btn">Discover your next piece <ArrowUpRight size={19} aria-hidden="true" /></Link>
           <Link href="/contact" className={styles.contactLink}>A question, an idea, a hello? <span>Let’s talk <ArrowRight size={14} aria-hidden="true" /></span></Link>
-          <span className={styles.closingWordmark} aria-hidden="true">DreamVault</span>
+          <span className={styles.closingWordmark} aria-hidden="true">RareDaze</span>
         </div>
       </section>
     </div>

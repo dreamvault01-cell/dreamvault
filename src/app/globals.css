@@ -1,5 +1,5 @@
 /* ================================================================
-   DreamVault — Global Design System
+   RareDaze — Global Design System
    Premium dark-mode poster e-commerce
    ================================================================ */
 
@@ -19,6 +19,7 @@
   --text-muted: #6b7280;
   --text-accent: #a67c00;
   --btn-primary-text: #ffffff;
+  --brand-logo-filter: none;
 
   /* Accent Colors (Light Mode) */
   --accent-gold: #b38600;
@@ -64,6 +65,7 @@
   --text-muted: #666666;
   --text-accent: #d4af37;
   --btn-primary-text: #0a0a0a;
+  --brand-logo-filter: brightness(0) invert(1);
 
   /* Accent Colors (Dark Mode) */
   --accent-gold: #d4af37;
@@ -642,10 +644,8 @@ ul, ol {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.navbar-logo .logo-accent {
-  color: var(--accent-gold);
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .navbar-nav {
@@ -691,6 +691,14 @@ ul, ol {
   display: flex;
   align-items: center;
   gap: var(--gap-sm);
+}
+
+.user-button-wrapper {
+  margin: 0 0.25rem;
+}
+
+.mobile-search-link {
+  display: none;
 }
 
 .navbar-action-btn {
@@ -777,7 +785,7 @@ ul, ol {
   border-top: 1px solid var(--border-subtle);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navbar-nav {
     display: none;
   }
@@ -789,6 +797,10 @@ ul, ol {
   /* Hide desktop auth on mobile */
   .desktop-auth {
     display: none !important;
+  }
+
+  .navbar-orders-link {
+    display: none;
   }
 
   .navbar-nav.mobile-open {
@@ -2919,6 +2931,24 @@ ul, ol {
     gap: 2px;
   }
 
+  .navbar-search-button {
+    display: none;
+  }
+
+  .user-button-wrapper {
+    margin: 0;
+  }
+
+  .navbar-nav.mobile-open .mobile-search-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
   .navbar-action-btn,
   .navbar-toggle {
     width: 32px;
@@ -3820,6 +3850,12 @@ ul, ol {
   padding: 0 1.5rem 1.5rem;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 1rem;
+}
+
+.admin-brand-link {
+  display: inline-flex;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
 }
 
 .admin-sidebar-title {

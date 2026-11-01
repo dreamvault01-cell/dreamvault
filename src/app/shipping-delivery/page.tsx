@@ -8,7 +8,7 @@ export default function ShippingDeliveryPage() {
       tag="INFORMATION"
       title="Shipping &"
       titleAccent="Delivery"
-      subtitle="A simple view of what happens after you place a DreamVault order."
+      subtitle="A simple view of what happens after you place a RareDaze order."
       lastUpdated="October 1, 2026"
     >
       <PolicySection id="after-you-order" title="After You Order">

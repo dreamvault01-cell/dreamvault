@@ -9,7 +9,7 @@ const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', '
 export async function POST(req: Request) {
   try {
     await requireAdminApi();
-    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the RareDaze dashboard.' }, { status: 403 });
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const apiKey = process.env.CLOUDINARY_API_KEY;

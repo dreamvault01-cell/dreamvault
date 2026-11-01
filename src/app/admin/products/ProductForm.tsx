@@ -690,7 +690,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
                 <div className="pf-field">
                   <label className="pf-label">URL Slug</label>
                   <div className="pf-slug-preview">
-                    <span className="pf-slug-prefix">dreamvault.in/product/</span>
+                    <span className="pf-slug-prefix">/product/</span>
                     <input
                       type="text"
                       className="pf-input pf-slug-input"
@@ -792,7 +792,7 @@ export default function ProductForm({ categories, existingTags = [], initialData
                       </div>
                       <div className="pf-field pf-field-compact">
                         <label className="pf-label-sm">SKU</label>
-                        <input type="text" className="pf-input pf-input-sm" value={variant.sku} onChange={(e) => updateVariant(index, 'sku', e.target.value)} placeholder="DV-001" />
+                        <input type="text" className="pf-input pf-input-sm" value={variant.sku} onChange={(e) => updateVariant(index, 'sku', e.target.value)} placeholder="RD-001" />
                       </div>
                       <div className="pf-field pf-field-compact">
                         <label className="pf-label-sm">On-hand stock</label>

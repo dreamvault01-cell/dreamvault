@@ -44,7 +44,7 @@ export default function TrackOrderPage() {
   return <SupportPage eyebrow="Order care" title={<>Every print.<br /><em>A journey home.</em></>} description="Enter the order reference and the email used at checkout to see a live delivery update." breadcrumb="Track your order">
     <div className={styles.layout}>
       <section className={styles.card} aria-labelledby="reference-heading">
-        <div className={styles.cardTop}><span>Order tracking / DreamVault</span><Package size={22} strokeWidth={1.3} aria-hidden="true" /></div>
+        <div className={styles.cardTop}><span>Order tracking / RareDaze</span><Package size={22} strokeWidth={1.3} aria-hidden="true" /></div>
         <h2 id="reference-heading">Find your<br />order update.</h2>
         <p className={styles.intro}>For privacy, we match the reference with your checkout email before showing delivery details.</p>
         <form onSubmit={handleTrack}>
@@ -60,7 +60,7 @@ export default function TrackOrderPage() {
           {order.trackingUrl && <a href={order.trackingUrl} target="_blank" rel="noreferrer">Open courier tracking <ExternalLink size={15} /></a>}
         </div>}
       </section>
-      <aside className={styles.guide} aria-labelledby="guide-heading"><div className={styles.packageIllustration} aria-hidden="true"><div><Package size={76} strokeWidth={.7} /><span>Handled with care.</span></div><span className={styles.illustrationIndex}>DV / From print to place</span></div><span className={styles.eyebrow}>Need a hand?</span><h2 id="guide-heading">A little care.<br /><em>All the way home.</em></h2><p>If an update needs a closer look, our support team can help with your reference.</p><div className={styles.guideLinks}><Link href="/shipping-delivery"><Truck size={19} strokeWidth={1.4} /><span>Shipping & delivery<small>Timeframes and delivery information</small></span><ArrowUpRight size={16} /></Link><Link href="/contact"><LifeBuoy size={19} strokeWidth={1.4} /><span>Talk to our team<small>Help with a specific order</small></span><ArrowUpRight size={16} /></Link></div></aside>
+      <aside className={styles.guide} aria-labelledby="guide-heading"><div className={styles.packageIllustration} aria-hidden="true"><div><Package size={76} strokeWidth={.7} /><span>Handled with care.</span></div><span className={styles.illustrationIndex}>RD / From print to place</span></div><span className={styles.eyebrow}>Need a hand?</span><h2 id="guide-heading">A little care.<br /><em>All the way home.</em></h2><p>If an update needs a closer look, our support team can help with your reference.</p><div className={styles.guideLinks}><Link href="/shipping-delivery"><Truck size={19} strokeWidth={1.4} /><span>Shipping & delivery<small>Timeframes and delivery information</small></span><ArrowUpRight size={16} /></Link><Link href="/contact"><LifeBuoy size={19} strokeWidth={1.4} /><span>Talk to our team<small>Help with a specific order</small></span><ArrowUpRight size={16} /></Link></div></aside>
     </div>
   </SupportPage>;
 }

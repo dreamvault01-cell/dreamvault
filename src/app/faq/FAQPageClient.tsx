@@ -76,7 +76,7 @@ function getFaqs(supportEmail: string) {
       },
       {
         q: 'Is my payment information secure?',
-        a: 'Online payment details are entered in Razorpay’s secure payment window. DreamVault stores the payment reference and status needed to confirm the order, without storing complete card, bank, or UPI credentials.',
+        a: 'Online payment details are entered in Razorpay’s secure payment window. RareDaze stores the payment reference and status needed to confirm the order, without storing complete card, bank, or UPI credentials.',
       },
       {
         q: 'Do you offer Cash on Delivery?',
@@ -176,7 +176,7 @@ export default function FAQPageClient({ supportEmail }: { supportEmail: string }
             </div>
             <div className={styles.searchMeta}>
               <p role="status">{normalizedQuery ? `${resultCount} ${resultCount === 1 ? 'answer' : 'answers'} found` : 'The details, without the guesswork.'}</p>
-              <span>DreamVault / FAQ</span>
+              <span>RareDaze / FAQ</span>
             </div>
           </div>
 

@@ -481,7 +481,7 @@ export async function processRazorpayWebhook(input: RazorpayWebhookInput) {
     // Keep verified events for unknown provider orders too. Acknowledging the
     // event prevents an unrelated Razorpay event from being retried forever;
     // our checkout attaches its Razorpay order before it is exposed to a
-    // customer, so an unknown order cannot be a valid DreamVault checkout.
+    // customer, so an unknown order cannot be a valid RareDaze checkout.
     if (!order || !input.captured || !input.razorpayOrderId || !input.razorpayPaymentId || input.amountPaise === null || !input.currency) {
       if (order) await addEvent(tx, order.id, `RAZORPAY_${input.eventType.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}`, 'Payment provider event received.');
       return { duplicate: false, outcome: 'IGNORED' as const };

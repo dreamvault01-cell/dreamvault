@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { BRAND_SUPPORT_NAME, getBrandDisplayName } from './brand';
+
 export interface SupportConfig {
   mode: 'development' | 'live';
   apiKey: string;
@@ -62,7 +64,7 @@ export function getSupportConfig(env: Readonly<Record<string, string | undefined
   const testRecipient = readMailbox('SUPPORT_TEST_RECIPIENT', 'dreamvault01@gmail.com');
   const notificationEmail = readMailbox('SUPPORT_NOTIFICATION_EMAIL', testRecipient);
   if (mode === 'development' && notificationEmail !== testRecipient) issues.push('SUPPORT_NOTIFICATION_EMAIL must match SUPPORT_TEST_RECIPIENT in development mode.');
-  const fromName = (env.SUPPORT_FROM_NAME ?? 'DreamVault Support').trim();
+  const fromName = getBrandDisplayName(env.SUPPORT_FROM_NAME, BRAND_SUPPORT_NAME);
   if (!fromName || fromName.length > 100 || CONTROL_CHARACTERS.test(env.SUPPORT_FROM_NAME ?? '') || /[<>]/.test(fromName)) {
     issues.push('SUPPORT_FROM_NAME must be a plain display name of 1–100 characters.');
   }

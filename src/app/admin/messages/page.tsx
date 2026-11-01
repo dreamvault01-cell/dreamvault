@@ -2,7 +2,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import SupportInbox from './SupportInbox';
 
 export const metadata = {
-  title: 'Support messages | DreamVault Admin',
+  title: 'Support messages | RareDaze Admin',
   robots: { index: false, follow: false },
 };
 

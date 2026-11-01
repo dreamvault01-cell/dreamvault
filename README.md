@@ -1,4 +1,4 @@
-# 🏛️ DreamVault — Premium Art Prints & Posters
+# RareDaze — Premium Art Prints & Posters
 
 A premium e-commerce website for art prints and posters, built with Next.js 16. Featuring a stunning dark-mode design with gold accents, full cart system, live search, and responsive layouts.
 

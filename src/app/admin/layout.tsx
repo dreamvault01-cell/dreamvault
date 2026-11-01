@@ -1,6 +1,7 @@
 import { requireAdmin } from '@/lib/admin-auth';
 import Link from 'next/link';
 import { LayoutDashboard, Package, ShoppingCart, FolderOpen, Warehouse, Users, ArrowLeft, MessagesSquare } from 'lucide-react';
+import BrandLogo from '@/components/BrandLogo';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireAdmin();
@@ -19,11 +20,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <div className="admin-sidebar-header">
+          <Link href="/" className="admin-brand-link" aria-label="RareDaze home"><BrandLogo /></Link>
           <div className="admin-sidebar-title">
             <LayoutDashboard size={20} />
             Admin Panel
           </div>
-          <div className="admin-sidebar-subtitle">DreamVault Management</div>
+          <div className="admin-sidebar-subtitle">RareDaze Management</div>
         </div>
 
         <nav className="admin-nav">

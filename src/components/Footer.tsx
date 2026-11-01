@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
 import { getSupportConfig } from '@/lib/support-config';
+import { BRAND_NAME } from '@/lib/brand';
+import BrandLogo from './BrandLogo';
 
 const ChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="footer-accordion-icon"><polyline points="6 9 12 15 18 9" /></svg>;
 
@@ -9,7 +11,7 @@ export default function Footer() {
   return <footer className="footer" id="footer">
     <div className="footer-main"><div className="container"><div className="footer-grid">
       <div className="footer-brand">
-        <div className="navbar-logo">Dream<span className="logo-accent">Vault</span></div>
+        <Link href="/" className="navbar-logo" aria-label={`${BRAND_NAME} home`}><BrandLogo /></Link>
         <p>Curated posters, premium art prints, and framed pieces for the rooms you live in.</p>
         <div className="footer-contact"><a href={`mailto:${supportEmail}`}><Mail size={14} /> {supportEmail}</a></div>
       </div>
@@ -39,7 +41,7 @@ export default function Footer() {
       </div>
     </div></div></div>
     <div className="footer-bottom-bar"><div className="container"><div className="footer-bottom">
-      <p className="footer-copyright">Copyright {new Date().getFullYear()} DreamVault. All rights reserved.</p>
+      <p className="footer-copyright">Copyright {new Date().getFullYear()} {BRAND_NAME}. All rights reserved.</p>
       <div className="footer-payments" aria-label="Checkout payment methods"><span className="payment-badge payment-badge-text" style={{ color: '#142787' }}>VISA</span><span className="payment-badge"><svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><circle cx="6" cy="6" r="5.5" fill="#EB001B" opacity="0.9" /><circle cx="12" cy="6" r="5.5" fill="#F79E1B" opacity="0.9" /></svg></span><span className="payment-badge payment-badge-text">UPI</span><span className="payment-badge payment-badge-text">RuPay</span><span className="payment-badge payment-badge-text">Net Banking</span></div>
     </div></div></div>
   </footer>;

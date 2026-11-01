@@ -8,7 +8,7 @@ const secrets = { RESEND_API_KEY: 're_test_key_123456789', RESEND_WEBHOOK_SECRET
 const config = getSupportConfig(secrets);
 const token = 'ab'.repeat(24);
 const email = {
-  id: 'message_123', to: config.testRecipient, subject: 'Your DreamVault enquiry', text: 'Hello!\nHow can we help?',
+  id: 'message_123', to: config.testRecipient, subject: 'Your RareDaze enquiry', text: 'Hello!\nHow can we help?',
   replyTo: makeSupportReplyAddress(token, config),
 };
 
@@ -36,7 +36,9 @@ test('send uses exact recipient, reply address, stable provider idempotency, and
   const text = '<script>alert("x")</script>\n<img src=x onerror=alert(1)> & customer text';
   assert.deepEqual(await sendSupportEmail({ ...email, text, inReplyTo: '<original@example.com>', references: ['<original@example.com>'] }, config), { id: 'provider_123' });
   assert.deepEqual(body.to, [config.testRecipient]);
+  assert.equal(body.from, '"RareDaze Support" <onboarding@resend.dev>');
   assert.equal(body.reply_to, email.replyTo);
+  assert.equal(body.subject, email.subject);
   assert.equal(body.text, text);
   assert.equal(headers.get('Idempotency-Key'), `support/${email.id}`);
   assert.equal(headers.get('Authorization'), `Bearer ${secrets.RESEND_API_KEY}`);
@@ -45,6 +47,41 @@ test('send uses exact recipient, reply address, stable provider idempotency, and
   assert.ok(String(body.html).includes('&lt;img'));
   assert.equal(String(body.html).includes('<script>'), false);
   assert.equal(String(body.html).includes('<img'), false);
+  assert.match(String(body.html), />RAREDAZE<\/p>/);
+  assert.match(String(body.html), />RareDaze Support<\/p>/);
+  assert.equal(/DreamVault|DREAMVAULT/.test(String(body.html)), false);
+});
+
+test('legacy configured sender uses the new brand while saved subjects and message text remain exact', async (t) => {
+  const legacy = getSupportConfig({ ...secrets, SUPPORT_FROM_NAME: 'DreamVault Support' });
+  const saved = { ...email, subject: 'Re: DreamVault enquiry [DV-12345678]', text: 'Saved message\nDreamVault Support' };
+  t.mock.method(globalThis, 'fetch', async (_url: Parameters<typeof fetch>[0], options?: RequestInit) => {
+    const body = JSON.parse(String(options?.body));
+    assert.equal(body.from, '"RareDaze Support" <onboarding@resend.dev>');
+    assert.equal(body.subject, saved.subject);
+    assert.equal(body.text, saved.text);
+    assert.match(body.html, /Saved message<br>DreamVault Support/);
+    return new Response(JSON.stringify({ id: 'legacy_sender' }), { status: 200 });
+  });
+  assert.deepEqual(await sendSupportEmail(saved, legacy), { id: 'legacy_sender' });
+});
+
+test('persisted legacy and custom senders retain the exact prior HTML wrapper on retries', async (t) => {
+  const text = '<Saved> & message\r\nDreamVault Support';
+  const previousHtml = '<!doctype html><html><body style="margin:0;background:#f8f7f4;color:#25241f;font-family:Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:36px 24px"><p style="font-size:12px;letter-spacing:3px;color:#8b702f">DREAMVAULT</p><div style="padding:24px 0;border-top:1px solid #dedbd3;border-bottom:1px solid #dedbd3;font-size:15px;line-height:1.8;overflow-wrap:anywhere">&lt;Saved&gt; &amp; message<br>DreamVault Support</div><p style="font-size:12px;line-height:1.7;color:#67645c">DreamVault Support</p></div></body></html>';
+  let body: Record<string, unknown> = {};
+  t.mock.method(globalThis, 'fetch', async (_url: Parameters<typeof fetch>[0], options?: RequestInit) => {
+    body = JSON.parse(String(options?.body));
+    assert.equal(new Headers(options?.headers).get('Idempotency-Key'), `support/${email.id}`);
+    return new Response(JSON.stringify({ id: 'historical_retry' }), { status: 200 });
+  });
+  for (const fromName of ['DreamVault Support', 'DreamVault', 'Custom Studio']) {
+    await sendSupportEmail({ ...email, text }, { ...config, fromName });
+    assert.equal(body.from, `"${fromName}" <onboarding@resend.dev>`);
+    assert.equal(body.html, previousHtml);
+    assert.equal(body.text, text);
+    assert.equal(body.subject, email.subject);
+  }
 });
 
 test('invalid headers, multi-recipient addresses and empty bodies are blocked before network', async (t) => {

@@ -45,14 +45,14 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
       <div className={styles.container}>
         <div className={styles.topline}>
           <Link href="/" className={styles.backLink}>
-            <ArrowLeft size={14} aria-hidden="true" /> Back to DreamVault
+            <ArrowLeft size={14} aria-hidden="true" /> Back to RareDaze
           </Link>
           <span className={styles.edition}>Art for the way you live.</span>
         </div>
 
         <div className={styles.grid}>
           <section className={styles.welcome} aria-labelledby="account-heading">
-            <span className={styles.eyebrow}><span className={styles.dot} /> Your little corner of DreamVault</span>
+            <span className={styles.eyebrow}><span className={styles.dot} /> Your little corner of RareDaze</span>
             <h1 id="account-heading">
               {signingIn ? 'Make yourself' : 'A little art.'}<br />
               <em>{signingIn ? 'at home.' : 'A world of you.'}</em>
@@ -73,7 +73,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
               />
               <figcaption>
                 <span>A sense of belonging.</span>
-                <span>DreamVault <span aria-hidden="true">/</span> Everyday inspiration</span>
+                <span>RareDaze <span aria-hidden="true">/</span> Everyday inspiration</span>
               </figcaption>
             </figure>
 
@@ -86,7 +86,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
           <section className={styles.account} aria-label={signingIn ? 'Sign in to your account' : 'Create your account'}>
             <div className={styles.accountIntro}>
               <span className={styles.eyebrow}>{signingIn ? 'A familiar place' : 'Your story starts here'}</span>
-              <span className={styles.accountIndex} aria-hidden="true">DV / {signingIn ? '01' : '02'}</span>
+              <span className={styles.accountIndex} aria-hidden="true">RD / {signingIn ? '01' : '02'}</span>
             </div>
             <div className={styles.formContainer}>
               {signingIn ? <SignIn appearance={appearance} /> : <SignUp appearance={appearance} />}

@@ -85,7 +85,7 @@ export default function ContactPageClient({ supportEmail, developmentMode }: { s
           <div className={styles.heroGrid}>
             <h1>Let’s start<br /><em>with a hello.</em></h1>
             <div className={styles.heroAside}>
-              <span className={styles.eyebrow}>The human side of DreamVault</span>
+              <span className={styles.eyebrow}>The human side of RareDaze</span>
               <p>A question, an idea, a print you can’t stop thinking about. We’d love to hear from you.</p>
               <a href="#contact-form" className={styles.textLink}>Drop us a note <ArrowRight size={16} aria-hidden="true" /></a>
             </div>
@@ -93,11 +93,11 @@ export default function ContactPageClient({ supportEmail, developmentMode }: { s
         </header>
 
         <div className={styles.contactGrid}>
-          <aside className={styles.contactAside} aria-label="Get in touch with DreamVault">
+          <aside className={styles.contactAside} aria-label="Get in touch with RareDaze">
             <figure className={styles.artwork}>
               <Image src="/images/about/sanctuary.jpg" alt="A warm living room with a thoughtfully curated gallery wall" fill preload sizes="(max-width: 850px) 92vw, 500px" />
               <figcaption><span className={styles.imageEyebrow}>A little inspiration, every day.</span><span>Good spaces.<br /><em>Better conversations.</em></span></figcaption>
-              <span className={styles.imageSignature} aria-hidden="true">DV</span>
+              <span className={styles.imageSignature} aria-hidden="true">RD</span>
             </figure>
             <div className={styles.asideHeading}><span className={styles.eyebrow}>Here to help</span><h2>A personal touch.<br />Every step of the way.</h2><p>From finding the right print to a question about your order, let’s make it a little easier.</p></div>
             <a href={`mailto:${supportEmail}`} className={styles.contactLink}>
@@ -111,7 +111,7 @@ export default function ContactPageClient({ supportEmail, developmentMode }: { s
           </aside>
 
           <section id="contact-form" className={styles.formCard} aria-labelledby="form-heading">
-            <div className={styles.formTopline}><span className={styles.eyebrow}>A note to DreamVault</span><MessageCircle size={20} strokeWidth={1.3} aria-hidden="true" /></div>
+            <div className={styles.formTopline}><span className={styles.eyebrow}>A note to RareDaze</span><MessageCircle size={20} strokeWidth={1.3} aria-hidden="true" /></div>
             <h2 id="form-heading">What’s on your mind?</h2>
             <p className={styles.formIntro}>Tell us a little about it. We’ll take it from here.</p>
             {developmentMode && <p className={styles.formIntro}><small>Development preview: messages are saved; email delivery is currently limited to our test inbox.</small></p>}
@@ -206,7 +206,7 @@ export default function ContactPageClient({ supportEmail, developmentMode }: { s
             ))}
           </div>
         </section>
-        <div className={styles.signoff}><span>Thoughtfully made. Personally yours.</span><span>Dream<span>Vault</span></span></div>
+        <div className={styles.signoff}><span>Thoughtfully made. Personally yours.</span><span>Rare<span>Daze</span></span></div>
       </div>
     </div>
   );

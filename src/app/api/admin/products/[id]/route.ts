@@ -44,7 +44,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdminApi();
-    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the RareDaze dashboard.' }, { status: 403 });
     const { id } = await params;
     const body = await req.json();
     const {
@@ -280,7 +280,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdminApi();
-    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the RareDaze dashboard.' }, { status: 403 });
     const { id } = await params;
     const orderItemCount = await prisma.orderItem.count({ where: { productId: id } });
     if (orderItemCount > 0) {

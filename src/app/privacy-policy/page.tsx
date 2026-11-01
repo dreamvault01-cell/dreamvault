@@ -8,14 +8,14 @@ export default function PrivacyPolicyPage() {
       tag="LEGAL"
       title="Privacy"
       titleAccent="Policy"
-      subtitle="A plain-language explanation of the information needed to run DreamVault and fulfil an order."
+      subtitle="A plain-language explanation of the information needed to run RareDaze and fulfil an order."
       lastUpdated="October 1, 2026"
     >
       <PolicySection id="information-we-collect" title="Information We Collect">
         <p>We collect the information you choose to provide when you create an account, place an order, contact us, or request support. This can include your name, email address, phone number, delivery address, order details, and the contents of your message.</p>
       </PolicySection>
       <PolicySection id="payments" title="Payments">
-        <p>Online payments are handled by Razorpay. DreamVault receives the payment reference and status needed to confirm your order; we do not store complete card, bank, or UPI credentials in this website.</p>
+        <p>Online payments are handled by Razorpay. RareDaze receives the payment reference and status needed to confirm your order; we do not store complete card, bank, or UPI credentials in this website.</p>
       </PolicySection>
       <PolicySection id="how-we-use-your-information" title="How We Use Your Information">
         <p>We use order and contact information to process purchases, arrange delivery, provide support, prevent misuse, and meet applicable legal obligations. We do not use your details for marketing unless you separately choose to receive it.</p>

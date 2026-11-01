@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { CheckCircle2, CreditCard, ShieldCheck, Truck } from 'lucide-react';
 import { getCartItemKey, useCart } from '@/context/CartContext';
+import { BRAND_NAME } from '@/lib/brand';
 
 interface RazorpayResponse {
   razorpay_order_id: string;
@@ -104,7 +105,8 @@ export default function CheckoutPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'DreamVault',
+        name: BRAND_NAME,
+        image: new URL('/brand/raredaze-apple-icon.png', window.location.origin).toString(),
         description: 'Art print order',
         order_id: orderData.orderId,
         prefill: { name: `${formData['first-name']} ${formData['last-name']}`.trim(), email: formData.email, contact: formData.phone },

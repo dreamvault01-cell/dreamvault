@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { BRAND_NAME, BRAND_SUPPORT_NAME, BRAND_WORDMARK, getBrandDisplayName } from './brand';
 import { getCustomerOrderStatus, getOrderNotificationLabel, type OrderNotificationKind } from './order-types';
 import { normalizeSupportEmail } from './support-config';
 
@@ -69,8 +70,8 @@ export function getOrderEmailConfig(env: Readonly<Record<string, string | undefi
   const replyToFallback = env.SUPPORT_EMAIL_ADDRESS ?? (fromEmail || 'support@soliheleug.resend.app');
   const replyTo = readMailbox(env, 'ORDER_REPLY_TO_EMAIL', replyToFallback, issues);
   const testRecipient = readMailbox(env, 'ORDER_TEST_RECIPIENT', env.SUPPORT_TEST_RECIPIENT ?? 'dreamvault01@gmail.com', issues);
-  const fromName = (env.ORDER_FROM_NAME ?? 'DreamVault').trim();
-  if (!fromName || fromName.length > 100 || CONTROL.test(fromName) || /[<>]/.test(fromName)) issues.push('ORDER_FROM_NAME must be a plain display name of 1–100 characters.');
+  const fromName = getBrandDisplayName(env.ORDER_FROM_NAME);
+  if (!fromName || fromName.length > 100 || CONTROL.test(env.ORDER_FROM_NAME ?? '') || /[<>]/.test(fromName)) issues.push('ORDER_FROM_NAME must be a plain display name of 1–100 characters.');
   const appUrl = readAppUrl(env, mode, issues);
   const apiKey = (env.RESEND_API_KEY ?? '').trim();
   if (!/^re_[a-zA-Z0-9_-]{8,}$/.test(apiKey) || CONTROL.test(apiKey)) issues.push('RESEND_API_KEY is missing or invalid.');
@@ -144,7 +145,7 @@ export function prepareOrderEmail(input: OrderEmailContentInput, config: Pick<Or
     : '';
   const cancellationLine = input.cancellationReason ? `\nReason: ${input.cancellationReason}\n` : '';
   const text = [
-    `DreamVault — ${copy.title}`,
+    `${BRAND_NAME} — ${copy.title}`,
     '',
     `Hello ${input.customerName},`,
     '',
@@ -161,7 +162,7 @@ export function prepareOrderEmail(input: OrderEmailContentInput, config: Pick<Or
     '',
     `${copy.button}: ${destination}`,
     '',
-    'DreamVault',
+    BRAND_NAME,
   ].filter(Boolean).join('\n');
   const itemHtml = input.items.map((item) => `<li style="margin:0 0 8px"><strong>${escapeHtml(item.name)}</strong> × ${item.quantity}<br><span style="color:#66645c">${escapeHtml(item.configuration)}</span></li>`).join('');
   const trackingHtml = input.trackingCarrier && input.trackingNumber
@@ -170,8 +171,8 @@ export function prepareOrderEmail(input: OrderEmailContentInput, config: Pick<Or
   const cancellationHtml = input.cancellationReason
     ? `<p style="margin:20px 0 0"><strong>Reason</strong><br>${escapeHtml(input.cancellationReason)}</p>`
     : '';
-  const html = `<!doctype html><html><body style="margin:0;background:#f8f7f4;color:#25241f;font-family:Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:38px 24px"><p style="margin:0 0 24px;font-size:12px;letter-spacing:3px;color:#8b702f">DREAMVAULT</p><div style="padding:28px 0;border-top:1px solid #dedbd3;border-bottom:1px solid #dedbd3"><h1 style="margin:0 0 16px;font-size:26px;line-height:1.25;font-family:Georgia,serif">${escapeHtml(copy.title)}</h1><p style="margin:0;color:#545149;font-size:15px;line-height:1.7">Hello ${escapeHtml(input.customerName)},<br><br>${escapeHtml(copy.intro)}</p><div style="margin:24px 0;padding:16px;background:#ffffff;border:1px solid #e4e1da"><strong>Order ${escapeHtml(input.orderReference)}</strong><br><span style="color:#66645c">${escapeHtml(getCustomerOrderStatus(input.fulfillmentStatus, input.paymentStatus))} · ${escapeHtml(formatMoney(input.totalAmount))}</span></div>${trackingHtml}${cancellationHtml}<p style="margin:24px 0 10px;font-size:12px;letter-spacing:1.5px;color:#8b702f;text-transform:uppercase">Your selection</p><ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.55">${itemHtml}</ul><p style="margin:28px 0 0"><a href="${escapeHtml(destination)}" style="display:inline-block;padding:13px 20px;background:#b38600;color:#fff;text-decoration:none;font-weight:bold">${escapeHtml(copy.button)}</a></p></div><p style="margin:20px 0 0;font-size:12px;color:#77736b;line-height:1.6">Questions? Reply to this email and our support team will help.</p></div></body></html>`;
-  return { subject: `DreamVault · ${copy.title} · ${input.orderReference}`, text, html };
+  const html = `<!doctype html><html><body style="margin:0;background:#f8f7f4;color:#25241f;font-family:Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:38px 24px"><p style="margin:0 0 24px;font-size:12px;letter-spacing:3px;color:#8b702f">${BRAND_WORDMARK}</p><div style="padding:28px 0;border-top:1px solid #dedbd3;border-bottom:1px solid #dedbd3"><h1 style="margin:0 0 16px;font-size:26px;line-height:1.25;font-family:Georgia,serif">${escapeHtml(copy.title)}</h1><p style="margin:0;color:#545149;font-size:15px;line-height:1.7">Hello ${escapeHtml(input.customerName)},<br><br>${escapeHtml(copy.intro)}</p><div style="margin:24px 0;padding:16px;background:#ffffff;border:1px solid #e4e1da"><strong>Order ${escapeHtml(input.orderReference)}</strong><br><span style="color:#66645c">${escapeHtml(getCustomerOrderStatus(input.fulfillmentStatus, input.paymentStatus))} · ${escapeHtml(formatMoney(input.totalAmount))}</span></div>${trackingHtml}${cancellationHtml}<p style="margin:24px 0 10px;font-size:12px;letter-spacing:1.5px;color:#8b702f;text-transform:uppercase">Your selection</p><ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.55">${itemHtml}</ul><p style="margin:28px 0 0"><a href="${escapeHtml(destination)}" style="display:inline-block;padding:13px 20px;background:#b38600;color:#fff;text-decoration:none;font-weight:bold">${escapeHtml(copy.button)}</a></p></div><p style="margin:20px 0 0;font-size:12px;color:#77736b;line-height:1.6">Questions? Reply to this email and our support team will help.</p></div></body></html>`;
+  return { subject: `${BRAND_NAME} · ${copy.title} · ${input.orderReference}`, text, html };
 }
 
 export async function sendOrderEmail(
@@ -185,6 +186,12 @@ export async function sendOrderEmail(
   }
   const to = config.mode === 'development' ? config.testRecipient : recipient;
   if (config.mode === 'development' && !to) throw new OrderMailError('RECIPIENT_BLOCKED');
+  // Order messages already freeze their content. Keep the old default sender
+  // for that exact legacy template too, preserving its provider retry payload.
+  const legacyTemplate = input.subject.startsWith('DreamVault · ')
+    && input.text.startsWith('DreamVault — ') && input.html.includes('>DREAMVAULT</p>');
+  const fromName = legacyTemplate && config.fromName === BRAND_NAME ? 'DreamVault'
+    : legacyTemplate && config.fromName === BRAND_SUPPORT_NAME ? 'DreamVault Support' : config.fromName;
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -194,7 +201,7 @@ export async function sendOrderEmail(
         'Idempotency-Key': `order/${input.id}`,
       },
       body: JSON.stringify({
-        from: `"${config.fromName.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" <${config.fromEmail}>`,
+        from: `"${fromName.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" <${config.fromEmail}>`,
         to: [to], reply_to: config.replyTo, subject: input.subject, text: input.text, html: input.html,
       }),
       signal: AbortSignal.timeout(8_000),

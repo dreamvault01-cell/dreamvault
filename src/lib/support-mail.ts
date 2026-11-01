@@ -1,5 +1,6 @@
 import 'server-only';
 import { Resend, type Response as ResendResponse } from 'resend';
+import { BRAND_NAME, BRAND_SUPPORT_NAME, BRAND_WORDMARK } from './brand';
 import { getSupportConfig, normalizeSupportEmail, type SupportConfig } from './support-config';
 import { normalizeRfcMessageId } from './support-validation';
 
@@ -114,7 +115,13 @@ export async function sendSupportEmail(input: SendSupportEmailInput, config: Sup
   const headers: Record<string, string> = {};
   if (input.inReplyTo) headers['In-Reply-To'] = input.inReplyTo;
   if (input.references?.length) headers.References = input.references.join(' ');
-  const html = `<!doctype html><html><body style="margin:0;background:#f8f7f4;color:#25241f;font-family:Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:36px 24px"><p style="font-size:12px;letter-spacing:3px;color:#8b702f">DREAMVAULT</p><div style="padding:24px 0;border-top:1px solid #dedbd3;border-bottom:1px solid #dedbd3;font-size:15px;line-height:1.8;overflow-wrap:anywhere">${escapeHtml(input.text).replace(/\r\n?|\n/g, '<br>')}</div><p style="font-size:12px;line-height:1.7;color:#67645c">DreamVault Support</p></div></body></html>`;
+  // The outbox freezes fromName before the first attempt. Use it as the stable
+  // template discriminator so a rebrand does not alter a provider retry payload.
+  // Custom senders have no saved template version; retain their exact old wrapper.
+  const currentBrand = config.fromName === BRAND_NAME || config.fromName === BRAND_SUPPORT_NAME;
+  const wordmark = currentBrand ? BRAND_WORDMARK : 'DREAMVAULT';
+  const supportName = currentBrand ? BRAND_SUPPORT_NAME : 'DreamVault Support';
+  const html = `<!doctype html><html><body style="margin:0;background:#f8f7f4;color:#25241f;font-family:Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:36px 24px"><p style="font-size:12px;letter-spacing:3px;color:#8b702f">${wordmark}</p><div style="padding:24px 0;border-top:1px solid #dedbd3;border-bottom:1px solid #dedbd3;font-size:15px;line-height:1.8;overflow-wrap:anywhere">${escapeHtml(input.text).replace(/\r\n?|\n/g, '<br>')}</div><p style="font-size:12px;line-height:1.7;color:#67645c">${supportName}</p></div></body></html>`;
   try {
     const { data, error } = await new SupportResend(config.apiKey).emails.send({
       from: `"${config.fromName.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" <${config.fromEmail}>`,

@@ -30,7 +30,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await requireAdminApi();
-    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the RareDaze dashboard.' }, { status: 403 });
     const body = await req.json();
     const {
       name, slug, description, shortDescription,

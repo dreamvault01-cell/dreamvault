@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { ArrowRight, Clock3, MessageCircle, Palette } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Custom Prints | DreamVault',
-  description: 'DreamVault custom photo and quote prints are being prepared. Explore ready-to-order wall art today.',
+  title: 'Custom Prints | RareDaze',
+  description: 'RareDaze custom photo and quote prints are being prepared. Explore ready-to-order wall art today.',
 };
 
 export default function CustomPosterPage() {
@@ -23,7 +23,7 @@ export default function CustomPosterPage() {
           <p style={{ marginTop: 18, color: 'var(--text-muted)', fontSize: '.86rem' }}>No upload or payment is collected on this page while the service is being prepared.</p>
         </div>
         <figure style={{ margin: 0, position: 'relative', minHeight: 380, overflow: 'hidden', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-subtle)', background: 'var(--bg-card)' }}>
-          <Image src="/images/banners/hero.jpg" alt="A styled DreamVault art print in a home" fill sizes="(max-width: 800px) 92vw, 480px" style={{ objectFit: 'cover' }} />
+          <Image src="/images/banners/hero.jpg" alt="A styled RareDaze art print in a home" fill sizes="(max-width: 800px) 92vw, 480px" style={{ objectFit: 'cover' }} />
           <figcaption style={{ position: 'absolute', inset: 'auto 16px 16px', padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'color-mix(in srgb, var(--bg-primary) 88%, transparent)', border: '1px solid var(--border-subtle)', backdropFilter: 'blur(12px)' }}><strong style={{ display: 'block' }}>The next chapter is personal.</strong><span style={{ color: 'var(--text-secondary)', fontSize: '.84rem' }}>For now, shop the curated collection with confidence.</span></figcaption>
         </figure>
       </div>

@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import ScrollToTop from '@/components/ScrollToTop';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ToastProvider } from '@/components/Toast';
+import { BRAND_NAME, BRAND_WORDMARK_PATH } from '@/lib/brand';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -23,7 +24,14 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'DreamVault — Premium Art Prints & Posters',
+  title: `${BRAND_NAME} — Premium Art Prints & Posters`,
+  applicationName: BRAND_NAME,
+  appleWebApp: { title: BRAND_NAME },
+  icons: {
+    icon: [{ url: '/brand/raredaze-mark.svg', type: 'image/svg+xml' }],
+    shortcut: '/favicon.ico',
+    apple: [{ url: '/brand/raredaze-apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   description:
     'Discover curated posters, premium art prints, and framed wall art with clear paper, size, and frame choices before checkout.',
   keywords: [
@@ -38,11 +46,11 @@ export const metadata: Metadata = {
     'movie posters',
   ],
   openGraph: {
-    title: 'DreamVault — Premium Art Prints & Posters',
+    title: `${BRAND_NAME} — Premium Art Prints & Posters`,
     description:
       'Curated posters, premium art prints, and framed wall art for your space.',
     type: 'website',
-    siteName: 'DreamVault',
+    siteName: BRAND_NAME,
   },
 };
 
@@ -58,7 +66,30 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
-        <ClerkProvider>
+        <ClerkProvider
+          localization={{
+            signIn: { start: { title: `Sign in to ${BRAND_NAME}` } },
+            signUp: { start: { title: `Create your ${BRAND_NAME} account` } },
+          }}
+          appearance={{
+            options: {
+              logoImageUrl: BRAND_WORDMARK_PATH,
+              logoLinkUrl: '/',
+              helpPageUrl: '/contact',
+              privacyPageUrl: '/privacy-policy',
+              termsPageUrl: '/terms-of-service',
+            },
+            variables: {
+              colorPrimary: 'var(--accent-gold)',
+              colorBackground: 'var(--bg-card)',
+              colorForeground: 'var(--text-primary)',
+              fontFamily: 'var(--font-sans)',
+            },
+            elements: {
+              logoImage: { width: '160px', height: 'auto', filter: 'var(--brand-logo-filter)' },
+            },
+          }}
+        >
           <ThemeProvider>
             <CartProvider>
               <ToastProvider>

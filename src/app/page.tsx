@@ -23,13 +23,13 @@ export default async function Home() {
             <Link href="/collections" className="btn btn-primary btn-lg" id="hero-shop-btn">Shop the collection <ArrowRight size={17} /></Link>
             <Link href="#print-options" className="btn btn-secondary btn-lg" id="hero-options-btn">Explore print options</Link>
           </div>
-          <div className="hero-stats" aria-label="DreamVault print options">
+          <div className="hero-stats" aria-label="RareDaze print options">
             <div><div className="hero-stat-value">{allProducts.length}</div><div className="hero-stat-label">Curated artworks</div></div>
             <div><div className="hero-stat-value">3</div><div className="hero-stat-label">Print formats</div></div>
             <div><div className="hero-stat-value">4</div><div className="hero-stat-label">Frame finishes</div></div>
           </div>
         </div>
-        <div className="hero-image-wrapper"><div className="hero-image-inner"><Image src="/images/banners/hero.jpg" alt="A DreamVault art print in a styled interior" width={600} height={600} priority /><div className="hero-image-glow" /></div></div>
+        <div className="hero-image-wrapper"><div className="hero-image-inner"><Image src="/images/banners/hero.jpg" alt="A RareDaze art print in a styled interior" width={600} height={600} priority /><div className="hero-image-glow" /></div></div>
       </div>
     </section>
 
@@ -61,7 +61,7 @@ export default async function Home() {
               <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '440px' }}>Keep it simple with a Classic Matte Poster Print, step up to a Premium Fine-Art Matte print, or choose a ready-to-hang framed piece in a finish that suits your room.</p>
               <Link href="/collections" className="btn btn-primary btn-lg" id="cta-print-options-btn">Choose your finish <ArrowRight size={17} /></Link>
             </div>
-            <div className="custom-cta-image-side"><div className="custom-frame"><div className="custom-frame-inner"><Image src="/images/banners/hero.jpg" alt="A framed DreamVault artwork in a room" width={400} height={400} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div></div></div>
+            <div className="custom-cta-image-side"><div className="custom-frame"><div className="custom-frame-inner"><Image src="/images/banners/hero.jpg" alt="A framed RareDaze artwork in a room" width={400} height={400} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div></div></div>
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@ export default async function Home() {
 
     <section className="section" aria-labelledby="dreamvault-standard">
       <div className="container">
-        <div className="section-header"><p className="section-eyebrow">The DreamVault standard</p><h2 id="dreamvault-standard" className="section-title">Clear choices.<br /><span className="accent">Better walls.</span></h2></div>
+        <div className="section-header"><p className="section-eyebrow">The RareDaze standard</p><h2 id="dreamvault-standard" className="section-title">Clear choices.<br /><span className="accent">Better walls.</span></h2></div>
         <div className="features-grid">
           <div className="feature-item"><div className="feature-icon"><Palette size={30} /></div><div className="feature-text"><strong>Choose your finish</strong><span>Paper and frame details are shown for each option.</span></div></div>
           <div className="feature-item"><div className="feature-icon"><Layers size={30} /></div><div className="feature-text"><strong>Preview the look</strong><span>See available prints in a styled room with your selected frame finish.</span></div></div>

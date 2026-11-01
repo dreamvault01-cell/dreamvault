@@ -20,7 +20,7 @@ class InventoryUpdateError extends Error {
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdminApi();
-    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
+    if (!hasSameOrigin(req)) return NextResponse.json({ error: 'Please perform this action from the RareDaze dashboard.' }, { status: 403 });
     const { id } = await params;
     const body = await req.json();
     if (!body || typeof body !== 'object' || Array.isArray(body)) {

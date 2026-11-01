@@ -1,6 +1,7 @@
 import 'server-only';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { Prisma } from '@prisma/client';
+import { BRAND_SUPPORT_NAME } from './brand';
 import prisma from './prisma';
 import { getSupportConfig, type SupportConfig } from './support-config';
 import type { ContactSubmission } from './contact';
@@ -89,13 +90,13 @@ export async function initializeSupportContact(tx: DB, data: ContactSubmission, 
   await insertSupportOutgoing(tx, {
     ticketId: data.submissionId, kind: 'ACKNOWLEDGEMENT', to: data.email,
     subject: supportEmailSubject(data.subject, data.submissionId),
-    body: `Hello ${data.name},\n\nWe have received your message about “${data.subject}”.\n\nYour reference: ${data.submissionId}\n\nOur team will review your message. You can reply to this email to add more information.\n\nDreamVault Support`,
+    body: `Hello ${data.name},\n\nWe have received your message about “${data.subject}”.\n\nYour reference: ${data.submissionId}\n\nOur team will review your message. You can reply to this email to add more information.\n\n${BRAND_SUPPORT_NAME}`,
   }, config);
   if (config.notificationEmail) await insertSupportOutgoing(tx, {
     ticketId: data.submissionId, kind: 'NOTIFICATION', to: config.notificationEmail,
     subject: `New support request [DV-${data.submissionId.slice(0, 8).toUpperCase()}]`,
     // Deliberately omit customer content/PII from development notifications.
-    body: `A new support request has been saved.\n\nOpen the protected Messages dashboard to read and respond:\n${config.appUrl}/admin/messages?ticket=${data.submissionId}\n\nReply from the dashboard, not to this notification.\n\nDreamVault Support`,
+    body: `A new support request has been saved.\n\nOpen the protected Messages dashboard to read and respond:\n${config.appUrl}/admin/messages?ticket=${data.submissionId}\n\nReply from the dashboard, not to this notification.\n\n${BRAND_SUPPORT_NAME}`,
   }, config);
 }
 

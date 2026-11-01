@@ -47,7 +47,7 @@ export default async function CheckoutSuccessPage({
     <main className="container" style={{ minHeight: '75vh', display: 'grid', placeItems: 'center', paddingTop: 64, paddingBottom: 64 }}>
       <section style={{ maxWidth: 600, width: '100%', textAlign: 'center', padding: 'clamp(1.5rem, 5vw, 3rem)', border: '1px solid var(--border-light)', borderRadius: 10, background: 'var(--bg-card)' }}>
         <Icon size={48} strokeWidth={1.35} color="var(--accent-gold)" aria-hidden="true" />
-        <p className="eyebrow" style={{ marginTop: 20 }}>DreamVault order</p>
+        <p className="eyebrow" style={{ marginTop: 20 }}>RareDaze order</p>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 6vw, 3.25rem)', fontWeight: 400, marginTop: 8 }}>{title}</h1>
         <p style={{ color: 'var(--text-secondary)', lineHeight: 1.75, margin: '16px auto 0', maxWidth: 440 }}>{message}</p>
         {reference && <div style={{ margin: '24px auto', padding: '14px 18px', maxWidth: 360, borderTop: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)' }}><span style={{ display: 'block', color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.12em' }}>Order reference</span><strong style={{ display: 'block', marginTop: 6, letterSpacing: '.05em' }}>{reference}</strong></div>}

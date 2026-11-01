@@ -14,7 +14,7 @@ export const maxDuration = 60;
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const admin = await requireAdminApi();
-    if (!hasSameOrigin(request)) return NextResponse.json({ error: 'Please perform this action from the DreamVault dashboard.' }, { status: 403 });
+    if (!hasSameOrigin(request)) return NextResponse.json({ error: 'Please perform this action from the RareDaze dashboard.' }, { status: 403 });
     if (!request.headers.get('content-type')?.toLowerCase().includes('application/json')) return NextResponse.json({ error: 'Please send a JSON request.' }, { status: 415 });
     const body: unknown = await request.json();
     if (!body || typeof body !== 'object' || Array.isArray(body)) throw new OrderValidationError('Invalid fulfilment request.');
