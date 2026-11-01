@@ -64,7 +64,7 @@ In the GitHub repository that contains this code:
    - Name: `CRON_SECRET`
    - Value: the same private value used in Vercel.
 3. Under **Variables**, add `BACKGROUND_APP_URL`:
-   - Value: `https://dream-vault-rho.vercel.app`
+   - Value: `https://dreamvault-beta.vercel.app`
    - Use the HTTPS origin only: no `/api/...`, credentials, query or fragment.
    - This origin is not a secret. If omitted, the workflow uses the URL above.
 4. Leave `BACKGROUND_JOBS_ENABLED` unset until the manual check succeeds.
@@ -150,7 +150,7 @@ provider failures or change email restrictions on a live customer order.
    `background_jobs` summary and run ID. No mail body or customer address is logged.
 
 The endpoint returns HTTP 200 when all three workers finish, or HTTP 503 if a
-worker throws or a reservation needs review. A terminal/blocked email can be
+worker throws or a reservation release fails. A terminal/blocked email can be
 counted by a completed worker; HTTP 200 is not a promise that every email arrived.
 Check the failed/blocked counters and the Admin delivery state.
 
@@ -166,10 +166,44 @@ locks and email leases protect against replay or overlapping external requests.
 | HTTP 401/403 | Matching private `CRON_SECRET` in Vercel and GitHub; production redeployed; deployment protection |
 | Redirect/login/invalid response | Use the direct public production origin and deploy the updated code |
 | `DATABASE_NOT_READY` | Existing order/support SQL updates applied to this deployment's database |
-| `RESERVATION_REVIEW_REQUIRED` | Inspect inventory and expired orders in Admin; never force stock to increase |
+| `RESERVATION_RELEASE_FAILED` | Read the failure categories and duration in the summary; a transaction error does not prove stock is corrupt |
+| `RESERVATION_REVIEW_REQUIRED` | A guarded held-stock decrement failed; inspect the reservation and inventory balance; never force stock to increase |
 | `JOB_FAILED` | Check Vercel infrastructure/DB availability; independent jobs still attempt their work |
 | Queued/blocked mail | Review delivery status and development mode; do not repeatedly send a replacement |
 | Green run with zero work | Normal when no holds are expired and no queued message is due |
+
+### Reservation failure diagnostics
+
+The scheduled reservation worker has a 20-second shared budget. Each database
+transaction receives at most 10 seconds, with connection acquisition and a
+completion margin deducted from the remaining budget. Checkout-triggered sweeps
+keep their smaller five-second default. No work is detached when time runs out.
+Busy order/configuration locks are skipped for a later sweep. Only a confirmed
+Prisma serialization/deadlock rollback (`P2034`) is retried inside a sweep, at
+most once and only if enough time remains. Other failures are left for the next
+scheduled attempt and shown as safe categories:
+
+| Category | Meaning |
+| --- | --- |
+| `TRANSACTION_ERROR` | Prisma transaction API error (`P2028`); may include expiry, but does not alone prove a timeout |
+| `DATABASE_TIMEOUT` | Database request or connection-pool wait timed out |
+| `DATABASE_CONFLICT` | Serialization/deadlock retry failed or its time budget ran out |
+| `DATABASE_UNAVAILABLE` | Database connection/authentication is unavailable |
+| `DATABASE_NOT_READY` | An expected table or column is missing |
+| `INVENTORY_INCONSISTENT` | Held stock was insufficient for the reservation; the whole transaction rolled back |
+| `UNEXPECTED_ERROR` | An unclassified failure; investigate without manually modifying stock |
+
+The authenticated response, GitHub summary and matching Vercel `background_jobs`
+log contain only allowlisted categories/counts and job timings, not customer
+details, SQL or raw exception messages. Older deployments may still show the
+generic `RESERVATION_REVIEW_REQUIRED` label for unrelated database failures.
+
+After deploying this fix, run the workflow once and refresh Admin. For a single
+expired test reservation with On hand 20 / Held 1 / Available 19, expect Held 0 /
+Available 20, On hand still 20, and one `RESERVATION_EXPIRED` audit entry. Repeat
+the workflow to confirm that the same order is not released again. An already
+released test order may correctly produce `released=0` on subsequent sweeps.
+No environment-variable change or database migration is needed for this fix.
 
 ## Local verification
 
@@ -180,6 +214,12 @@ npm run test:support
 npm run lint
 ```
 
-Background unit tests use fake jobs and mocked HTTP; they do not mutate a
+Background tests exercise the production reservation adapter against a
+transactional in-memory fake, including rollback, guarded decrements, shared
+lock ordering, stale paid candidates and repeated sweeps. Policy tests also
+cover slow operations, acquisition/execution budgets and bounded conflict
+retries. They do not prove production database connectivity or latency.
+
+The tests use fake jobs and mocked HTTP; they do not mutate a
 database, release real stock, send email, or enable a GitHub workflow. The actual
 scheduled deployment must still be checked using the activation steps above.

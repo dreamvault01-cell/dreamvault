@@ -7,7 +7,11 @@ import { setTimeout as sleep } from 'node:timers/promises';
 const MAX_RESPONSE_BYTES = 32 * 1024;
 const JOB_NAMES = ['reservations', 'orders', 'support'];
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-const ERROR_CODES = ['DATABASE_NOT_READY', 'JOB_FAILED', 'RESERVATION_REVIEW_REQUIRED'];
+const RESERVATION_FAILURE_CODES = [
+  'TRANSACTION_ERROR', 'DATABASE_TIMEOUT', 'DATABASE_CONFLICT', 'DATABASE_UNAVAILABLE',
+  'DATABASE_NOT_READY', 'INVENTORY_INCONSISTENT', 'UNEXPECTED_ERROR',
+];
+const ERROR_CODES = ['JOB_FAILED', 'RESERVATION_REVIEW_REQUIRED', 'RESERVATION_RELEASE_FAILED', ...RESERVATION_FAILURE_CODES];
 const MESSAGES = {
   CONFIGURATION: 'Set a valid BACKGROUND_APP_URL origin and private CRON_SECRET (at least 32 characters).',
   NETWORK: 'The background endpoint could not be reached within the request timeout.',
@@ -64,6 +68,17 @@ export function validateReport(value) {
       if (name === 'reservations') {
         if (typeof raw.result.hasMore !== 'boolean') throw new SchedulerError('RESPONSE');
         job.result.hasMore = raw.result.hasMore;
+        if (raw.result.failures) {
+          const failures = {};
+          for (const code of RESERVATION_FAILURE_CODES) {
+            if (raw.result.failures[code] !== undefined) {
+              const value = count(raw.result.failures[code]);
+              if (value > 0) failures[code] = value;
+            }
+          }
+          if (Object.values(failures).reduce((sum, value) => sum + value, 0) > job.result.failed) throw new SchedulerError('RESPONSE');
+          if (Object.keys(failures).length) job.result.failures = failures;
+        }
       }
     } else if (raw.status === 'completed') throw new SchedulerError('RESPONSE');
     report.jobs[name] = job;
@@ -145,8 +160,12 @@ export function formatSummary(report) {
   const lines = ['## DreamVault background jobs', '', `Run: ${report.runId}`, '', `Result: ${report.ok ? 'Completed' : 'Needs attention'}`, ''];
   for (const name of JOB_NAMES) {
     const job = report.jobs[name];
-    const counts = job.result ? Object.entries(job.result).map(([key, value]) => `${key}=${value}`).join(', ') : 'no counts available';
-    lines.push(`- ${name}: ${job.status}${job.errorCode ? ` (${job.errorCode})` : ''}; ${counts}`);
+    const counts = job.result ? Object.entries(job.result).filter(([key]) => key !== 'failures')
+      .map(([key, value]) => `${key}=${value}`).join(', ') : 'no counts available';
+    lines.push(`- ${name}: ${job.status}${job.errorCode ? ` (${job.errorCode})` : ''}; ${counts}; durationMs=${job.durationMs}`);
+    if (job.result?.failures) {
+      lines.push(`  - Failure categories: ${Object.entries(job.result.failures).map(([code, value]) => `${code}=${value}`).join(', ')}`);
+    }
   }
   lines.push('', 'Completed processing does not mean every email was delivered. Review failed/blocked counters in Admin.', '');
   return lines.join('\n');

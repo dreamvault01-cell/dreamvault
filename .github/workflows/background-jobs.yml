@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Check out scheduler only
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # verified official v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # verified official v6.0.2, Node 24
         with:
           persist-credentials: false
           sparse-checkout-cone-mode: false
@@ -38,6 +38,6 @@ jobs:
 
       - name: Process stock reservations and email queues
         env:
-          BACKGROUND_APP_URL: ${{ vars.BACKGROUND_APP_URL || 'https://dream-vault-rho.vercel.app' }}
+          BACKGROUND_APP_URL: ${{ vars.BACKGROUND_APP_URL || 'https://dreamvault-beta.vercel.app' }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: node scripts/run-background-jobs.mjs

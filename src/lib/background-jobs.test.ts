@@ -15,7 +15,7 @@ function harness() {
   const dependencies: Parameters<typeof createBackgroundJobsHandler>[0] = {
     authorize: assertSupportProcessorSecret,
     reservations: async (options) => {
-      assert.deepEqual(options, { limit: 25, budgetMs: 8_000 }); calls.push('reservations'); return reservation;
+      assert.deepEqual(options, { limit: 25, budgetMs: 20_000 }); calls.push('reservations'); return reservation;
     },
     orders: async (options) => {
       assert.deepEqual(options, { limit: 5, budgetMs: 12_000 }); calls.push('orders'); return mail;
@@ -115,7 +115,8 @@ test('independent work starts even while the first job is still pending; no work
 
 test('a candidate needing inventory review fails the run without suppressing emails', async () => withSecret(async () => {
   const h = harness();
-  h.dependencies.reservations = async () => ({ ...reservation, checked: 2, failed: 1, released: 1, hasMore: true });
+  h.dependencies.reservations = async () => ({ ...reservation, checked: 2, failed: 1, released: 1, hasMore: true,
+    failures: { INVENTORY_INCONSISTENT: 1 } });
   const response = await createBackgroundJobsHandler(h.dependencies)(request(`Bearer ${SECRET}`));
   const body = await response.json();
   assert.equal(response.status, 503);
@@ -123,6 +124,28 @@ test('a candidate needing inventory review fails the run without suppressing ema
   assert.equal(body.jobs.reservations.result.released, 1);
   assert.equal(body.jobs.orders.status, 'completed');
   assert.equal(body.jobs.support.status, 'completed');
+}));
+
+test('transaction failures are diagnosed without incorrectly reporting corrupt inventory', async () => withSecret(async () => {
+  const h = harness();
+  h.dependencies.reservations = async () => ({ ...reservation, checked: 1, failed: 1, hasMore: true,
+    failures: { TRANSACTION_ERROR: 1, privateMessage: 'SQL customer@example.com' } });
+  const response = await createBackgroundJobsHandler(h.dependencies)(request(`Bearer ${SECRET}`));
+  const body = await response.json();
+  assert.equal(response.status, 503);
+  assert.equal(body.jobs.reservations.errorCode, 'RESERVATION_RELEASE_FAILED');
+  assert.deepEqual(body.jobs.reservations.result.failures, { TRANSACTION_ERROR: 1 });
+  assert.doesNotMatch(JSON.stringify([body, h.reports]), /SQL|customer@example|privateMessage/);
+}));
+
+test('candidate lookup errors preserve safe database failure categories', async () => withSecret(async () => {
+  const h = harness();
+  h.dependencies.reservations = async () => { throw { code: 'P2028', message: 'private SQL' }; };
+  const response = await createBackgroundJobsHandler(h.dependencies)(request(`Bearer ${SECRET}`));
+  const body = await response.json();
+  assert.equal(body.jobs.reservations.errorCode, 'TRANSACTION_ERROR');
+  assert.equal(body.jobs.orders.status, 'completed');
+  assert.doesNotMatch(JSON.stringify([body, h.reports]), /private SQL/);
 }));
 
 test('only explicit counters are exposed, never accidental worker fields or provider errors', async () => withSecret(async () => {

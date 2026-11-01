@@ -3,7 +3,8 @@ import 'server-only';
 import { randomBytes } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import prisma from './prisma';
-import { isExpiredUnpaidOrder, runReservationCleanup } from './order-reservations';
+import { runReservationCleanup } from './order-reservations';
+import { createReservationCleanupDependencies, releaseLockedReservations } from './order-reservation-store';
 import { queueOrderNotification, type OrderForNotification } from './order-notifications';
 import {
   canApplyFulfillmentAction,
@@ -160,19 +161,15 @@ async function reserveVariant(tx: Transaction, variantId: string, quantity: numb
   if (!rows[0]) throw new OrderStoreError(409, 'One of your selected prints just sold out. Please review your cart and try again.');
 }
 
-async function releaseReservations(tx: Transaction, orderId: string, reservations: ReservationRow[], now: Date) {
+async function releaseReservations(tx: Transaction, reservations: ReservationRow[], now: Date) {
   const active = reservations.filter((reservation) => reservation.status === 'RESERVED');
   await lockVariants(tx, active.map((reservation) => reservation.variantId));
-  for (const reservation of active) {
-    const rows = await tx.$queryRaw<{ id: string }[]>`UPDATE "ProductVariant"
-      SET "reservedStock"="reservedStock"-${reservation.quantity}
-      WHERE "id"=${reservation.variantId} AND "reservedStock">=${reservation.quantity}
-      RETURNING "id"`;
-    if (!rows[0]) throw new OrderStoreError(503, 'Inventory needs review before this order can be released.');
-    await tx.inventoryReservation.update({
-      where: { id: reservation.id },
-      data: { status: 'RELEASED', releasedAt: now },
-    });
+  try { await releaseLockedReservations(tx, active, now); }
+  catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'INVENTORY_INCONSISTENT') {
+      throw new OrderStoreError(503, 'Inventory needs review before this order can be released.');
+    }
+    throw error;
   }
 }
 
@@ -371,7 +368,7 @@ export async function cancelUnstartedPayment(orderId: string) {
     await lockOrder(tx, orderId);
     const order = await getOrderWithReservations(tx, orderId);
     if (!order || order.stockCommittedAt || order.paymentStatus !== 'PENDING') return;
-    await releaseReservations(tx, order.id, order.reservations, new Date());
+    await releaseReservations(tx, order.reservations, new Date());
     await tx.order.update({
       where: { id: order.id },
       data: { status: 'CANCELLED', paymentStatus: 'FAILED', fulfillmentStatus: 'CANCELLED', cancelledAt: new Date(), reservationExpiresAt: null },
@@ -499,41 +496,7 @@ export async function processRazorpayWebhook(input: RazorpayWebhookInput) {
 
 /** Release payment holds that passed their expiry. Safe on overlapping workers. */
 export async function releaseExpiredReservations(options: { limit?: number; budgetMs?: number } = {}) {
-  return runReservationCleanup(options, {
-    now: Date.now,
-    candidates: (take, before) => prisma.$transaction((tx) => tx.order.findMany({
-      where: { paymentStatus: 'PENDING', stockCommittedAt: null, reservationExpiresAt: { lt: before } },
-      select: { id: true },
-      take,
-      orderBy: [{ reservationExpiresAt: 'asc' }, { id: 'asc' }],
-    }), { maxWait: 500, timeout: 3_000 }),
-    release: (id, before, timeoutMs) => prisma.$transaction(async (tx) => {
-      // Checkout/payment/admin mutations use the same order -> sorted variants
-      // lock order. A scheduler must skip busy rows, not delay a payment.
-      const tryLock = async (key: string) => {
-        const rows = await tx.$queryRaw<Array<{ locked: boolean }>>`SELECT pg_try_advisory_xact_lock(hashtext(${key})) AS locked`;
-        return rows[0]?.locked === true;
-      };
-      if (!await tryLock(`order/${id}`)) return 'skipped' as const;
-      const order = await getOrderWithReservations(tx, id);
-      if (!isExpiredUnpaidOrder(order, before)) return 'skipped' as const;
-      const variants = [...new Set(order!.reservations.filter((item) => item.status === 'RESERVED').map((item) => item.variantId))].sort();
-      for (const variantId of variants) {
-        if (!await tryLock(`inventory/${variantId}`)) return 'skipped' as const;
-      }
-      await releaseReservations(tx, id, order!.reservations, before);
-      await tx.order.update({
-        where: { id },
-        data: {
-          status: 'CANCELLED', paymentStatus: 'EXPIRED', fulfillmentStatus: 'CANCELLED',
-          reservationExpiresAt: null, cancelledAt: before,
-          cancellationReason: 'Payment window expired before a captured payment was confirmed.',
-        },
-      });
-      await addEvent(tx, id, 'RESERVATION_EXPIRED', 'Unpaid checkout hold expired and inventory was released.');
-      return 'released' as const;
-    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, maxWait: Math.min(500, timeoutMs), timeout: timeoutMs }),
-  });
+  return runReservationCleanup(options, createReservationCleanupDependencies(prisma));
 }
 
 export interface FulfillmentTransitionInput {
@@ -595,7 +558,7 @@ export async function transitionOrderFulfillment(orderId: string, input: Fulfill
     }
     if (input.action === 'CANCEL') {
       if (order.stockCommittedAt) await restockCommittedReservations(tx, order.reservations, now);
-      else await releaseReservations(tx, order.id, order.reservations, now);
+      else await releaseReservations(tx, order.reservations, now);
       const refundStatus = order.paymentMethod === 'COD' ? 'NOT_REQUIRED' : ['PAID', 'PAID_REVIEW'].includes(order.paymentStatus) ? 'PENDING' : 'NONE';
       const paymentStatus = order.paymentStatus === 'PENDING' ? 'CANCELLED' : order.paymentStatus;
       await tx.order.update({

@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { randomUUID } from 'node:crypto';
-import type { ReservationCleanupResult } from './order-reservations';
+import { RESERVATION_FAILURE_CODES, reservationFailureCode, type ReservationCleanupResult } from './order-reservations';
 import type { OrderOutboxResult } from './order-notifications';
 import type { SupportProcessResult } from './support-outbox';
 
@@ -43,11 +43,24 @@ function counters<T extends string>(source: Record<T, number>, keys: readonly T[
 }
 
 function errorCode(error: unknown) {
-  const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
-  const meta = error && typeof error === 'object' && 'meta' in error ? error.meta : undefined;
-  const sqlCode = meta && typeof meta === 'object' && 'code' in meta ? meta.code : undefined;
-  return ['P2021', 'P2022', '42P01', '42703'].includes(String(code))
-    || (code === 'P2010' && ['42P01', '42703'].includes(String(sqlCode))) ? 'DATABASE_NOT_READY' : 'JOB_FAILED';
+  const code = reservationFailureCode(error);
+  return code === 'UNEXPECTED_ERROR' ? 'JOB_FAILED' : code;
+}
+
+function reservationCounters(result: ReservationCleanupResult): ReservationCleanupResult {
+  const safe: ReservationCleanupResult = { ...counters(result, RESERVATION_COUNTERS), hasMore: result.hasMore === true };
+  if (result.failures) {
+    const failures: NonNullable<ReservationCleanupResult['failures']> = {};
+    for (const code of RESERVATION_FAILURE_CODES) {
+      const count = result.failures[code];
+      if (count === undefined) continue;
+      if (!Number.isSafeInteger(count) || count < 0) throw new Error('Invalid reservation diagnostics.');
+      if (count > 0) failures[code] = count;
+    }
+    if (Object.values(failures).reduce((sum, count) => sum + count, 0) > safe.failed) throw new Error('Invalid reservation diagnostics.');
+    if (Object.keys(failures).length) safe.failures = failures;
+  }
+  return safe;
 }
 
 /** Authenticate before doing any work. Jobs are independently awaited, never
@@ -72,15 +85,17 @@ export function createBackgroundJobsHandler(dependencies: BackgroundJobDependenc
 
     const [reservations, orders, support] = await Promise.all([
       run(async () => {
-        const result = await dependencies.reservations({ limit: 25, budgetMs: 8_000 });
-        return { ...counters(result, RESERVATION_COUNTERS), hasMore: result.hasMore === true };
+        // Remote DB work needs a meaningful transaction window, still well
+        // inside the route's 60-second maximum. Email workers remain parallel.
+        return reservationCounters(await dependencies.reservations({ limit: 25, budgetMs: 20_000 }));
       }),
       run(async () => counters(await dependencies.orders({ limit: 5, budgetMs: 12_000 }), MAIL_COUNTERS)),
       run(async () => counters(await dependencies.support({ limit: 5, budgetMs: 12_000 }), MAIL_COUNTERS)),
     ]);
     if (reservations.result && reservations.result.failed > 0) {
       reservations.status = 'failed';
-      reservations.errorCode = 'RESERVATION_REVIEW_REQUIRED';
+      reservations.errorCode = reservations.result.failures?.INVENTORY_INCONSISTENT
+        ? 'RESERVATION_REVIEW_REQUIRED' : 'RESERVATION_RELEASE_FAILED';
     }
     const finished = now();
     const report: BackgroundJobsReport = {

@@ -139,6 +139,21 @@ test('untrusted server extras are never copied into the report or job summary', 
   assert.match(summary, /orders: completed/);
 });
 
+test('safe reservation diagnostics reach the summary without exposing arbitrary worker fields', () => {
+  const raw = report();
+  raw.ok = false;
+  Object.assign(raw.jobs.reservations, { status: 'failed', errorCode: 'RESERVATION_RELEASE_FAILED' });
+  Object.assign(raw.jobs.reservations.result, { failed: 1, released: 0, hasMore: true,
+    failures: { TRANSACTION_ERROR: 1, privateDetail: 'SQL customer@example.com' } });
+  const normalized = validateReport(raw);
+  assert.equal(normalized.jobs.reservations.errorCode, 'RESERVATION_RELEASE_FAILED');
+  assert.deepEqual(normalized.jobs.reservations.result.failures, { TRANSACTION_ERROR: 1 });
+  const summary = formatSummary(normalized);
+  assert.match(summary, /TRANSACTION_ERROR=1/);
+  assert.match(summary, /durationMs=5/);
+  assert.doesNotMatch(JSON.stringify(normalized) + summary, /SQL|customer@example|privateDetail|\[object Object\]/);
+});
+
 test('invalid identifiers, dates, counts or inconsistent status fail report validation', () => {
   for (const change of [
     (value) => { value.runId = 'private injected text'; },
@@ -149,6 +164,8 @@ test('invalid identifiers, dates, counts or inconsistent status fail report vali
     (value) => { delete value.jobs.reservations.result.hasMore; },
     (value) => { value.ok = false; },
     (value) => { delete value.jobs.orders.result; },
+    (value) => { value.jobs.reservations.result.failures = { TRANSACTION_ERROR: -1 }; },
+    (value) => { value.jobs.reservations.result.failures = { DATABASE_CONFLICT: 2 }; },
   ]) {
     const value = report();
     change(value);
@@ -177,6 +194,8 @@ test('workflow is opt-in, default-branch only, authenticated and never triggered
   assert.match(workflow, /contents: read/);
   assert.match(workflow, /persist-credentials: false/);
   assert.match(workflow, /actions\/checkout@[a-f0-9]{40}/);
+  assert.match(workflow, /actions\/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd/);
+  assert.match(workflow, /BACKGROUND_APP_URL:.*https:\/\/dreamvault-beta\.vercel\.app/);
   assert.match(workflow, /CRON_SECRET: \$\{\{ secrets\.CRON_SECRET \}\}/);
   assert.doesNotMatch(workflow, /pull_request|NEXT_PUBLIC_CRON|Bearer [a-zA-Z0-9]{32}/);
 });
