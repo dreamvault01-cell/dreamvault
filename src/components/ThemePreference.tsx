@@ -6,10 +6,10 @@ import { useTheme } from 'next-themes';
 
 type ThemePreferenceProps = {
   className?: string;
-  variant?: 'select' | 'icon';
+  variant?: 'toggle' | 'icon';
 };
 
-export default function ThemePreference({ className = '', variant = 'select' }: ThemePreferenceProps) {
+export default function ThemePreference({ className = '', variant = 'toggle' }: ThemePreferenceProps) {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -36,19 +36,23 @@ export default function ThemePreference({ className = '', variant = 'select' }: 
     );
   }
 
+  const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const ThemeIcon = currentTheme === 'dark' ? Sun : Moon;
+
   return (
-    <label className={`theme-preference ${className}`.trim()}>
+    <div className={`theme-preference ${className}`.trim()}>
       <span>Appearance</span>
-      <select
-        aria-label="Theme preference"
-        value={mounted ? theme ?? 'dark' : 'dark'}
+      <button
+        type="button"
+        className={`theme-switch ${currentTheme === 'dark' ? 'is-dark' : 'is-light'}`}
+        aria-label={`Switch to ${nextTheme} theme`}
+        aria-pressed={currentTheme === 'dark'}
         disabled={!mounted}
-        onChange={(event) => setTheme(event.target.value)}
+        onClick={() => setTheme(nextTheme)}
       >
-        <option value="system">System</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-      </select>
-    </label>
+        <span className="theme-switch-track" aria-hidden="true"><span className="theme-switch-thumb"><ThemeIcon size={14} /></span></span>
+        <span className="theme-switch-value">{currentTheme === 'dark' ? 'Dark' : 'Light'}</span>
+      </button>
+    </div>
   );
 }
