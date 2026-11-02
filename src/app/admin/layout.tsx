@@ -1,6 +1,6 @@
 import { requireAdmin } from '@/lib/admin-auth';
 import Link from 'next/link';
-import { LayoutDashboard, Package, ShoppingCart, FolderOpen, Warehouse, Users, ArrowLeft, MessagesSquare } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, FolderOpen, Warehouse, Users, ArrowLeft, MessagesSquare, Star } from 'lucide-react';
 import BrandLogo from '@/components/BrandLogo';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: '/admin/categories', label: 'Categories', icon: FolderOpen },
     { href: '/admin/inventory', label: 'Inventory', icon: Warehouse },
     { href: '/admin/customers', label: 'Customers', icon: Users },
+    { href: '/admin/reviews', label: 'Reviews', icon: Star },
   ];
 
   return (

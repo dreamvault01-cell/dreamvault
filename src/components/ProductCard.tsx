@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import type { Product } from '@/lib/data';
-import { Heart, Eye } from 'lucide-react';
+import WishlistButton from './WishlistButton';
 
 interface ProductCardProps {
   product: Product;
@@ -12,18 +11,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, index = 0 }: ProductCardProps) {
-  const router = useRouter();
-
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
   const discount = hasDiscount
     ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
     : 0;
-
-  const handleChooseOptions = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(`/product/${product.slug}`);
-  };
 
   return (
     <Link
@@ -40,24 +31,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         )}
 
         <div className="product-card-actions">
-          <button
-            className="product-card-action-btn"
-            title="Add to wishlist"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-          >
-            <Heart size={18} />
-          </button>
-          <button
-            className="product-card-action-btn"
-            title="Quick view"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-          >
-            <Eye size={18} />
-          </button>
-        </div>
-
-        <div className="product-card-quick-add">
-          <button onClick={handleChooseOptions}>Choose options</button>
+          <WishlistButton productId={product.id} />
         </div>
       </div>
 

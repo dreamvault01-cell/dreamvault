@@ -8,15 +8,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  firstName String?
-  lastName  String?
-  role      String   @default("USER") // USER or ADMIN
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]
+  id            String          @id @default(cuid())
+  clerkId       String          @unique
+  email         String          @unique
+  firstName     String?
+  lastName      String?
+  role          String          @default("USER") // USER or ADMIN
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  orders        Order[]
+  wishlistItems WishlistItem[]
+  reviews       ProductReview[]
 }
 
 model Category {
@@ -35,10 +37,10 @@ model Product {
   name             String
   slug             String           @unique
   description      String
-  shortDescription String?          // Shown on product cards
-  price            Float            // Selling price (lowest variant price)
-  compareAtPrice   Float?           // MRP / original price (for showing discount)
-  image            String           // Primary image (hero)
+  shortDescription String? // Shown on product cards
+  price            Float // Selling price (lowest variant price)
+  compareAtPrice   Float? // MRP / original price (for showing discount)
+  image            String // Primary image (hero)
   badge            String?
   status           String           @default("ACTIVE") // ACTIVE or DRAFT
   categoryId       String
@@ -47,19 +49,21 @@ model Product {
   images           ProductImage[]
   tags             Tag[]            @relation("ProductTags")
   orderItems       OrderItem[]
+  wishlistItems    WishlistItem[]
+  reviews          ProductReview[]
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  url       String
-  alt       String?
-  isRoomPreview Boolean @default(false) // Artwork-only image used in the illustrative room preview
-  position  Int      @default(0) // For ordering images in gallery
-  createdAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url           String
+  alt           String?
+  isRoomPreview Boolean  @default(false) // Artwork-only image used in the illustrative room preview
+  position      Int      @default(0) // For ordering images in gallery
+  createdAt     DateTime @default(now())
 
   @@index([productId, position])
 }
@@ -72,39 +76,39 @@ model Tag {
 }
 
 model ProductVariant {
-  id               String   @id @default(cuid())
+  id               String                 @id @default(cuid())
   productId        String
-  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  size             String   // "A4", "A3", "A2", "A1"
-  format           String   @default("POSTER") // POSTER, ART_PRINT, FRAMED_ART_PRINT
-  paper            String   @default("CLASSIC_MATTE") // CLASSIC_MATTE, PREMIUM_FINE_ART
-  frame            String   @default("NONE") // NONE, BLACK, WHITE, NATURAL_OAK, WALNUT
-  configurationKey String   // Stable: size:format:paper:frame
-  price            Float    // Selling price for this exact configuration
-  compareAtPrice   Float?   // MRP for this exact configuration
-  sku              String?  // Stock Keeping Unit
-  stock            Int      @default(0) // Physical units on hand
-  reservedStock    Int      @default(0) // Unpaid checkout holds; never shown as available stock
+  product          Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size             String // "A4", "A3", "A2", "A1"
+  format           String                 @default("POSTER") // POSTER, ART_PRINT, FRAMED_ART_PRINT
+  paper            String                 @default("CLASSIC_MATTE") // CLASSIC_MATTE, PREMIUM_FINE_ART
+  frame            String                 @default("NONE") // NONE, BLACK, WHITE, NATURAL_OAK, WALNUT
+  configurationKey String // Stable: size:format:paper:frame
+  price            Float // Selling price for this exact configuration
+  compareAtPrice   Float? // MRP for this exact configuration
+  sku              String? // Stock Keeping Unit
+  stock            Int                    @default(0) // Physical units on hand
+  reservedStock    Int                    @default(0) // Unpaid checkout holds; never shown as available stock
   reservations     InventoryReservation[]
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
 
   @@unique([productId, configurationKey])
   @@index([productId, size])
 }
 
 model Order {
-  id                   String      @id @default(cuid())
-  orderReference       String      @unique // Safe customer-facing reference, e.g. DV-20261028-AB12CD34
+  id                   String                 @id @default(cuid())
+  orderReference       String                 @unique // Safe customer-facing reference, e.g. DV-20261028-AB12CD34
   userId               String?
-  user                 User?       @relation(fields: [userId], references: [id])
-  razorpayOrderId      String?     @unique
+  user                 User?                  @relation(fields: [userId], references: [id])
+  razorpayOrderId      String?                @unique
   razorpayPaymentId    String?
-  razorpayRefundId     String?     @unique
-  status               String      @default("PENDING") // Legacy summary: PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, PAYMENT_REVIEW
-  paymentStatus        String      @default("PENDING") // PENDING, PAID, COD_PENDING, FAILED, EXPIRED, CANCELLED, PAID_REVIEW, REFUNDED
-  fulfillmentStatus    String      @default("UNFULFILLED") // UNFULFILLED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  refundStatus         String      @default("NONE") // NONE, NOT_REQUIRED, PENDING, REFUNDED
+  razorpayRefundId     String?                @unique
+  status               String                 @default("PENDING") // Legacy summary: PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, PAYMENT_REVIEW
+  paymentStatus        String                 @default("PENDING") // PENDING, PAID, COD_PENDING, FAILED, EXPIRED, CANCELLED, PAID_REVIEW, REFUNDED
+  fulfillmentStatus    String                 @default("UNFULFILLED") // UNFULFILLED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  refundStatus         String                 @default("NONE") // NONE, NOT_REQUIRED, PENDING, REFUNDED
   totalAmount          Float
   shippingName         String
   shippingEmail        String?
@@ -113,7 +117,7 @@ model Order {
   shippingCity         String
   shippingState        String
   shippingPin          String
-  paymentMethod        String      @default("RAZORPAY") // RAZORPAY or COD
+  paymentMethod        String                 @default("RAZORPAY") // RAZORPAY or COD
   reservationExpiresAt DateTime?
   stockCommittedAt     DateTime?
   processingAt         DateTime?
@@ -130,11 +134,49 @@ model Order {
   events               OrderEvent[]
   notifications        OrderNotification[]
   paymentWebhookEvents PaymentWebhookEvent[]
-  createdAt            DateTime    @default(now())
-  updatedAt            DateTime    @updatedAt
+  reviews              ProductReview[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
 
   @@index([userId, createdAt])
   @@index([reservationExpiresAt])
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId, createdAt])
+  @@index([productId])
+}
+
+model ProductReview {
+  id             String    @id @default(uuid())
+  productId      String
+  userId         String
+  orderId        String
+  rating         Int
+  title          String?   @db.VarChar(120)
+  body           String    @db.Text
+  photoUrls      Json      @default("[]")
+  status         String    @default("PENDING") @db.VarChar(16) // PENDING, APPROVED, REJECTED
+  moderationNote String?   @db.Text
+  moderatedAt    DateTime?
+  moderatedBy    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order          Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId, status, createdAt])
+  @@index([orderId])
 }
 
 model OrderItem {
@@ -145,9 +187,9 @@ model OrderItem {
   product       Product @relation(fields: [productId], references: [id])
   variantId     String? // Snapshot only: variants may be removed from the catalogue later
   variantSku    String?
-  configuration Json?   // Exact size, format, paper, frame, and label at checkout
+  configuration Json? // Exact size, format, paper, frame, and label at checkout
   quantity      Int
-  price         Float   // Store price at the time of purchase
+  price         Float // Store price at the time of purchase
   size          String? // Kept for older orders and quick reporting
 
   @@index([variantId])
@@ -191,24 +233,24 @@ model OrderEvent {
 // Durable, idempotent transactional email outbox. This is intentionally kept
 // separate from customer-support conversations.
 model OrderNotification {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   orderId         String
-  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   kind            String
   toEmail         String
   subject         String
   text            String
   html            String
-  deliveryStatus  String   @default("QUEUED") // QUEUED, SENDING, SENT, FAILED, BLOCKED
-  attempts        Int      @default(0)
-  nextAttemptAt   DateTime @default(now())
+  deliveryStatus  String    @default("QUEUED") // QUEUED, SENDING, SENT, FAILED, BLOCKED
+  attempts        Int       @default(0)
+  nextAttemptAt   DateTime  @default(now())
   firstAttemptAt  DateTime?
   lockedUntil     DateTime?
   lockToken       String?
-  providerEmailId String?  @unique
+  providerEmailId String?   @unique
   lastError       String?
   sentAt          DateTime?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
 
   @@unique([orderId, kind])
   @@index([deliveryStatus, nextAttemptAt])
@@ -217,35 +259,35 @@ model OrderNotification {
 // Razorpay may retry and deliver events out of order. Store the provider event
 // identifier once so payment automation is safe to run more than once.
 model PaymentWebhookEvent {
-  id              String   @id @default(uuid())
-  providerEventId String   @unique
+  id              String    @id @default(uuid())
+  providerEventId String    @unique
   eventType       String
   orderId         String?
-  order           Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  order           Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
   paymentId       String?
   payloadHash     String
   occurredAt      DateTime?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
 
   @@index([orderId, createdAt])
   @@index([paymentId])
 }
 
 model ContactMessage {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(100)
-  email     String   @db.VarChar(254)
-  subject   String   @db.VarChar(150)
-  message   String   @db.Text
-  status    String   @default("NEW") @db.VarChar(20)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
-  lastMessageAt DateTime @default(now()) @db.Timestamptz(3)
-  lastInboundAt DateTime @default(now()) @db.Timestamptz(3)
-  lastReadAt DateTime? @db.Timestamptz(3)
-  replyToken String? @unique @db.VarChar(48)
-  source String @default("FORM") @db.VarChar(10)
-  messages SupportMessage[]
+  id            String           @id @default(uuid())
+  name          String           @db.VarChar(100)
+  email         String           @db.VarChar(254)
+  subject       String           @db.VarChar(150)
+  message       String           @db.Text
+  status        String           @default("NEW") @db.VarChar(20)
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime         @default(now()) @updatedAt @db.Timestamptz(3)
+  lastMessageAt DateTime         @default(now()) @db.Timestamptz(3)
+  lastInboundAt DateTime         @default(now()) @db.Timestamptz(3)
+  lastReadAt    DateTime?        @db.Timestamptz(3)
+  replyToken    String?          @unique @db.VarChar(48)
+  source        String           @default("FORM") @db.VarChar(10)
+  messages      SupportMessage[]
 
   @@index([email, createdAt])
   @@index([status, createdAt])
@@ -253,42 +295,42 @@ model ContactMessage {
 }
 
 model SupportMessage {
-  id String @id @default(uuid())
-  ticketId String
-  ticket ContactMessage @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  direction String @db.VarChar(10)
-  kind String @db.VarChar(20)
-  body String @db.Text
-  fromEmail String? @db.VarChar(254)
-  fromName String? @db.VarChar(100)
-  toEmail String? @db.VarChar(254)
-  replyToEmail String? @db.VarChar(254)
-  subject String @db.VarChar(200)
-  authorId String?
-  attachments Json @default("[]")
-  deliveryStatus String @default("RECEIVED") @db.VarChar(16)
-  attempts Int @default(0)
-  nextAttemptAt DateTime @default(now()) @db.Timestamptz(3)
-  firstAttemptAt DateTime? @db.Timestamptz(3)
-  lockedUntil DateTime? @db.Timestamptz(3)
-  lockToken String? @db.VarChar(36)
-  providerEmailId String? @unique
-  internetMessageId String? @db.VarChar(998)
-  inReplyTo String? @db.VarChar(998)
-  sentAt DateTime? @db.Timestamptz(3)
-  providerEventAt DateTime? @db.Timestamptz(3)
-  lastError String? @db.VarChar(300)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  id                String         @id @default(uuid())
+  ticketId          String
+  ticket            ContactMessage @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  direction         String         @db.VarChar(10)
+  kind              String         @db.VarChar(20)
+  body              String         @db.Text
+  fromEmail         String?        @db.VarChar(254)
+  fromName          String?        @db.VarChar(100)
+  toEmail           String?        @db.VarChar(254)
+  replyToEmail      String?        @db.VarChar(254)
+  subject           String         @db.VarChar(200)
+  authorId          String?
+  attachments       Json           @default("[]")
+  deliveryStatus    String         @default("RECEIVED") @db.VarChar(16)
+  attempts          Int            @default(0)
+  nextAttemptAt     DateTime       @default(now()) @db.Timestamptz(3)
+  firstAttemptAt    DateTime?      @db.Timestamptz(3)
+  lockedUntil       DateTime?      @db.Timestamptz(3)
+  lockToken         String?        @db.VarChar(36)
+  providerEmailId   String?        @unique
+  internetMessageId String?        @db.VarChar(998)
+  inReplyTo         String?        @db.VarChar(998)
+  sentAt            DateTime?      @db.Timestamptz(3)
+  providerEventAt   DateTime?      @db.Timestamptz(3)
+  lastError         String?        @db.VarChar(300)
+  createdAt         DateTime       @default(now()) @db.Timestamptz(3)
 
   @@index([ticketId, createdAt])
   @@index([deliveryStatus, nextAttemptAt])
 }
 
 model SupportWebhookEvent {
-  id String @id
-  eventType String @db.VarChar(80)
+  id              String   @id
+  eventType       String   @db.VarChar(80)
   providerEmailId String?
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
 
   @@index([createdAt])
 }

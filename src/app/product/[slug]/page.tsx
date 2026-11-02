@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProductBySlug, getProductsByCategory } from '@/lib/data';
+import { getApprovedProductReviews } from '@/lib/review-types';
+import ProductReviews from '@/components/ProductReviews';
 import ProductCard from '@/components/ProductCard';
 import ProductExperience from '@/components/ProductExperience';
 
@@ -11,10 +13,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const categoryProducts = await getProductsByCategory(product.categorySlug);
   const relatedProducts = categoryProducts.filter((item) => item.id !== product.id).slice(0, 4);
+  const reviewData = await getApprovedProductReviews(product.id);
 
   return (
     <>
       <ProductExperience key={product.id} product={product} />
+      <div className="container"><ProductReviews productId={product.id} initialReviews={reviewData.reviews} initialSummary={reviewData.summary} /></div>
       {relatedProducts.length > 0 && (
         <section className="section" style={{ background: 'var(--bg-secondary)' }} aria-labelledby="related-art-heading">
           <div className="container">
